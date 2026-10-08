@@ -26,7 +26,7 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 | D-10 | 태그 저장 모양: **A. 소문자로 바꿔 저장** (팀 ERD `tag.name`의 `UNIQUE` 그대로 대소문자 무시가 됨) | 결정됨 (2026-10-08, 추천대로) | T002, T041, T042, T043 |
 | D-11 | 글을 지우면 그 글의 신고 기록도 함께 지운다 (`003` D-7과 같음) | 결정됨 | T034, T038 |
 | `002` D-1, D-5 | 탈퇴해도 남의 글에 단 댓글은 남고 "탈퇴한 사용자"로 보인다. **내가 한 신고는 남긴다.** 내가 누른 좋아요는 지운다 (`MemberWithdrawnEvent` 주석) | 결정됨 | T023, T026, T032, T038 |
-| (도구) | 본문 마크다운을 그리는 화면 도구 이름은 `003` research D-8(`003` T025)에서 **아직 정하지 않았다.** 그 전에는 본문 안 이미지가 그림으로 보이지 않는다 | **미정** (`003`의 일) | T059 |
+| (도구) | 본문 마크다운을 그리는 화면 도구는 `003` research D-8에서 **react-markdown + remark-gfm**으로 정했다(2026-10-08, `003` T025). `003` T025가 merge되기 전에는 본문 안 이미지가 그림으로 보이지 않는다 | 결정됨 (`003`의 일) | T059 |
 
 **Tests**: `001`·`002`·`003`처럼 **사용자 이야기마다 서버 테스트 작업**을 넣었다 (`@SpringBootTest` + MockMvc + `springSecurity()`, 실제 PostgreSQL). 테스트 이름에는 [quickstart.md](quickstart.md)의 시나리오 번호를 붙인다. 동시 요청을 보는 테스트는 클래스 전체에 `@Transactional`을 걸지 않는다 (`002` T021과 같은 이유). 화면에는 테스트 도구가 없어서(`frontend/package.json`) 각 단계 끝의 `Checkpoint`에서 손으로(또는 Playwright로) 확인한다.
 
@@ -75,7 +75,7 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
   - **US1, US3, US6** (글 상세에 붙음): `003` US3 **T026 ~ T029** (`PostReadService`, `GET /api/posts/{postId}`, `PostDetailPage`)
   - **US2, US3, US6, US5, US4** (글 삭제 때 함께 지움): `003` US4 **T030 ~ T037**. 특히 **T032**(`PostDeletingEvent`), **T034**(`PostEditService.delete`가 이벤트 발행 → 글 삭제를 한 트랜잭션에서), **T036**(`PostBlogClosingCleaner`, 탈퇴 때 글마다 `PostDeletingEvent`)
   - **US5, US4** (글 저장·수정에 붙음): `003` US2 **T017 ~ T024** (`PostWriteService.create`, `PostRequests`, `PostEditorPage`)와 US4 **T033 ~ T035, T037** (`PostEditService.update`, 수정 화면)
-  - **US4의 본문 안 이미지 보이기**: `003` **T025**(마크다운 표시 도구, `003` research D-8 `미정`)와 **T029**의 `MarkdownView`
+  - **US4의 본문 안 이미지 보이기**: `003` **T025**(마크다운 표시 도구, `003` research D-8: react-markdown + remark-gfm)와 **T029**의 `MarkdownView`
   - `002`의 `MemberWithdrawnEvent`(T030), `BlogClosingEvent`(T032)는 이미 merge됨 (PR #19)
 - [x] T002 **미정 항목을 사용자에게 묻는 때를 정해 둔다** (헌법 II. 2026-10-08 끝: 사용자가 모두 추천대로 골랐고 research·plan·`상세/05`·`상세/07`·기술스택 2.6을 맞췄다. 헌법의 `미정` 목록은 배포 위치가 남아 그대로): ① US5(Phase 7)를 시작하기 전에 `D-10` ② US4(Phase 8)를 시작하기 전에 `D-1`, `D-5`, `D-6`, D-3의 **정리 시간 숫자**. 물을 때는 research의 선택지·추천·이유를 그대로 보여 준다. 고르면 research D-항목과 E 표, plan `정해야 할 것 요약`과 FR 연결표의 해당 줄을 같이 고친다. `D-1`을 고르면 헌법의 `미정` 목록, `상세/05`·`상세/07` 구현 방식, `기술스택-아키텍처.md` 2.6도 같이 맞춘다 (research D-1 `영향`)
 - [ ] T003 [P] ERD 문서 맞추기 (CLAUDE.md `ERD를 고칠 때`): `post_report`의 `UNIQUE(users_id, post_id)`(FR-019, SC-003, data-model 4)는 2026-10-08 사용자 결정으로 `docs/3-설계/ERD-변경-요청.md`에 내 확장 **E-7**로 더했다. 남은 것: Crowfoot `myblog-제안`(666)에 E-7 반영. `post_image.storage_key` 중복 불가(data-model 5)도 같이 묻는다. 팀 요청 T-1(`post_image`)과 T-3(`reason` CHECK)은 팀 답이 없어도 `003`이 T-2·T-3을 그랬듯 내 코드에는 먼저 넣는다 (T035, T052)
@@ -255,7 +255,7 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 - [ ] T056 [US4] `ImageController`의 `GET /api/images/{fileName}`: 기록을 찾고, 연결된 글이면 `PostLookup.findVisible(postId, 보는 사람)`, 연결 전이면 **올린 사람만**. 아니면 `404`. `Content-Type`은 확인한 형식, `X-Content-Type-Options: nosniff`, 비공개 글·연결 전 이미지는 공용 캐시에 남지 않게(`Cache-Control: private`, 가안) (contracts 11, research B-5, R-7, FR-026)
 - [ ] T057 [US4] **글 저장 때 이미지 연결** (D-3, D-4): `post` 맨 위에 이벤트 `BE/post/PostContentSavedEvent.java`(`record(Long postId, Long ownerId, String content)`, 가안)를 두고 `003`의 `PostWriteService.create`·`PostEditService.update`가 같은 트랜잭션에서 낸다. `BE/image/service/ImageLinker.java`(`@EventListener`): 본문에서 **우리 서버 주소(`/api/images/…`)의 마크다운 이미지만** 찾아 내가 올린 연결 전 이미지와 이 글의 이미지를 이 글에 연결하고, 10장을 넘으면 `fieldErrors.content` `IMAGE_LIMIT_EXCEEDED`로 거절(저장 전체 취소, contracts 8), 이 글에 있었는데 본문에서 빠진 이미지는 기록을 지우고 파일은 T058과 같은 방법으로 지운다. 남이 올린 이미지 주소는 연결하지 않는다 (FR-024, FR-026, SC-004)
 - [ ] T058 [US4] 이미지 정리: ① `BE/image/service/ImagePostCleaner.java` — `PostDeletingEvent`로 그 글의 `storage_key`를 읽어 두고 기록을 지운다(같은 트랜잭션). **파일 삭제는 D-5 결정(A)대로 트랜잭션이 끝난 뒤** 지우고(`@TransactionalEventListener(phase = AFTER_COMMIT)` 등), 실패하면 로그를 남기고 ②가 다시 지운다) ② `BE/image/service/OrphanImageCleaner.java`(`@Scheduled`, `@EnableScheduling`은 `common`에 한 번): 정리 시간(24시간, T053)보다 오래된 연결 전 이미지의 기록·파일을 지운다. D-5가 A이므로 저장소 목록과 DB를 비교해 주인 없는 파일도 지운다(`ImageStorage`에 목록 보기가 필요하면 T050에 더함). 탈퇴한 회원의 연결 전 이미지도 이 작업이 지운다(따로 듣지 않음, 가안) (FR-027, SC-005, research D-3, D-5)
-- [ ] T059 [US4] 화면: `003`의 `PostEditorPage`에 `FE/image/ImageUploadButton.tsx`(파일 고르기 `accept`는 jpg·png·gif·webp, 크기를 화면에서도 먼저 보고(보조), **한 장씩** 보냄, 받은 주소를 커서 자리에 `![](주소)`로 넣음(D-4), 실패 문구는 서버 것 그대로, 수정 중이면 `postId`를 같이 보냄). 글 상세의 본문 안 이미지는 `003` T029의 `MarkdownView`가 그린다 — **`003` T025(마크다운 표시 도구, `미정`)가 정해지기 전에는 원문 글자로 보인다.** 정해지면 이미지 주소는 우리 서버 주소만 그리게 한다(D-4, S-12의 5). 글 목록의 대표 이미지는 만들지 않는다 (FR-022 ~ FR-026)
+- [ ] T059 [US4] 화면: `003`의 `PostEditorPage`에 `FE/image/ImageUploadButton.tsx`(파일 고르기 `accept`는 jpg·png·gif·webp, 크기를 화면에서도 먼저 보고(보조), **한 장씩** 보냄, 받은 주소를 커서 자리에 `![](주소)`로 넣음(D-4), 실패 문구는 서버 것 그대로, 수정 중이면 `postId`를 같이 보냄). 글 상세의 본문 안 이미지는 `003` T029의 `MarkdownView`가 그린다 — **`003` T025(마크다운 표시 도구, react-markdown + remark-gfm)가 merge되기 전에는 원문 글자로 보인다.** 그 뒤에는 이미지 주소는 우리 서버 주소만 그리게 한다(D-4, S-12의 5). 글 목록의 대표 이미지는 만들지 않는다 (FR-022 ~ FR-026)
 
 **Checkpoint**: T047, T048이 통과하고 S-7, S-8, S-11(10)을 화면으로 확인한다. 본문 안 그림은 `003` T025 뒤에 S-7의 8을 다시 본다 (PR 하나)
 
@@ -339,11 +339,7 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 
 ### 미정 항목이 막는 작업
 
-`D-10`, `D-1`, `D-5`, `D-6`과 정리 시간은 2026-10-08에 정해져서 더 막는 작업이 없다. 남은 것은 아래 한 줄이다.
-
-| 미정 | 막는 작업 | 결정 전에 해도 되는 것 |
-|---|---|---|
-| `003` D-8 (마크다운 도구) | T059의 본문 안 그림, T061의 S-12 5 | 이미지 올리기와 주소 넣기 |
+`D-10`, `D-1`, `D-5`, `D-6`, 정리 시간과 `003` D-8(마크다운 도구)은 2026-10-08에 정해져서 결정이 막는 작업은 없다. T059의 본문 안 그림과 T061의 S-12 5는 `003` T025가 merge된 뒤에 확인한다.
 
 ### Within Each User Story
 
@@ -388,7 +384,7 @@ Task: "T017 @ValidCommentBody (코드 포인트, 공백만이면 비어 있음)"
 2. US3(좋아요) → 확인
 3. US6(신고) → 확인
 4. US5(태그, `D-10` 결정됨) → 확인
-5. US4(이미지, `D-1`, `D-5`, `D-6`, 정리 시간 결정됨) → 확인. `003` T025가 정해지면 본문 안 그림을 다시 확인
+5. US4(이미지, `D-1`, `D-5`, `D-6`, 정리 시간 결정됨) → 확인. `003` T025가 merge되면 본문 안 그림을 다시 확인
 6. T064로 글 삭제·탈퇴 연쇄 전체를 다시 확인
 
 ---
@@ -398,4 +394,4 @@ Task: "T017 @ValidCommentBody (코드 포인트, 공백만이면 비어 있음)"
 - 작업 하나 또는 묶음 하나를 끝낼 때마다 커밋하고, 커밋 메시지에 작업 ID를 적는다 (예: `005 T018`). PR은 이야기 하나에 하나
 - `가안`인 주소, 오류 이름, 설정 이름, 입구·이벤트 이름(`MemberNames`, `PostLookup`, `PostCommentCounter`, `PostLikeSummary`, `PostContentSavedEvent`, `ImageStorage`)과 모듈 나누기를 바꾸면 T060처럼 문서도 같이 고친다
 - `003`은 다른 세션이 만드는 중이다. `003`의 클래스·이벤트 이름이 계획(`003` tasks.md)과 달라지면 이 목록의 이름도 그에 맞춘다
-- 남은 결정: 이 기능의 D-항목은 없다 (2026-10-08 모두 결정. 정리 시간 24시간과 태그만 바꾼 수정의 "수정됨"은 사용자 아침 확인). 남은 것은 `003`의 마크다운 표시 도구. 확인할 위험: research R-1(좋아요·신고 동시 요청, T030·T037), R-2(글 상세 2초, T063), R-3(남의 비공개 글에 직접 요청, T009), R-6(5MB 경계, T053), R-7(이미지 주소, T056)
+- 남은 결정: 이 기능의 D-항목은 없다 (2026-10-08 모두 결정. 정리 시간 24시간과 태그만 바꾼 수정의 "수정됨"은 사용자 아침 확인). `003`의 마크다운 표시 도구도 정해졌다(react-markdown + remark-gfm). 확인할 위험: research R-1(좋아요·신고 동시 요청, T030·T037), R-2(글 상세 2초, T063), R-3(남의 비공개 글에 직접 요청, T009), R-6(5MB 경계, T053), R-7(이미지 주소, T056)
