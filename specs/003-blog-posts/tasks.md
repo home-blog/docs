@@ -59,7 +59,7 @@ description: "003 블로그·분류·글 작업 목록"
 
 ---
 
-> **진행 (2026-10-08)**: 바탕 + US1 = 코드 PR #20 (merge). US2 = PR #21. US3 이후는 이어서. T011의 글 요청 함수(`postApi.ts`)와 `rules.ts`는 US2에서, T012의 `/write`·`/posts/:postId` 주소는 US2·US3에서 더했다. T012의 `useUnsavedChangesPrompt`를 `components/`로 옮기는 것은 하지 않았다(`002` 화면들이 같은 파일을 쓰고 있어, 옮기면 얻는 것보다 바꿀 곳이 많다). 머리글의 `내 블로그`는 `/me/blog`(내 블로그 번호를 물어 이동)로 만들었다.
+> **진행 (2026-10-08)**: 바탕 + US1 = 코드 PR #20, US2 = PR #21 (둘 다 merge). US2 리뷰에서 "같은 `requestKey`에 다른 내용이면 `409 POST_ALREADY_SAVED`"를 더했다(contracts 10). US3 = PR #23. US4·US5, US6, US7은 브랜치에 만들어 두고 차례로 올린다. T011의 글 요청 함수(`postApi.ts`)와 `rules.ts`는 US2에서, T012의 `/write`·`/posts/:postId` 주소는 US2·US3에서 더했다. T012의 `useUnsavedChangesPrompt`를 `components/`로 옮기는 것은 하지 않았다(`002` 화면들이 같은 파일을 쓰고 있어, 옮기면 얻는 것보다 바꿀 곳이 많다). 머리글의 `내 블로그`는 `/me/blog`(내 블로그 번호를 물어 이동)로 만들었다.
 
 ## Phase 1: Setup (공통 준비)
 
@@ -119,17 +119,17 @@ description: "003 블로그·분류·글 작업 목록"
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] `BE-TEST/post/controller/PostCreateTest.java`: S-2의 1 ~ 5(기본값 `미분류`·주제 `null`·`public`, 마지막 글의 분류·주제, `createdAt`을 보내도 무시), S-2a의 1 ~ 4·7(주제 없음·없는 번호 → `topicId` "주제를 골라 주세요"), S-3의 1 ~ 8(빈 제목·공백 제목, 빈 본문, 둘 다 비면 두 칸, 101자·100자, 앞뒤 공백, 이모지 100자), S-3의 5·6(본문은 **저장 원문 기준** 10,000자 통과·10,001자 거절, 마크다운 기호·이미지 주소도 센다), S-3의 9(공백·줄바꿈만 있는 본문 → `content` "본문을 입력해 주세요") (D-2), S-4의 1·3·4(로그인 안 하면 `401`, 남의 분류 번호 → `400 INVALID_CATEGORY`, 본문의 `blogId` 무시), S-12의 6 ~ 8(SQL 같은 글자 그대로, CSRF 없으면 거절, 화면 없이 101자 거절) (FR-008 ~ FR-016, FR-046, SC-013)
-- [ ] T018 [P] [US2] `BE-TEST/post/controller/PostRequestKeyTest.java` (**클래스 전체 `@Transactional` 쓰지 않음**, 끝에서 지움): S-5의 2·3 — 같은 `requestKey`로 요청 3개를 동시에 보내면 글은 하나, 세 응답의 `postId`가 같다(처음은 `201`, 나머지는 `200`). 다른 키면 글 두 개 (D-6, FR-018, SC-008)
+- [x] T017 [P] [US2] `BE-TEST/post/controller/PostCreateTest.java`: S-2의 1 ~ 5(기본값 `미분류`·주제 `null`·`public`, 마지막 글의 분류·주제, `createdAt`을 보내도 무시), S-2a의 1 ~ 4·7(주제 없음·없는 번호 → `topicId` "주제를 골라 주세요"), S-3의 1 ~ 8(빈 제목·공백 제목, 빈 본문, 둘 다 비면 두 칸, 101자·100자, 앞뒤 공백, 이모지 100자), S-3의 5·6(본문은 **저장 원문 기준** 10,000자 통과·10,001자 거절, 마크다운 기호·이미지 주소도 센다), S-3의 9(공백·줄바꿈만 있는 본문 → `content` "본문을 입력해 주세요") (D-2), S-4의 1·3·4(로그인 안 하면 `401`, 남의 분류 번호 → `400 INVALID_CATEGORY`, 본문의 `blogId` 무시), S-12의 6 ~ 8(SQL 같은 글자 그대로, CSRF 없으면 거절, 화면 없이 101자 거절) (FR-008 ~ FR-016, FR-046, SC-013)
+- [x] T018 [P] [US2] `BE-TEST/post/controller/PostRequestKeyTest.java` (**클래스 전체 `@Transactional` 쓰지 않음**, 끝에서 지움): S-5의 2·3 — 같은 `requestKey`로 요청 3개를 동시에 보내면 글은 하나, 세 응답의 `postId`가 같다(처음은 `201`, 나머지는 `200`). 다른 키면 글 두 개 (D-6, FR-018, SC-008)
 
 ### Implementation for User Story 2
 
-- [ ] T019 [P] [US2] 입력 검사 `BE/post/validation/`: `@ValidTitle`(앞뒤 공백을 지운 뒤 1 ~ `post.title.max-length`, **코드 포인트로 셈**, 비면 `TITLE_REQUIRED`), `@ValidContent`(1 ~ `post.content.max-length`, 앞뒤 공백은 지우지 않음. **저장하는 원문 그대로 코드 포인트로 센다**(마크다운 기호 포함). 공백·줄바꿈만 있으면 `CONTENT_REQUIRED`, D-2), `PostFieldErrorMessages`(문구의 숫자를 `PostProperties`에서) (FR-010, FR-011, FR-016, research B-4)
-- [ ] T020 [US2] `BE/post/domain/Post.java`에 `create(categoryId, topicId, title, content, visibility, requestKey)`: 제목은 앞뒤 공백 제거, 본문은 `\r\n` → `\n`만 하고 그 밖에는 손대지 않는다 (글자 수는 이렇게 맞춘 원문으로 센다, D-2), `visibility` 없으면 `public`. `created_at`은 서버가 넣는다 (FR-010, FR-011, FR-013, FR-014)
-- [ ] T021 [US2] `BE/post/service/PostFormService.java`: 내 블로그의 분류 목록(T009), 주제 목록(`sort_order`), 기본 분류·주제 = 내 블로그에서 **작성 시각이 가장 늦은 글**의 것(없으면 `is_default` 분류, 주제 `null`), `defaultVisibility: "public"`, `limits`는 `PostProperties`에서 (contracts 9, research B-6, FR-012, FR-013, FR-046)
-- [ ] T022 [US2] `BE/post/service/PostWriteService.create`: ① 블로그는 세션 회원으로(`BlogDirectory.myBlog`), 요청에 블로그 번호를 받지 않음 ② `categoryId`가 내 블로그의 것이 아니면 `INVALID_CATEGORY` ③ `topicId`가 `topic` 표에 없으면 `fieldErrors.topicId` `TOPIC_REQUIRED` ④ 같은 `requestKey`의 글이 있으면 그 번호를 돌려줌, 동시에 들어와 `request_key` 중복으로 DB가 거절하면 다시 찾아 그 번호를 돌려줌 (D-6) ⑤ 저장 (FR-008, FR-009, FR-018, FR-034, FR-046) — T019 ~ T021 다음
-- [ ] T023 [US2] `BE/post/controller/PostController.java`: `GET /api/me/blog/post-form`, `POST /api/posts`(`201 { postId }`, 같은 키 다시 오면 `200`). 요청 본문 `BE/post/controller/dto/PostRequests.java`에 작성 시각·블로그 번호 칸 없음. 제목·본문이 모두 비면 두 칸을 함께 (contracts 9·10, FR-014, FR-015)
-- [ ] T024 [US2] 글쓰기 화면 `FE/post/PostEditorPage.tsx` + `post-editor.css`: 제목, 마크다운 본문(글자 입력 칸), 분류·주제 고르기(주제는 처음에 비어 있음), 공개/비공개. 화면을 열 때 `crypto.randomUUID()`로 `requestKey`를 한 번 만든다. 저장 중 버튼 잠금, 칸별 오류(`ApiError.messageFor`), 실패해도 입력 유지, 성공하면 `/posts/:postId`, 나가기 확인(`useUnsavedChangesPrompt`). 화면의 글자 수 표시는 **입력한 원문 그대로**(코드 포인트, 서버와 같게), 공백만 있으면 "본문을 입력해 주세요" (D-2) (FR-008 ~ FR-018, FR-046)
+- [x] T019 [P] [US2] 입력 검사 `BE/post/validation/`: `@ValidTitle`(앞뒤 공백을 지운 뒤 1 ~ `post.title.max-length`, **코드 포인트로 셈**, 비면 `TITLE_REQUIRED`), `@ValidContent`(1 ~ `post.content.max-length`, 앞뒤 공백은 지우지 않음. **저장하는 원문 그대로 코드 포인트로 센다**(마크다운 기호 포함). 공백·줄바꿈만 있으면 `CONTENT_REQUIRED`, D-2), `PostFieldErrorMessages`(문구의 숫자를 `PostProperties`에서) (FR-010, FR-011, FR-016, research B-4)
+- [x] T020 [US2] `BE/post/domain/Post.java`에 `create(categoryId, topicId, title, content, visibility, requestKey)`: 제목은 앞뒤 공백 제거, 본문은 `\r\n` → `\n`만 하고 그 밖에는 손대지 않는다 (글자 수는 이렇게 맞춘 원문으로 센다, D-2), `visibility` 없으면 `public`. `created_at`은 서버가 넣는다 (FR-010, FR-011, FR-013, FR-014)
+- [x] T021 [US2] `BE/post/service/PostFormService.java`: 내 블로그의 분류 목록(T009), 주제 목록(`sort_order`), 기본 분류·주제 = 내 블로그에서 **작성 시각이 가장 늦은 글**의 것(없으면 `is_default` 분류, 주제 `null`), `defaultVisibility: "public"`, `limits`는 `PostProperties`에서 (contracts 9, research B-6, FR-012, FR-013, FR-046)
+- [x] T022 [US2] `BE/post/service/PostWriteService.create`: ① 블로그는 세션 회원으로(`BlogDirectory.myBlog`), 요청에 블로그 번호를 받지 않음 ② `categoryId`가 내 블로그의 것이 아니면 `INVALID_CATEGORY` ③ `topicId`가 `topic` 표에 없으면 `fieldErrors.topicId` `TOPIC_REQUIRED` ④ 같은 `requestKey`의 글이 있으면 그 번호를 돌려줌, 동시에 들어와 `request_key` 중복으로 DB가 거절하면 다시 찾아 그 번호를 돌려줌 (D-6) ⑤ 저장 (FR-008, FR-009, FR-018, FR-034, FR-046) — T019 ~ T021 다음
+- [x] T023 [US2] `BE/post/controller/PostController.java`: `GET /api/me/blog/post-form`, `POST /api/posts`(`201 { postId }`, 같은 키 다시 오면 `200`). 요청 본문 `BE/post/controller/dto/PostRequests.java`에 작성 시각·블로그 번호 칸 없음. 제목·본문이 모두 비면 두 칸을 함께 (contracts 9·10, FR-014, FR-015)
+- [x] T024 [US2] 글쓰기 화면 `FE/post/PostEditorPage.tsx` + `post-editor.css`: 제목, 마크다운 본문(글자 입력 칸), 분류·주제 고르기(주제는 처음에 비어 있음), 공개/비공개. 화면을 열 때 `crypto.randomUUID()`로 `requestKey`를 한 번 만든다. 저장 중 버튼 잠금, 칸별 오류(`ApiError.messageFor`), 실패해도 입력 유지, 성공하면 `/posts/:postId`, 나가기 확인(`useUnsavedChangesPrompt`). 화면의 글자 수 표시는 **입력한 원문 그대로**(코드 포인트, 서버와 같게), 공백만 있으면 "본문을 입력해 주세요" (D-2) (FR-008 ~ FR-018, FR-046)
 
 **Checkpoint**: T017, T018이 통과하고 S-2 ~ S-5를 화면으로 확인한다. 로그인하지 않고 `글쓰기`를 누르면 로그인 창이 뜨고 돌아온다 (PR 하나)
 
