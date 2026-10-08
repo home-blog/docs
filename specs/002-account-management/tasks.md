@@ -179,8 +179,8 @@ description: "002 계정 관리 (마이페이지) 작업 목록"
 **Purpose**: 여러 이야기에 걸친 마무리
 
 - [x] T038 [P] 결정과 구현에 맞게 문서를 같이 고친다 (헌법 `작업 흐름`: 두 곳이 같이 바뀐다): `contracts/account-api.md` 3·4의 `ACCOUNT_LOCKED` 문구를 D-3 문구로, 3의 3단계 "D-4에서 정함"을 "맞으면 0", 1의 "내 블로그 번호"를 T012 방식으로 / `plan.md`의 "아직 하나도 정하지 않았습니다", `정해야 할 것 요약`의 D-2 ~ D-6 줄, `Technical Context`의 버전 `미정`, `Structure Decision`의 "`user` 모듈이 그것들을 한 묶음으로 부른다"(→ 이벤트로) / `data-model.md` 1의 `failed_login_count`·`locked_until` "없음 ⚠"(→ `V2`에 있음) / `docs/2-요구사항/상세/02-계정관리.md`의 `구현 방식` / `docs/3-설계/기술스택-아키텍처.md` 2.2 표의 Spring Session JDBC·Spring 이벤트 줄에 "002 다른 기기 끊기(`FindByIndexNameSessionRepository`), 탈퇴 정리(`MemberWithdrawnEvent`)"
-- [ ] T039 [P] quickstart S-11(보안 점검: CSRF 없이 세 변경 요청, 소개의 `<script>`가 글자로 보임, `' OR 1=1 --`, 이상한 JSON, 응답·로그에 비밀번호 없음)과 S-3(저장하지 않은 내용 확인)을 화면에서 실행한다
-- [ ] T040 quickstart.md 전체 시나리오를 실행하고 끝의 `구현 뒤에 채울 것`(실행 명령, 화면 순서, 탈퇴용 데이터 만드는 방법, D-1 ~ D-6 반영 문구)을 채운다. `tasks.md` 체크박스와 `CLAUDE.md`의 `6. 지금 상태`를 고친다
+- [x] T039 [P] quickstart S-11(보안 점검: CSRF 없이 세 변경 요청, 소개의 `<script>`가 글자로 보임, `' OR 1=1 --`, 이상한 JSON, 응답·로그에 비밀번호 없음)과 S-3(저장하지 않은 내용 확인)을 화면에서 실행한다
+- [x] T040 quickstart.md 전체 시나리오를 실행하고 끝의 `구현 뒤에 채울 것`(실행 명령, 화면 순서, 탈퇴용 데이터 만드는 방법, D-1 ~ D-6 반영 문구)을 채운다. `tasks.md` 체크박스와 `CLAUDE.md`의 `6. 지금 상태`를 고친다
 - [ ] T041 NF-04(비밀번호 변경은 HTTPS로)는 `001`의 T041과 같이 배포 환경(`001` research D-5)이 정해지면 `prod`의 `Secure` 쿠키와 함께 확인한다
 
 ---
