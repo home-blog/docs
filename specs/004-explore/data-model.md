@@ -56,7 +56,7 @@ post.category_id ──▶ category.category_id
 | `blog` | `blog_id`, `users_id` | 블로그 있는지 확인, 주인 판단(`users_id == 로그인한 회원`) | FR-006, FR-008 |
 | `blog` | `name` | 검색 결과에 보여 주기 | FR-015 |
 
-- **글 목록 (한 블로그)**: `post`를 `category`와 이어서 `category.blog_id = :blogId` 조건으로 읽는다. 분류를 골랐으면 `post.category_id = :categoryId`를 더한다. 이때 그 분류가 `:blogId`의 것인지 **먼저** 확인한다(남의 분류 번호는 `D-2`). 방문자가 **비공개 분류**를 고르면 없는 분류와 똑같이 다룬다(`D-2`를 따른다).
+- **글 목록 (한 블로그)**: `post`를 `category`와 이어서 `category.blog_id = :blogId` 조건으로 읽는다. 분류를 골랐으면 `post.category_id = :categoryId`를 더한다. 이때 그 분류가 `:blogId`의 것인지 **먼저** 확인한다(남의 분류 번호는 `404`, `D-2` 가). 방문자가 **비공개 분류**를 고르면 없는 분류와 똑같이 `404`로 답한다.
 - **검색 (여러 블로그)**: `post`, `category`, `blog`를 이어서 블로그 이름을 함께 읽는다. 10개만 읽으므로 이어 읽는 비용은 작다.
 - **블로그가 없을 때**: 없는 `blogId`면 목록을 읽지 않고 "없는 블로그"로 답한다. (contracts 1)
 - ⚠ **`D-6`**: `post`에 `blog_id`가 있으면 이 잇기가 필요 없고 색인도 단순해진다. 지금은 ERD를 바꾸지 않는 A안(분류를 거쳐 찾기)으로 쓴다.
@@ -87,7 +87,7 @@ post.category_id ──▶ category.category_id
 | `idx_post_public_created` | `post (created_at DESC, post_id DESC) WHERE visibility = 'public'` | 검색과 방문자 목록이 공개 글만 최신순으로 훑는다 (부분 인덱스, PostgreSQL 기능). 분류의 공개 여부(`category.visibility = 'public'`)는 `category`와 이은 뒤 거른다 | FR-011, FR-014 |
 | (이미 있음) `idx_category_blog_id` | `category (blog_id)` | 블로그의 분류를 찾는다 (분류는 블로그마다 몇 개뿐이라 `visibility`는 인덱스에 넣지 않는다). 코드 저장소 `V2__auth_tables.sql`에 이미 만들었다 | FR-006, FR-007 |
 | (이미 있음) `uk_blog_users_id` | `blog (users_id)` UNIQUE | 주인 판단. 회원당 블로그 1개(`003`, CF-03-1). `V2__auth_tables.sql`에 이미 있다 | FR-006 |
-| (D-5의 B를 고를 때만) | `post` 제목·본문에 trigram 색인(`pg_trgm`, GIN) | `%단어%` 검색을 색인으로 찾는다 | `D-5` |
+| (재서 느릴 때만, D-5) | `post` 제목·본문에 trigram 색인(`pg_trgm`, GIN) | `%단어%` 검색을 색인으로 찾는다 | `D-5` |
 
 - **검색의 한계**: `%단어%` 모양은 위의 보통 인덱스로 빨라지지 않는다. 위 인덱스는 **정렬과 거르기**를 도울 뿐이고, "검색 결과 N건"을 세려면 공개 글을 끝까지 훑는다. 그래서 글이 많아지면 `D-5`가 필요하다.
 - **`D-6`의 B를 고르면** 첫 줄 대신 `post (blog_id, created_at DESC, post_id DESC)`를 쓴다.
