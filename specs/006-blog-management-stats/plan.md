@@ -50,7 +50,7 @@
 |---|---|---|
 | 서버 | **Java 21, Spring Boot 4.1.1, Maven** (2026-10-08 결정, `001`과 같음), Spring Security | 가안 (버전·빌드 도구 결정됨) |
 | 화면 | **React 19, Vite 8, TypeScript** (2026-10-08 결정). 관리 화면은 지금 시안(데모)만 있고 규칙은 동작하지 않는다 (BM-01) | 가안 |
-| 그래프 | 선 그래프, 마우스를 올리면 그날 숫자. 가벼운 그래프 도구 하나를 **구현 때** 고른다. 그 전에는 숫자 표 (`D-10` A) | 가안 (도구 이름은 구현 때) |
+| 그래프 | 선 그래프, 마우스를 올리면 그날 숫자. **uPlot 1.6.32** (가벼운 캔버스 선 그래프, 2026-10-08 T058에서 고름, `D-10` A). 그래프를 쓰는 화면은 따로 불러온다 | 가안 |
 | 통신 | REST API (JSON). [contracts/manage-api.md](contracts/manage-api.md) | 가안 |
 | 로그인·세션·CSRF·오류 모양 | `001`의 것을 그대로 쓴다 ([001 contracts](../001-member-signup-login/contracts/auth-api.md) 공통 약속, 9) | 세션 방식 확정 / 나머지 가안 (`001`) |
 | 저장소 | **PostgreSQL 18**: 블로그, 분류, 글, 댓글, 일별 통계 표 | 가안 (버전 결정됨) |
@@ -185,8 +185,10 @@ specs/006-blog-management-stats/
 | `stats.view.dedupe-window` | 30분 | FR-033 |
 | `stats.visitor.unit`, `stats.day-zone` | 하루 1번, 한국 시간(`Asia/Seoul`) 자정 기준 | FR-034, FR-036 |
 | `stats.visitor.cookie-max-age` | 1년 (가안, 2026-10-08 `상세/06` 기본값 표에 먼저 적음) | FR-033, FR-034 |
+| `stats.visitor.cookie-name` | `MYBLOG_VISITOR` (구현 때 더함) | FR-033, FR-034 |
+| `category.color-count` | 6 (색 값은 `index.css`의 `--category-1 ~ 6`) | FR-020 |
 
-**분류 색 목록**(`D-9`)은 `상세/06` `기본값` 표에 "시안의 색 목록을 따르고 값은 구현 때 `index.css` 토큰에서 정한다"로 적었다. 색 개수가 정해지면 `category.color-count`(가안)를 이 표에 더한다.
+**분류 색 목록**(`D-9`)은 2026-10-08 구현 때 6색으로 정해 `상세/06` `기본값` 표에 적었다 (`category.color-count`). `stats.visitor.unit`은 따로 두지 않았다(하루 1번은 코드의 규칙).
 
 ## 구현 순서 제안 (`tasks`에서 확정)
 
