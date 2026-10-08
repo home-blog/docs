@@ -173,13 +173,13 @@ description: "006 블로그 관리와 통계 작업 목록"
 
 ### Tests for User Story 4
 
-- [ ] T026 [P] [US4] `BE-TEST/comment/controller/ManageCommentListTest.java`: S-4의 1(빈 목록), 2(여러 글의 댓글 11개 → 새 댓글이 위, 10 + 1), 3(닉네임·작성 시각·앞 50자·글 번호와 제목, 60자 댓글은 50자, 이모지도 한 글자로 셈), 5(탈퇴한 작성자 → `withdrawn: true`, `nickname: null`), 6(주인이 남의 댓글을 `005`의 `DELETE /api/comments/{commentId}`로 지움 → `204`), 7(`<script>`가 든 댓글이 글자 그대로 온다), 회원 B는 A의 블로그 댓글을 받지 않는다, `page=0` → `400` (FR-023 ~ FR-026, SC-003)
+- [x] T026 [P] [US4] `BE-TEST/comment/controller/ManageCommentListTest.java`: S-4의 1(빈 목록), 2(여러 글의 댓글 11개 → 새 댓글이 위, 10 + 1), 3(닉네임·작성 시각·앞 50자·글 번호와 제목, 60자 댓글은 50자, 이모지도 한 글자로 셈), 5(탈퇴한 작성자 → `withdrawn: true`, `nickname: null`), 6(주인이 남의 댓글을 `005`의 `DELETE /api/comments/{commentId}`로 지움 → `204`), 7(`<script>`가 든 댓글이 글자 그대로 온다), 회원 B는 A의 블로그 댓글을 받지 않는다, `page=0` → `400` (FR-023 ~ FR-026, SC-003)
 
 ### Implementation for User Story 4
 
-- [ ] T027 [US4] `BE/comment/service/ManageCommentQueryService.java`: 내 블로그 글 번호(`PostSummaryQuery.postIdsOf`)의 댓글을 (작성 시각, 댓글 번호) 최신순, 한 쪽 `manage.page-size`. `preview`는 **서버가 코드 포인트 기준 앞 `manage.comment.preview-length`자**로 자른다. 작성자는 `005` T008의 `MemberNames`로 한 번에(탈퇴면 `withdrawn: true`, 닉네임 없음, `005` D-9), 글 제목은 `PostSummaryQuery.titlesOf`. 내 블로그는 `LoggedInMember` + `BlogDirectory.myBlog`로 찾으므로 **`comment`의 `allowedDependencies`에 `blog`를 더한다**(`005` T005는 `post`, `user`, `common`. `comment → blog`는 고리가 아니다) (research B-9, FR-023, FR-024)
-- [ ] T028 [US4] `BE/comment/controller/ManageCommentController.java`: `GET /api/manage/comments?page` — 응답은 contracts 5-2 모양(`isNew`는 US5의 T034에서) (FR-023, FR-024, FR-026)
-- [ ] T029 [US4] `FE/manage/ManageCommentsPage.tsx`(`/manage/comments`): 닉네임(탈퇴했으면 "탈퇴한 사용자"), 작성 시각(한국 시간으로 보여 줌), 앞 50자(글자 그대로), 글 제목 → 그 글의 댓글 위치(`/posts/:postId`의 댓글 자리, 모양은 `005` 화면에 맞춘다), `삭제` → `<dialog>` "댓글을 삭제할까요?", 취소하면 요청 없음, 빈 목록 "아직 달린 댓글이 없습니다", 쪽 넘기기 (FR-023 ~ FR-026, SC-003)
+- [x] T027 [US4] `BE/comment/service/ManageCommentQueryService.java`: 내 블로그 글 번호(`PostSummaryQuery.postIdsOf`)의 댓글을 (작성 시각, 댓글 번호) 최신순, 한 쪽 `manage.page-size`. `preview`는 **서버가 코드 포인트 기준 앞 `manage.comment.preview-length`자**로 자른다. 작성자는 `005` T008의 `MemberNames`로 한 번에(탈퇴면 `withdrawn: true`, 닉네임 없음, `005` D-9), 글 제목은 `PostSummaryQuery.titlesOf`. 내 블로그는 `LoggedInMember` + `BlogDirectory.myBlog`로 찾으므로 **`comment`의 `allowedDependencies`에 `blog`를 더한다**(`005` T005는 `post`, `user`, `common`. `comment → blog`는 고리가 아니다) (research B-9, FR-023, FR-024)
+- [x] T028 [US4] `BE/comment/controller/ManageCommentController.java`: `GET /api/manage/comments?page` — 응답은 contracts 5-2 모양(`isNew`는 US5의 T034에서) (FR-023, FR-024, FR-026)
+- [x] T029 [US4] `FE/manage/ManageCommentsPage.tsx`(`/manage/comments`): 닉네임(탈퇴했으면 "탈퇴한 사용자"), 작성 시각(한국 시간으로 보여 줌), 앞 50자(글자 그대로), 글 제목 → 그 글의 댓글 위치(`/posts/:postId`의 댓글 자리, 모양은 `005` 화면에 맞춘다), `삭제` → `<dialog>` "댓글을 삭제할까요?", 취소하면 요청 없음, 빈 목록 "아직 달린 댓글이 없습니다", 쪽 넘기기 (FR-023 ~ FR-026, SC-003)
 
 **Checkpoint**: T026이 통과하고 S-4를 화면으로 확인한다 (PR 하나)
 
@@ -193,16 +193,16 @@ description: "006 블로그 관리와 통계 작업 목록"
 
 ### Tests for User Story 5
 
-- [ ] T030 [P] [US5] `BE-TEST/comment/controller/NewCommentCountTest.java`: S-5의 1 ~ 6 — 한 번도 열지 않았으면(`comments_read_at` 비어 있음) 남이 단 모든 댓글, 주인이 단 댓글은 세지 않음, `POST /api/manage/comments/read` → `previousReadAt`·`readAt`, 그 뒤 `new-count`·`GET /api/manage/blog`의 숫자가 0, 그 뒤 달린 하나만 1, `newSince`로 쪽을 넘겨도 `isNew`가 같은 댓글에만, CSRF 토큰 없이 읽음 처리 → 거절 (FR-027 ~ FR-029, SC-008)
-- [ ] T031 [P] [US5] `BE-TEST/comment/service/CommentsReadRaceTest.java` (클래스 전체 `@Transactional` 쓰지 않음): S-5의 7 — 읽음 처리와 남의 댓글 쓰기를 동시에 여러 번 해도, 그 댓글은 이번 목록에서 `NEW`이거나 다음번 새 댓글 수에 남는다. **보지도 못하고 사라지는 경우 0건**. 읽음 처리 두 개가 동시에 와도 `comments_read_at`이 뒤로 가지 않는다 (research R-4)
+- [x] T030 [P] [US5] `BE-TEST/comment/controller/NewCommentCountTest.java`: S-5의 1 ~ 6 — 한 번도 열지 않았으면(`comments_read_at` 비어 있음) 남이 단 모든 댓글, 주인이 단 댓글은 세지 않음, `POST /api/manage/comments/read` → `previousReadAt`·`readAt`, 그 뒤 `new-count`·`GET /api/manage/blog`의 숫자가 0, 그 뒤 달린 하나만 1, `newSince`로 쪽을 넘겨도 `isNew`가 같은 댓글에만, CSRF 토큰 없이 읽음 처리 → 거절 (FR-027 ~ FR-029, SC-008)
+- [x] T031 [P] [US5] `BE-TEST/comment/service/CommentsReadRaceTest.java` (클래스 전체 `@Transactional` 쓰지 않음): S-5의 7 — 읽음 처리와 남의 댓글 쓰기를 동시에 여러 번 해도, 그 댓글은 이번 목록에서 `NEW`이거나 다음번 새 댓글 수에 남는다. **보지도 못하고 사라지는 경우 0건**. 읽음 처리 두 개가 동시에 와도 `comments_read_at`이 뒤로 가지 않는다 (research R-4)
 
 ### Implementation for User Story 5
 
-- [ ] T032 [US5] `blog` 맨 위 입구 `BE/blog/CommentReadMarks.java`(가안): `readAt(blogId)`, `markRead(blogId) → ReadMark(previous, now)`. 채우기 `BE/blog/service/CommentReadMarksAdapter.java` — 블로그 줄을 잠그고(`@Lock(PESSIMISTIC_WRITE)`) `Blog.markCommentsRead(now)`(새 메서드, 이전 값을 돌려줌), `now`는 `Clock`. `blog.comments_read_at`은 `V2`에 이미 있다 (D-8, research B-6, FR-029)
-- [ ] T033 [US5] **새 댓글 수 계산은 하나** `BE/comment/NewCommentCounter.java`(`comment` 맨 위 입구) + `BE/comment/service/NewCommentCounterService.java`: 내 블로그 글의 댓글 중 `created_at > readAt`(비어 있으면 모두) **그리고** `users_id ≠ 블로그 주인`인 것의 수. 메뉴 옆·사용자 메뉴·대시보드가 **모두 이것만** 부른다 (FR-027, FR-028, SC-008)
-- [ ] T034 [US5] `ManageCommentController`에 `POST /api/manage/comments/read`(contracts 5-1), `GET /api/manage/comments/new-count`(contracts 6), 목록의 `newSince` → `isNew`(`newSince`보다 늦고 작성자가 주인이 아님. 보여 주기에만 쓰고 권한과 상관없다). "한 번도 연 적 없음"(`previousReadAt: null`)을 목록 요청에 어떻게 실을지는 구현 때 가안으로 정하고 contracts 5-2를 고친다(T062) (FR-027 ~ FR-029)
-- [ ] T035 [US5] `ManageHeaderController`(T014)의 응답에 `newCommentCount`를 더한다 — `NewCommentCounter`를 부른다 (contracts 1, FR-028)
-- [ ] T036 [US5] 화면: `FE/manage/NewCommentCountContext.tsx`(로그인했을 때 화면을 열면 `new-count`를 한 번 묻는다, 계속 다시 묻지 않음), `SiteHeader` 사용자 메뉴의 `블로그 관리` 옆과 `ManageLayout`의 `댓글 관리` 옆에 숫자. `ManageCommentsPage`는 열 때 **읽음 처리를 먼저** 보내고 받은 `previousReadAt`으로 목록을 읽어 `NEW`를 붙이고, 숫자를 0으로 바꾼다. 종 모양 목록·메일·푸시는 만들지 않는다 (BM-05-7 `확인 필요`, 원본대로) (FR-028 ~ FR-030)
+- [x] T032 [US5] `blog` 맨 위 입구 `BE/blog/CommentReadMarks.java`(가안): `readAt(blogId)`, `markRead(blogId) → ReadMark(previous, now)`. 채우기 `BE/blog/service/CommentReadMarksAdapter.java` — 블로그 줄을 잠그고(`@Lock(PESSIMISTIC_WRITE)`) `Blog.markCommentsRead(now)`(새 메서드, 이전 값을 돌려줌), `now`는 `Clock`. `blog.comments_read_at`은 `V2`에 이미 있다 (D-8, research B-6, FR-029)
+- [x] T033 [US5] **새 댓글 수 계산은 하나** `BE/comment/NewCommentCounter.java`(`comment` 맨 위 입구) + `BE/comment/service/NewCommentCounterService.java`: 내 블로그 글의 댓글 중 `created_at > readAt`(비어 있으면 모두) **그리고** `users_id ≠ 블로그 주인`인 것의 수. 메뉴 옆·사용자 메뉴·대시보드가 **모두 이것만** 부른다 (FR-027, FR-028, SC-008)
+- [x] T034 [US5] `ManageCommentController`에 `POST /api/manage/comments/read`(contracts 5-1), `GET /api/manage/comments/new-count`(contracts 6), 목록의 `newSince` → `isNew`(`newSince`보다 늦고 작성자가 주인이 아님. 보여 주기에만 쓰고 권한과 상관없다). "한 번도 연 적 없음"(`previousReadAt: null`)을 목록 요청에 어떻게 실을지는 구현 때 가안으로 정하고 contracts 5-2를 고친다(T062) (FR-027 ~ FR-029)
+- [x] T035 [US5] `ManageHeaderController`(T014)의 응답에 `newCommentCount`를 더한다 — `NewCommentCounter`를 부른다 (contracts 1, FR-028)
+- [x] T036 [US5] 화면: `FE/manage/NewCommentCountContext.tsx`(로그인했을 때 화면을 열면 `new-count`를 한 번 묻는다, 계속 다시 묻지 않음), `SiteHeader` 사용자 메뉴의 `블로그 관리` 옆과 `ManageLayout`의 `댓글 관리` 옆에 숫자. `ManageCommentsPage`는 열 때 **읽음 처리를 먼저** 보내고 받은 `previousReadAt`으로 목록을 읽어 `NEW`를 붙이고, 숫자를 0으로 바꾼다. 종 모양 목록·메일·푸시는 만들지 않는다 (BM-05-7 `확인 필요`, 원본대로) (FR-028 ~ FR-030)
 
 **Checkpoint**: T030, T031이 통과하고 S-5를 화면으로 확인한다 (대시보드 숫자는 US7 뒤) (PR 하나)
 
