@@ -85,8 +85,8 @@ post.category_id ──▶ category.category_id
 |---|---|---|---|
 | `idx_post_category_created` | `post (category_id, created_at DESC, post_id DESC)` | 분류를 고른 목록을 최신순으로 바로 읽는다. 블로그 전체 목록도 그 블로그의 분류들로 찾을 때 쓴다 | FR-001, FR-007, SC-009 |
 | `idx_post_public_created` | `post (created_at DESC, post_id DESC) WHERE visibility = 'public'` | 검색과 방문자 목록이 공개 글만 최신순으로 훑는다 (부분 인덱스, PostgreSQL 기능). 분류의 공개 여부(`category.visibility = 'public'`)는 `category`와 이은 뒤 거른다 | FR-011, FR-014 |
-| `idx_category_blog` | `category (blog_id)` | 블로그의 분류를 찾는다 (분류는 블로그마다 몇 개뿐이라 `visibility`는 인덱스에 넣지 않는다) | FR-006, FR-007 |
-| (이미 있음) | `blog (users_id)` UNIQUE (주석) | 주인 판단. 회원당 블로그 1개(`003`, CF-03-1)와 함께 `003`에서 정리한다 | FR-006 |
+| (이미 있음) `idx_category_blog_id` | `category (blog_id)` | 블로그의 분류를 찾는다 (분류는 블로그마다 몇 개뿐이라 `visibility`는 인덱스에 넣지 않는다). 코드 저장소 `V2__auth_tables.sql`에 이미 만들었다 | FR-006, FR-007 |
+| (이미 있음) `uk_blog_users_id` | `blog (users_id)` UNIQUE | 주인 판단. 회원당 블로그 1개(`003`, CF-03-1). `V2__auth_tables.sql`에 이미 있다 | FR-006 |
 | (D-5의 B를 고를 때만) | `post` 제목·본문에 trigram 색인(`pg_trgm`, GIN) | `%단어%` 검색을 색인으로 찾는다 | `D-5` |
 
 - **검색의 한계**: `%단어%` 모양은 위의 보통 인덱스로 빨라지지 않는다. 위 인덱스는 **정렬과 거르기**를 도울 뿐이고, "검색 결과 N건"을 세려면 공개 글을 끝까지 훑는다. 그래서 글이 많아지면 `D-5`가 필요하다.
@@ -108,7 +108,7 @@ post.category_id ──▶ category.category_id
 | # | 무엇을 | 이유 | 관련 |
 |---|---|---|---|
 | 1 | `post.visibility`에 `CHECK (visibility IN ('public', 'private'))` 추가 | 잘못된 값이 들어가 비공개가 새거나 공개가 숨는 일을 DB가 막는다 | FR-006, FR-011, SC-001 |
-| 2 | 위 4번의 인덱스 3개 추가 | 목록 2초(NF-09) | SC-009 |
-| 3 | `category.visibility`에 `CHECK (visibility IN ('public', 'private'))` 추가 (`003` data-model 9와 같은 요청) | 이 칸도 방문자에게 보일지를 정하므로 1번과 같은 이유. 이 기능은 항상 `= 'public'`으로 거른다 | `D-7`, FR-006, FR-011 |
+| 2 | 위 4번의 `post` 인덱스 2개 추가 (`category (blog_id)`는 V2에 이미 있다) | 목록 2초(NF-09) | SC-009 |
+| 3 | `category.visibility`에 `CHECK (visibility IN ('public', 'private'))` 추가 (`003` data-model 9와 같은 요청, T-3). 내 DB에는 `V2__auth_tables.sql`의 `ck_category_visibility`로 이미 있다 | 이 칸도 방문자에게 보일지를 정하므로 1번과 같은 이유. 이 기능은 항상 `= 'public'`으로 거른다 | `D-7`, FR-006, FR-011 |
 | 4 | (재 보고 느릴 때만) `post.blog_id` 추가 | 블로그 전체 목록 속도 | `D-6` |
 | 5 | (재 보고 느릴 때만) `pg_trgm` 확장과 색인 | 검색 속도 | `D-5` |
