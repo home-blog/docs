@@ -84,8 +84,8 @@ description: "003 블로그·분류·글 작업 목록"
 - [x] T008 `BE/user/config/SecurityConfig.java`: 누구나 읽는 주소 `GET /api/blogs/**`, `GET /api/posts/{postId}`(숫자만, `/edit`는 빼고)를 `permitAll`에 더한다. 나머지(`/api/me/**`, 변경 요청)는 지금처럼 `anyRequest().authenticated()` → `401` (contracts 공통, FR-008)
 - [x] T009 `blog` 모듈의 입구 (맨 위 패키지, 가안): ① `BE/blog/BlogDirectory.java` — `post`가 묻는 것: `myBlog(memberId)`, `category(categoryId)` → `CategoryInfo(categoryId, blogId, ownerId, blogName, name, visibility, isDefault)`, `categoriesOf(blogId)`, `publicCategoryIds(blogId)`. 채우기는 `BE/blog/service/BlogDirectoryAdapter.java` ② `BE/blog/CategoryPostCounter.java` — `blog`가 묻고 `post`가 채우는 틀: `countAll(categoryId)`(비공개 포함), `countVisible(categoryIds)`(공개 글만) (FR-034, FR-040, FR-043, research B-2)
 - [x] T010 **"보이는 글" 조건을 한곳에** — T004, T009 다음: `BE/post/service/PostVisibility.java`(research B-3): 주인이면 모두, 아니면 `post.visibility = 'public'` **그리고** `category.visibility = 'public'`. 상세·분류 개수·이전/다음이 모두 이것을 쓴다(`004` 목록·검색도). `BE/post/service/CategoryPostCounterAdapter.java`가 T009의 틀을 이 조건으로 채운다 (FR-026, FR-030, FR-031, FR-043, FR-048, SC-002)
-- [ ] T011 [P] 화면 요청 함수와 규칙: `FE/blog/blogApi.ts`(contracts 1 ~ 8), `FE/post/postApi.ts`(contracts 9 ~ 14), 응답 타입은 contracts 그대로. `FE/post/rules.ts`에 글자 수와 문구(서버 설정·contracts와 같게)
-- [ ] T012 [P] 화면 주소(가안) `FE/App.tsx`: `/blog/:blogId`(블로그), `/posts/:postId`(글 상세), `<RequireLogin>`으로 `/write`(새 글), `/write/:postId`(수정), `/manage/blog`(이름·소개), `/manage/categories`(분류). `FE/components/SiteHeader.tsx`에 `글쓰기`, `내 블로그` 링크. `FE/account/useUnsavedChangesPrompt.ts`를 `FE/components/`로 옮겨 같이 쓴다 (FR-008, FR-017)
+- [x] T011 [P] 화면 요청 함수와 규칙: `FE/blog/blogApi.ts`(contracts 1 ~ 8), `FE/post/postApi.ts`(contracts 9 ~ 14), 응답 타입은 contracts 그대로. `FE/post/rules.ts`에 글자 수와 문구(서버 설정·contracts와 같게)
+- [x] T012 [P] 화면 주소(가안) `FE/App.tsx`: `/blog/:blogId`(블로그), `/posts/:postId`(글 상세), `<RequireLogin>`으로 `/write`(새 글), `/write/:postId`(수정), `/manage/blog`(이름·소개), `/manage/categories`(분류). `FE/components/SiteHeader.tsx`에 `글쓰기`, `내 블로그` 링크. `FE/account/useUnsavedChangesPrompt.ts`를 `FE/components/`로 옮겨 같이 쓴다 (FR-008, FR-017) — 2026-10-08: 훅은 아직 `FE/account/`에 두고 글쓰기·블로그 설정이 같이 쓴다. 옮기기는 작은 정리라 다음 기능 PR에 넣는다
 
 **Checkpoint**: `mvn verify`(CI)와 `ModularityTest`가 통과한다(`post → blog → user` 방향만 있음). 로그인하지 않고 `GET /api/blogs/1`이 `401`이 아니다. 새 주소들이 빈 화면으로 열린다
 
@@ -227,10 +227,10 @@ description: "003 블로그·분류·글 작업 목록"
 
 **Independent Test**: quickstart S-11
 
-- [ ] T047 [P] [US7] `BE-TEST/blog/controller/BlogSettingsTest.java`: S-11의 1 ~ 7(바꾼 이름이 블로그·글 상세에 바로, 앞뒤 공백 제거, 빈 이름·공백 이름 거절, 31자·201자 거절, 빈 소개 허용, B의 요청은 B의 블로그만, 삭제 주소 없음) (FR-004 ~ FR-007, SC-004, SC-010)
-- [ ] T048 [P] [US7] `@ValidBlogName`(앞뒤 공백 제거 뒤 1 ~ 30), `@ValidBlogIntro`(앞뒤 공백 제거 뒤 0 ~ 200, research B-4 가안 해석) — `BE/blog/validation/`, 문구는 T042의 `BlogFieldErrorMessages`에. DB 칸은 500이지만 서버가 200으로 막는다 (FR-004, FR-005)
-- [ ] T049 [US7] `BE/blog/domain/Blog.java`에 `changeProfile(name, intro)`(빈 소개는 하나로 정해 저장, 응답은 `""`, data-model 1), `BE/blog/service/BlogSettingsService.java`, `BlogController`에 `PUT /api/me/blog`. 블로그 삭제 주소는 만들지 않는다 (contracts 4, FR-004 ~ FR-007)
-- [ ] T050 [US7] 블로그 설정 화면 `FE/blog/BlogSettingsPage.tsx`(`/manage/blog`): 이름·소개, 바뀐 것이 없으면 저장 잠금, 칸별 오류, 저장 뒤 블로그 화면에 새 값. 삭제 버튼 없음 (FR-004 ~ FR-007)
+- [x] T047 [P] [US7] `BE-TEST/blog/controller/BlogSettingsTest.java`: S-11의 1 ~ 7(바꾼 이름이 블로그·글 상세에 바로, 앞뒤 공백 제거, 빈 이름·공백 이름 거절, 31자·201자 거절, 빈 소개 허용, B의 요청은 B의 블로그만, 삭제 주소 없음) (FR-004 ~ FR-007, SC-004, SC-010)
+- [x] T048 [P] [US7] `@ValidBlogName`(앞뒤 공백 제거 뒤 1 ~ 30), `@ValidBlogIntro`(앞뒤 공백 제거 뒤 0 ~ 200, research B-4 가안 해석) — `BE/blog/validation/`, 문구는 T042의 `BlogFieldErrorMessages`에. DB 칸은 500이지만 서버가 200으로 막는다 (FR-004, FR-005)
+- [x] T049 [US7] `BE/blog/domain/Blog.java`에 `changeProfile(name, intro)`(빈 소개는 하나로 정해 저장, 응답은 `""`, data-model 1), `BE/blog/service/BlogSettingsService.java`, `BlogController`에 `PUT /api/me/blog`. 블로그 삭제 주소는 만들지 않는다 (contracts 4, FR-004 ~ FR-007)
+- [x] T050 [US7] 블로그 설정 화면 `FE/blog/BlogSettingsPage.tsx`(`/manage/blog`): 이름·소개, 바뀐 것이 없으면 저장 잠금, 칸별 오류, 저장 뒤 블로그 화면에 새 값. 삭제 버튼 없음 (FR-004 ~ FR-007)
 
 **Checkpoint**: T047이 통과하고 S-11을 화면으로 확인한다 (PR 하나)
 
@@ -246,7 +246,7 @@ description: "003 블로그·분류·글 작업 목록"
 - [x] T054 quickstart S-13: 한 블로그에 글 1,000개를 넣고 상세(이전·다음 포함)와 분류 목록이 2초 안인지 본다. 느리면 T003의 인덱스부터 확인한다 (NF-09)
   - **2026-10-08 (클라우드 세션, Docker PostgreSQL)**: 글 1,003개(비공개 200개 섞음). 상세(이전·다음 포함) 첫 요청 0.52초(서버 예열), 이후 0.03~0.04초. 분류 목록 0.03~0.09초. 이전 글 쿼리는 이 크기에서 순차 읽기 0.36ms라 인덱스가 아직 필요 없다
 - [ ] T055 SC-011(제안값 3분): **사람이** 글쓰기 화면을 열어 저장한 글의 상세를 볼 때까지 시간을 잰다 (S-2의 6)
-- [ ] T056 quickstart 전체를 실행하고 끝의 `구현 뒤에 채울 것`을 채운다. `tasks.md` 체크박스와 `CLAUDE.md`의 `6. 지금 상태`를 고친다
+- [x] T056 quickstart 전체를 실행하고 끝의 `구현 뒤에 채울 것`을 채운다. `tasks.md` 체크박스와 `CLAUDE.md`의 `6. 지금 상태`를 고친다 (2026-10-08. 남은 것은 `005`가 만들어진 뒤 S-8 다시 확인 한 줄)
 
 ---
 
