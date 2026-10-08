@@ -230,6 +230,8 @@
 
 ## 9. 팀에 보낼 ERD 요청 모음 (⚠)
 
+> 팀에 보내는 요청의 원본은 [`docs/3-설계/ERD-변경-요청.md`](../../docs/3-설계/ERD-변경-요청.md)입니다. 이 기능과 관련된 것은 **T-1**(`post_image`의 `post_id` NULL 허용, `users_id`·`created_at` 추가), **T-3**(`post_report.reason`의 `CHECK`)과 내 확장 **E-7**(`post_report`의 `UNIQUE(users_id, post_id)`를 내 DB에 실제 제약으로)입니다. 아래 표는 이 기능 쪽에서 본 요약입니다.
+
 | 표 | 요청 | 왜 | 관련 |
 |---|---|---|---|
 | `comment` | ~~`UNIQUE(users_id, post_id)` 없애기~~ → **팀 ERD 최신판에서 이미 지워짐** (끝남) | 한 글에 댓글을 여러 개 쓸 수 있어야 한다 | `D-7`, FR-005, FR-008 |
