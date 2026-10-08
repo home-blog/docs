@@ -57,6 +57,7 @@ ALTER TABLE comment_report ADD CONSTRAINT ck_comment_report_reason CHECK (reason
 | E-4 | `post` | `request_key`(VARCHAR(36), NULL, 중복 불가) | 저장을 여러 번 눌러도 한 번만 저장 | `003` D-6 |
 | E-5 | **새 표** `post_daily_stat` | `post_id`, `stat_date`, `views` | 최근 7일 인기 글 | `006` D-6 |
 | E-6 | `blog` | `comments_read_at`(TIMESTAMPTZ, NULL) | 새 댓글 N개 | `006` D-8 |
+| E-7 | `post_report` | `UNIQUE(users_id, post_id)`를 **실제 제약으로** 둔다 | 같은 회원이 같은 글을 두 번 신고할 수 없다(CF-21-3). 팀 ERD 최신판에도 규칙은 적혀 있지만(0절), 내 DB에서는 이 제약이 동시에 두 번 눌러도 한 건만 남게 하는 마지막 방어선이라 내 마이그레이션에 확실히 넣는다 (2026-10-08 사용자 결정) | `005` FR-019, SC-003 |
 
 ```sql
 -- E-1
@@ -85,6 +86,9 @@ CREATE TABLE post_daily_stat (
 
 -- E-6
 ALTER TABLE blog ADD COLUMN comments_read_at TIMESTAMPTZ NULL;
+
+-- E-7 (post_report를 만들 때 함께)
+ALTER TABLE post_report ADD CONSTRAINT uq_post_report_user_post UNIQUE (users_id, post_id);
 ```
 
 > E-2와 E-3은 기존 `UNIQUE`를 **대소문자 무시 비교로 바꾸는** 것입니다. 탈퇴 후 재가입은 탈퇴 때 이메일·닉네임을 바꾸므로(2026-10-08) 공통 ERD의 `UNIQUE` 그대로도 됩니다.
@@ -112,5 +116,5 @@ ALTER TABLE blog ADD COLUMN comments_read_at TIMESTAMPTZ NULL;
 
 ## 5. 이 정리가 끝나면
 
-- 팀이 T-1 ~ T-3에 답하면 `001`의 작업 T006(팀 ERD 반영 확인)이 끝난다. T007(DB 표 만들기)에서는 **팀 ERD + 내 확장(E-1 ~ E-6)** 으로 표를 만든다.
+- 팀이 T-1 ~ T-3에 답하면 `001`의 작업 T006(팀 ERD 반영 확인)이 끝난다. T007(DB 표 만들기)에서는 **팀 ERD + 내 확장(E-1 ~ E-7)** 으로 표를 만든다.
 - Crowfoot: `팀 공통 ERD` 문서(팀 ERD + T-1 ~ T-3)와 `myblog-제안 (2026-10-07)` 문서(= 내 확장판, 팀 ERD + T + E 전부)
