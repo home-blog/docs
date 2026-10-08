@@ -42,7 +42,7 @@
 | 서버 | **Java 21, Spring Boot 4.1.1, Maven** (2026-10-08 결정, `001`과 같음), Spring Security | 가안 (버전·빌드 도구 결정됨) |
 | 화면 | **React 19, Vite 8, TypeScript** (2026-10-08 결정). 글 목록과 검색 결과는 지금 HTML 시안에 있고(`화면 있음`) 나중에 옮긴다 | 가안 (버전 결정됨) |
 | 통신 | REST API (JSON). [contracts/explore-api.md](contracts/explore-api.md) | 가안 |
-| 주요 도구 | Spring Data JPA(페이지 나눔), Bean Validation(검색어 검사). 여러 단어 검색처럼 조건이 늘었다 줄었다 하는 쿼리를 만드는 방법(JPA Criteria, Querydsl 등)은 구현 때 고른다 | 가안 |
+| 주요 도구 | Spring Data JPA(글 목록의 세기·페이지 읽기, `Pageable`로 정렬·건너뛸 수를 값으로). 여러 단어 검색은 새 의존성 없이 **고정된 쿼리 하나에 단어 묶음을 배열 값 하나로** 넘긴다(`JdbcTemplate`, `unnest(?::text[])`, `ILIKE … ESCAPE`). JPA Criteria·Querydsl은 쓰지 않는다 (2026-10-08 구현, tasks T003) | 가안 |
 | 저장소 | **PostgreSQL 18** (`post`, `category`, `blog` 읽기만). Redis는 쓰지 않는다 | PostgreSQL 가안 (버전 결정됨) |
 | 로그인 상태 | `001`의 서버 세션을 **있으면 읽기만** 한다. 없으면 방문자로 본다 | 확정 (세션 방식) |
 | 검색 방식 | PostgreSQL 단순 포함 검색(대소문자 무시). 한국어 형태소 검색은 나중에. Elasticsearch는 안 씀 | 가안 (`상세/04`) / Elasticsearch 안 씀 |
