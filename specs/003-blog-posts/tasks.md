@@ -59,7 +59,7 @@ description: "003 블로그·분류·글 작업 목록"
 
 ---
 
-> **진행 (2026-10-08)**: 바탕 + US1 = 코드 PR #20, US2 = PR #21 (둘 다 merge). US2 리뷰에서 "같은 `requestKey`에 다른 내용이면 `409 POST_ALREADY_SAVED`"를 더했다(contracts 10). US3 = PR #23. US4·US5, US6, US7은 브랜치에 만들어 두고 차례로 올린다. T011의 글 요청 함수(`postApi.ts`)와 `rules.ts`는 US2에서, T012의 `/write`·`/posts/:postId` 주소는 US2·US3에서 더했다. T012의 `useUnsavedChangesPrompt`를 `components/`로 옮기는 것은 하지 않았다(`002` 화면들이 같은 파일을 쓰고 있어, 옮기면 얻는 것보다 바꿀 곳이 많다). 머리글의 `내 블로그`는 `/me/blog`(내 블로그 번호를 물어 이동)로 만들었다.
+> **진행 (2026-10-08)**: 바탕 + US1 = 코드 PR #20, US2 = PR #21 (둘 다 merge). US2 리뷰에서 "같은 `requestKey`에 다른 내용이면 `409 POST_ALREADY_SAVED`"를 더했다(contracts 10). US3 = PR #23 (merge). US4·US5 = PR #24. US6, US7은 브랜치에 만들어 두고 차례로 올린다. T011의 글 요청 함수(`postApi.ts`)와 `rules.ts`는 US2에서, T012의 `/write`·`/posts/:postId` 주소는 US2·US3에서 더했다. T012의 `useUnsavedChangesPrompt`를 `components/`로 옮기는 것은 하지 않았다(`002` 화면들이 같은 파일을 쓰고 있어, 옮기면 얻는 것보다 바꿀 곳이 많다). 머리글의 `내 블로그`는 `/me/blog`(내 블로그 번호를 물어 이동)로 만들었다.
 
 ## Phase 1: Setup (공통 준비)
 
@@ -147,13 +147,13 @@ description: "003 블로그·분류·글 작업 목록"
 
 ### Tests for User Story 3
 
-- [ ] T026 [P] [US3] `BE-TEST/post/controller/PostReadTest.java`: S-6의 1 ~ 4·6·7(로그인 없이 공개 글, `updatedAt` `null`, 1→2→3 순서의 이전·다음, 끝에서는 `null`, 사이에 낀 비공개 글은 건너뜀, 없는 번호 `404`, `isOwner`), S-9의 5·6(남의 비공개 글의 응답이 없는 번호의 응답과 **상태 코드·본문이 글자 단위로 같다**), S-9a의 4(비공개 분류의 공개 글도 같은 `404`) (FR-023 ~ FR-027, FR-031, FR-048, SC-002, SC-003)
+- [x] T026 [P] [US3] `BE-TEST/post/controller/PostReadTest.java`: S-6의 1 ~ 4·6·7(로그인 없이 공개 글, `updatedAt` `null`, 1→2→3 순서의 이전·다음, 끝에서는 `null`, 사이에 낀 비공개 글은 건너뜀, 없는 번호 `404`, `isOwner`), S-9의 5·6(남의 비공개 글의 응답이 없는 번호의 응답과 **상태 코드·본문이 글자 단위로 같다**), S-9a의 4(비공개 분류의 공개 글도 같은 `404`) (FR-023 ~ FR-027, FR-031, FR-048, SC-002, SC-003)
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] `BE/post/service/PostReadService.java`: 글 → `BlogDirectory.category`로 블로그·주인·분류 이름 → `PostVisibility`로 볼 수 없으면 **없는 글과 같은** `POST_NOT_FOUND`. 이전·다음 = 같은 블로그의 공개 분류(`publicCategoryIds`)의 공개 글 중 (작성 시각, 글 번호) 바로 앞·뒤, 주인이 봐도 공개 글만 (research B-5: "이전 = 바로 앞에 쓴 글", 가안). 블로그·분류 이름은 요청마다 읽는다 (FR-023 ~ FR-026, FR-038, FR-048, research R-6)
-- [ ] T028 [US3] `PostController`에 `GET /api/posts/{postId}`: 응답은 contracts 11 그대로(`content`는 원문, `topic`, `prevPostId`, `nextPostId`, `isOwner`)
-- [ ] T029 [US3] 글 상세 `FE/post/PostDetailPage.tsx` + `FE/post/MarkdownView.tsx`: 분류·제목·블로그 이름·작성 시각(수정 시각은 있을 때만)·본문, 없는 쪽 이전/다음 버튼 숨김, `목록으로`는 `/blog/:blogId`(분류 목록 주소는 `004`가 정하면 바꾼다), `isOwner`일 때만 `수정`·`삭제`. `MarkdownView`는 T025가 정해지기 전에는 **원문 글자 그대로**(`white-space: pre-wrap`), 정해지면 D-1의 A대로 그린다. 제목·이름은 React 기본 이스케이프 (FR-011, FR-023 ~ FR-027, FR-045, SC-012)
+- [x] T027 [US3] `BE/post/service/PostReadService.java`: 글 → `BlogDirectory.category`로 블로그·주인·분류 이름 → `PostVisibility`로 볼 수 없으면 **없는 글과 같은** `POST_NOT_FOUND`. 이전·다음 = 같은 블로그의 공개 분류(`publicCategoryIds`)의 공개 글 중 (작성 시각, 글 번호) 바로 앞·뒤, 주인이 봐도 공개 글만 (research B-5: "이전 = 바로 앞에 쓴 글", 가안). 블로그·분류 이름은 요청마다 읽는다 (FR-023 ~ FR-026, FR-038, FR-048, research R-6)
+- [x] T028 [US3] `PostController`에 `GET /api/posts/{postId}`: 응답은 contracts 11 그대로(`content`는 원문, `topic`, `prevPostId`, `nextPostId`, `isOwner`)
+- [x] T029 [US3] 글 상세 `FE/post/PostDetailPage.tsx` + `FE/post/MarkdownView.tsx`: 분류·제목·블로그 이름·작성 시각(수정 시각은 있을 때만)·본문, 없는 쪽 이전/다음 버튼 숨김, `목록으로`는 `/blog/:blogId`(분류 목록 주소는 `004`가 정하면 바꾼다), `isOwner`일 때만 `수정`·`삭제`. `MarkdownView`는 T025가 정해지기 전에는 **원문 글자 그대로**(`white-space: pre-wrap`), 정해지면 D-1의 A대로 그린다. 제목·이름은 React 기본 이스케이프 (FR-011, FR-023 ~ FR-027, FR-045, SC-012)
 
 **Checkpoint**: T026이 통과하고 S-6, S-12의 1 ~ 4를 화면으로 확인한다. 여기까지가 MVP다 (PR 하나)
 
