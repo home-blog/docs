@@ -2,14 +2,17 @@
 
 이 파일은 Claude가 이 저장소에서 작업할 때 **가장 먼저 읽는 지침**입니다. Claude는 세션이 바뀌면 이전 대화를 기억하지 못하므로, 이 파일과 아래 기준 문서를 읽고 이어서 작업합니다.
 
-> 마지막 정리: 2026-10-08 (클라우드 세션으로 작업 옮김, 실습 서버 정보) 16:20 (클라우드 세션에서 로컬 Claude Code로 옮기기 전)
+> 마지막 정리: 2026-10-08 (저장소를 문서 `home-blog/docs`와 코드 `home-blog/blog`로 나눔) 16:20 (클라우드 세션에서 로컬 Claude Code로 옮기기 전)
 
 ## 1. 이 저장소는
 
 MyBlog(임시 이름): 여러 사람이 각자 블로그를 운영하고, 방문자는 한곳에서 둘러보는 티스토리형 멀티 블로그 서비스. 팀원 4명이 공통 요구사항을 함께 정하고, 구현은 각자 한다.
 
-- 이 저장소(GitHub `home-blog/myblog`, Mac의 `~/Documents/AIGJ_blog_docs`)에 **문서와 코드가 함께** 있다 (2026-10-08부터. 이전 이름은 `home-blog/docs`). 문서의 하나뿐인 원본이다.
-- 코드는 `backend/`(서버), `frontend/`(화면)에 만든다. 마지막에 사용자가 `AIP-1/blog-basic-AIGJ_01_012-blog`로 옮긴다.
+- **저장소 두 개** (2026-10-08 사용자 결정):
+  - **`home-blog/docs`(이 저장소)**: 문서만. `docs/`, `specs/`, 헌법(`.specify/memory/constitution.md`), 이 CLAUDE.md. **문서의 하나뿐인 원본**이다. 2026-10-08에 `home-blog/myblog`에서 커밋 기록째 옮겨 왔다.
+  - **`home-blog/blog`**: 코드. `backend/`(서버), `frontend/`(화면), `docker-compose.yml`, CI·CodeRabbit·SonarQube 설정. 예전 `home-blog/myblog`의 이름을 바꾼 것이라 PR #1~#16과 설정이 그대로 있다. 그 저장소의 CLAUDE.md는 코드 규칙만 짧게 두고 이 파일을 가리킨다.
+- 클라우드 세션은 **두 저장소를 모두 붙여서** 일한다 (`add_repo`로 `home-blog/docs`, `home-blog/blog`). 코드를 고치며 `tasks.md`·계약이 바뀌면 이 저장소에도 커밋한다.
+- 마지막 제출용 저장소 `AIP-1/blog-basic-AIGJ_01_012-blog`는 **완전히 마지막에** 코드를 옮길 때만 쓴다.
 - 예전 프로젝트 폴더(Mac `~/myblog/blog-basic-AIGJ_01_012-myblog`)는 더 쓰지 않는다. 옛 UI 시안과 문서 사본은 그 폴더의 `backup/ui-mock-2026-10-08` 브랜치에 남아 있다(GitHub에는 올리지 않음).
 - 이 저장소는 **공개(public)** 다. 비밀번호, 키, 계정 정보는 절대 넣지 않는다.
 
@@ -22,7 +25,7 @@ MyBlog(임시 이름): 여러 사람이 각자 블로그를 운영하고, 방문
 
 ## 3. 어디에 무엇이 있나
 
-폴더: `docs/1-팀공통`(팀 합의 문서) · `docs/2-요구사항`(무엇을) · `docs/3-설계`(어떻게) · `docs/4-가이드`(쉬운 기술 설명) · `specs/`(Spec Kit) · `backend/`·`frontend/`(코드). 2026-10-08에 이렇게 나눴다.
+폴더: `docs/1-팀공통`(팀 합의 문서) · `docs/2-요구사항`(무엇을) · `docs/3-설계`(어떻게) · `docs/4-가이드`(쉬운 기술 설명) · `specs/`(Spec Kit). 코드는 `home-blog/blog`의 `backend/`·`frontend/`. 아래 표의 `backend/`, `frontend/`, `.github/` 줄은 코드 저장소 이야기다.
 
 | 위치 | 내용 | 고쳐도 되나 |
 |---|---|---|
@@ -72,8 +75,8 @@ MyBlog(임시 이름): 여러 사람이 각자 블로그를 운영하고, 방문
 
 - 커밋 작성자는 `JaeUng <rnrn4308428@gmail.com>`. 메시지는 한국어로, 무엇을 왜 바꿨는지 적는다.
 - **PR은 기능 단위로 올린다** (2026-10-08 사용자 지시: 너무 자주 올리지 않는다). 사용자 이야기 하나(예: 001 US1의 서버+화면)를 PR 하나로 만든다. 설정 몇 줄·작은 정리는 따로 올리지 않고 다음 기능 PR에 넣는다. 리뷰 수정은 같은 PR에서 한다.
-- 문서만 바꿀 때는 `main`에 바로 커밋해도 된다. **코드를 바꿀 때는 브랜치**(`feat/<기능>-<내용>`, `fix/...`, `chore/...`)를 만들어 PR로 올리고, CI가 통과하면 merge한다. 커밋 메시지에 작업 ID(T001 등)를 적는다.
-- 클라우드 세션은 `home-blog/myblog`를 붙여서(clone) 커밋하고 push한다. 그 뒤 Mac의 `~/Documents/AIGJ_blog_docs`에서 `git pull`로 맞춘다.
+- 문서(이 저장소)는 `main`에 바로 커밋해도 된다. **코드(`home-blog/blog`)를 바꿀 때는 브랜치**(`feat/<기능>-<내용>`, `fix/...`, `chore/...`)를 만들어 PR로 올리고, CI가 통과하면 merge한다. 커밋 메시지에 작업 ID(T001 등)를 적는다.
+- 클라우드 세션은 두 저장소를 붙여서(clone) 커밋하고 push한다. Mac의 `~/Documents/AIGJ_blog_docs`는 코드 저장소(`blog`. 이름이 바뀌어도 주소는 자동으로 넘어감)가 되고, 문서 저장소는 `git clone https://github.com/home-blog/docs`로 따로 받는다. 둘 다 `git pull`로 맞춘다.
 - Mac에서 git을 쓸 때는 삭제가 막혀 `tmp_obj_*`나 `.lock` 파일이 남을 수 있다. 끝나면 확인한다.
 
 ## 5. 기술 방향 (요약)
@@ -114,7 +117,7 @@ MyBlog(임시 이름): 여러 사람이 각자 블로그를 운영하고, 방문
 - 통합 API 명세서는 아직 없다. 기능별 초안이 `specs/*/contracts/`에 있다. ERD가 확정되면 합친다.
 
 - **코드 (2026-10-08)**: PR #1(뼈대, 세션 표), #9(pgvector DB), #10(Dependabot 반영·묶기), #11(001 공통 바탕: 회원·블로그·분류 표, 설정값, 공통 오류, 보안·CSRF, 입력 규칙, 화면 요청 도구), #14(로그인·로그아웃·잠금·로그인 창), #15(001 마무리: 로그 설정, 인증번호 HMAC 저장), 002 US1(마이페이지, 화면 주소 도구를 createBrowserRouter로)을 merge했다. CSRF는 쿠키 `XSRF-TOKEN` + 헤더 `X-XSRF-TOKEN`. 자동 검사 3개가 모두 돈다: CI(서버 Maven 빌드·테스트, 화면 린트·빌드), CodeRabbit(한국어 리뷰, `.coderabbit.yaml`), SonarQube(**아카데미 서버**, 프로젝트 키 `myblog-jaeung`). 아카데미 인프라의 계정·비밀번호는 이 공개 저장소에 적지 않는다.
-- PR 흐름: 브랜치 push → REST로 PR 생성(`gh api repos/home-blog/myblog/pulls`, GraphQL인 `gh pr create`는 막힘) → CI·CodeRabbit 확인, 맞는 지적은 고침 → `gh api .../pulls/N/merge`. 원격 브랜치 삭제는 이 세션에서 막혀 있다. **Dependabot PR은 직접 merge하지 않는다**(안전장치가 막음). 같은 변경을 내 PR로 반영하면 Dependabot이 자기 PR을 닫는다.
+- PR 흐름(코드 저장소): 브랜치 push → REST로 PR 생성(`gh api repos/home-blog/myblog/pulls`, GraphQL인 `gh pr create`는 막힘) → CI·CodeRabbit 확인, 맞는 지적은 고침 → `gh api .../pulls/N/merge`. 원격 브랜치 삭제는 이 세션에서 막혀 있다. **Dependabot PR은 직접 merge하지 않는다**(안전장치가 막음). 같은 변경을 내 PR로 반영하면 Dependabot이 자기 PR을 닫는다.
 - **작업은 Claude Code 클라우드 세션에서 한다** (2026-10-08 사용자 결정. claude.ai 대화창은 더 쓰지 않는다). 클라우드 세션에서는 **Maven 빌드·테스트(`cd backend && mvn verify`)와 Docker가 된다**: `dockerd`를 켜고 `docker compose up -d --wait` 뒤 서버를 직접 띄워 확인할 수 있다. PR을 올리기 전에 직접 돌려 본다.
 - 사용자는 IntelliJ로 작업을 지켜본다. 구현을 마치면 무엇을 만들었는지 **짧게 보고**한다.
 
