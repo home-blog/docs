@@ -76,8 +76,8 @@
 ```json
 {
   "categories": [
-    { "categoryId": 5, "name": "미분류", "postCount": 2, "isDefault": true, "visibility": "public" },
-    { "categoryId": 8, "name": "일상", "postCount": 4, "isDefault": false, "visibility": "public" }
+    { "categoryId": 5, "name": "미분류", "postCount": 2, "isDefault": true, "visibility": "public", "colorIndex": 0 },
+    { "categoryId": 8, "name": "일상", "postCount": 4, "isDefault": false, "visibility": "public", "colorIndex": 1 }
   ]
 }
 ```
@@ -127,7 +127,7 @@
 |---|---|
 | 연결 | FR-035, FR-036, FR-037 |
 | 요청 | `{ "name": "일상" }` (`visibility`를 함께 보낼 수 있다. 없으면 `"public"`, 가안) |
-| 성공 | `201` — `{ "categoryId": 8, "name": "일상", "postCount": 0, "isDefault": false, "visibility": "public" }` |
+| 성공 | `201` — `{ "categoryId": 8, "name": "일상", "postCount": 0, "isDefault": false, "visibility": "public", "colorIndex": 1 }` (`colorIndex`: 분류 색 번호, `006` T023·T025에서 더함) |
 
 **동작**: 앞뒤 공백을 지운 이름을 **소문자로 맞춰** 내 블로그의 분류와 비교하고, 겹치지 않으면 **목록 맨 아래**에 추가한다. (FR-037)
 
@@ -148,7 +148,7 @@
 |---|---|
 | 연결 | FR-035, FR-036, FR-038, FR-042, FR-047, FR-048 |
 | 요청 | `{ "name": "여행" }` 또는 `{ "visibility": "private" }` 또는 둘 다 (보낸 칸만 바꾼다, 가안) |
-| 성공 | `200` — `{ "categoryId": 8, "name": "여행", "postCount": 4, "isDefault": false, "visibility": "private" }` |
+| 성공 | `200` — `{ "categoryId": 8, "name": "여행", "postCount": 4, "isDefault": false, "visibility": "private", "colorIndex": 1 }` |
 
 **동작**: `categoryId`가 **내 블로그의 분류**인지 먼저 확인한다. 이름 규칙은 `5`와 같고, **자기 자신과는 비교하지 않는다.** `미분류`도 이름을 바꿀 수 있다. (FR-042) 글은 분류 번호만 가지고 있으므로 바꾼 이름이 그 분류의 모든 글에 바로 보인다. (FR-038)
 
