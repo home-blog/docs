@@ -1,0 +1,17 @@
+flowchart TB
+  subgraph LEAVE["탈퇴할 때 (002) · 모두 한 묶음: 하나라도 실패하면 탈퇴 전체 취소"]
+    direction LR
+    U2["user 회원<br/>개인정보 익명화<br/>회원 줄은 남김"] -- "MemberWithdrawnEvent<br/>(탈퇴했다)" --> B2["blog 블로그<br/>① 닫는다고<br/>알림<br/>③ 분류와<br/>블로그 지우기"]
+    B2 -- "BlogClosingEvent<br/>(블로그를 닫는다)" --> P2["post 글<br/>comment 댓글<br/>stats 통계<br/>② 자기 데이터<br/>먼저 지우기<br/>(모듈을 만들 때<br/>붙임)"]
+  end
+  subgraph JOIN["가입할 때 (001) · 한 묶음: 블로그를 못 만들면 가입도 취소"]
+    direction LR
+    U1["user 회원<br/>회원 저장"] -- "MemberRegisteredEvent<br/>(가입했다)" --> B1["blog 블로그<br/>내 블로그와<br/>미분류 분류<br/>만들기"]
+  end
+  JOIN ~~~ LEAVE
+  classDef user fill:#dbeafe,stroke:#3b82f6,color:#1e293b,stroke-width:2.5px
+  classDef blog fill:#fef9c3,stroke:#eab308,color:#1e293b,stroke-width:2.5px
+  classDef later fill:#ffedd5,stroke:#f97316,color:#1e293b,stroke-dasharray: 5 4
+  class U1,U2 user
+  class B1,B2 blog
+  class P2 later

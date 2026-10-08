@@ -1,13 +1,17 @@
 flowchart TB
-  comment["comment 댓글"] --> post["post 글"]
-  stats["stats 통계"] --> post
-  search["search 검색·인기 검색어"] --> post
-  post --> blog["blog 블로그·분류"]
-  blog --> user["user 회원·인증"]
-  comment --> user
-  classDef top fill:#ffedd5,stroke:#f97316,color:#1e293b
-  classDef mid fill:#fef9c3,stroke:#eab308,color:#1e293b
-  classDef base fill:#dbeafe,stroke:#3b82f6,color:#1e293b
-  class comment,stats,search top
-  class post,blog mid
-  class user base
+  comment["comment<br/>댓글"] --> post
+  community["community<br/>커뮤니티"] --> post
+  image["image<br/>글 이미지"] --> post
+  post["post<br/>글"] --> blog["blog<br/>블로그·분류"]
+  blog --> user["user<br/>회원·인증"]
+  user --> common["common 공통<br/>오류 응답, 시각<br/>모든 모듈이 씀"]
+  stats["stats 통계<br/>다른 모듈의<br/>데이터를<br/>읽기만 함"] -. 읽기만 .-> post
+  stats -.-> blog
+  classDef top fill:#ffedd5,stroke:#f97316,color:#1e293b,stroke-dasharray: 5 4
+  classDef mid fill:#fef9c3,stroke:#eab308,color:#1e293b,stroke-dasharray: 5 4
+  classDef done fill:#dbeafe,stroke:#3b82f6,color:#1e293b,stroke-width:2.5px
+  classDef base fill:#f1f5f9,stroke:#64748b,color:#1e293b,stroke-width:2.5px
+  class comment,community,image,stats top
+  class post mid
+  class blog,user done
+  class common base

@@ -2,13 +2,15 @@ sequenceDiagram
   autonumber
   participant B as 👤 브라우저
   participant S as ⚙️ 서버
-  participant I as 🖼️ MinIO 가안
+  participant I as 🖼️ 이미지 저장소 (미정)
   participant D as 🗄️ PostgreSQL
 
-  B->>S: 이미지 파일 업로드
-  S->>S: 로그인 확인, 형식과 용량(5MB) 검사, 안전한 새 파일 이름 생성
+  B->>S: 글을 쓰는 중에 이미지 올리기
+  S->>S: 로그인 확인, 형식과 용량(5MB), 개수(10장) 검사, 안전한 새 파일 이름
   S->>I: 파일 저장
-  S->>D: 이미지 주소 기록
-  S-->>B: 이미지 주소 (본문 마크다운에 삽입)
-  B->>S: 글 저장 (마크다운 본문)
-  S->>D: 글 주인 확인 후 저장
+  S->>D: 이미지 기록 (아직 글 없음)
+  S-->>B: 이미지 주소 (본문 마크다운에 넣어 바로 미리 보기)
+  B->>S: 글 저장 (제목, 마크다운 본문, 주제, 분류)
+  S->>D: 블로그 주인 확인 후 글 저장
+  S->>D: 본문에 남은 이미지만 이 글에 연결, 빠진 이미지는 지움
+  Note over S,D: 정리 작업(@Scheduled): 오래 연결되지 않은 이미지의 기록과 파일을 지움 (몇 시간 뒤인지는 미정)
