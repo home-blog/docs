@@ -301,6 +301,7 @@
 | C. Spring 응답에 건다 | Spring Security 설정 한 줄 | 쉽다 | 화면을 Spring이 주지 않으면 **효과가 거의 없다** |
 
 - **추천**: **A**. 정책 초안: `default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https: data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'`. 이미지 주소(`img-src`)는 `005`에서 저장 위치가 정해지면 좁힌다.
+- **`005`에서 알려 온 것 (2026-10-08, `005` T062)**: 올린 이미지는 우리 서버 주소(`/api/images/…`)로만 나간다(개발 저장소 MinIO도 서버를 거쳐 내려준다). 그래서 **바깥 이미지 주소를 막기로 하면**(`정할-것` 34) `img-src 'self'`로 좁힐 수 있다(가안). 34가 "바깥 주소도 허용"이면 지금 초안(`'self' https: data:`)을 둔다. 화면 코드는 `MarkdownView`의 `ONLY_OWN_IMAGES` 한 줄로 바꾼다.
 - **영향**: 정하면 배포 문서(`001` D-5)와 `기술스택-아키텍처.md`의 보안 줄에 적는다. 코드 변경은 배포 때.
 
 ## E. 요약
