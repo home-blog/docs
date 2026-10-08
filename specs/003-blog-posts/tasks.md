@@ -59,7 +59,7 @@ description: "003 블로그·분류·글 작업 목록"
 
 ---
 
-> **진행 (2026-10-08)**: 바탕 + US1 = 코드 PR #20, US2 = PR #21 (둘 다 merge). US2 리뷰에서 "같은 `requestKey`에 다른 내용이면 `409 POST_ALREADY_SAVED`"를 더했다(contracts 10). US3 = PR #23 (merge). US4·US5 = PR #24. US6, US7은 브랜치에 만들어 두고 차례로 올린다. T011의 글 요청 함수(`postApi.ts`)와 `rules.ts`는 US2에서, T012의 `/write`·`/posts/:postId` 주소는 US2·US3에서 더했다. T012의 `useUnsavedChangesPrompt`를 `components/`로 옮기는 것은 하지 않았다(`002` 화면들이 같은 파일을 쓰고 있어, 옮기면 얻는 것보다 바꿀 곳이 많다). 머리글의 `내 블로그`는 `/me/blog`(내 블로그 번호를 물어 이동)로 만들었다.
+> **진행 (2026-10-08)**: 바탕 + US1 = 코드 PR #20, US2 = PR #21 (둘 다 merge). US2 리뷰에서 "같은 `requestKey`에 다른 내용이면 `409 POST_ALREADY_SAVED`"를 더했다(contracts 10). US3 = PR #23, US4·US5 = PR #24 (merge, 리뷰에서 글 번호가 바뀌면 상세·수정 화면을 새로 만들도록 고침). US6 = PR #27. US7은 브랜치에 만들어 두고 이어서 올린다. T011의 글 요청 함수(`postApi.ts`)와 `rules.ts`는 US2에서, T012의 `/write`·`/posts/:postId` 주소는 US2·US3에서 더했다. T012의 `useUnsavedChangesPrompt`를 `components/`로 옮기는 것은 하지 않았다(`002` 화면들이 같은 파일을 쓰고 있어, 옮기면 얻는 것보다 바꿀 곳이 많다). 머리글의 `내 블로그`는 `/me/blog`(내 블로그 번호를 물어 이동)로 만들었다.
 
 ## Phase 1: Setup (공통 준비)
 
@@ -167,17 +167,17 @@ description: "003 블로그·분류·글 작업 목록"
 
 ### Tests for User Story 4
 
-- [ ] T030 [P] [US4] `BE-TEST/post/controller/PostEditTest.java`: S-7의 1 ~ 7(제목만 바꾸면 `changed: true`·`updatedAt` 생김·`createdAt` 그대로, 안 바꾸면 `changed: false`이고 **DB 값도 그대로**, 앞뒤 공백만 더하면 안 바뀐 것, 공개 여부만 바꿔도 갱신, 남의 글 `GET …/edit`·`PUT` → `404`이고 DB 그대로, **남의 글에 형식이 틀린 본문을 보내도 `400`이 아니라 `404`**), S-2a의 5·6(주제만 바꾸기, 주제 빼면 `400`) (FR-019, FR-020, FR-033, FR-041, SC-004, SC-009)
-- [ ] T031 [P] [US4] `BE-TEST/post/controller/PostDeleteTest.java` (클래스 전체 `@Transactional` 쓰지 않음): 내 글 삭제 `204`, 남의 글 `404`이고 그대로(S-8의 8), 테스트용 `@EventListener`가 `PostDeletingEvent`에서 예외를 던지면 글이 그대로 남음(S-8의 7, 한 묶음). `002` US3 뒤에는 탈퇴하면 그 회원의 글이 모두 지워지는지도 본다(`002` S-8, T036) (FR-021, FR-022, SC-004, SC-007)
+- [x] T030 [P] [US4] `BE-TEST/post/controller/PostEditTest.java`: S-7의 1 ~ 7(제목만 바꾸면 `changed: true`·`updatedAt` 생김·`createdAt` 그대로, 안 바꾸면 `changed: false`이고 **DB 값도 그대로**, 앞뒤 공백만 더하면 안 바뀐 것, 공개 여부만 바꿔도 갱신, 남의 글 `GET …/edit`·`PUT` → `404`이고 DB 그대로, **남의 글에 형식이 틀린 본문을 보내도 `400`이 아니라 `404`**), S-2a의 5·6(주제만 바꾸기, 주제 빼면 `400`) (FR-019, FR-020, FR-033, FR-041, SC-004, SC-009)
+- [x] T031 [P] [US4] `BE-TEST/post/controller/PostDeleteTest.java` (클래스 전체 `@Transactional` 쓰지 않음): 내 글 삭제 `204`, 남의 글 `404`이고 그대로(S-8의 8), 테스트용 `@EventListener`가 `PostDeletingEvent`에서 예외를 던지면 글이 그대로 남음(S-8의 7, 한 묶음). `002` US3 뒤에는 탈퇴하면 그 회원의 글이 모두 지워지는지도 본다(`002` S-8, T036) (FR-021, FR-022, SC-004, SC-007)
 
 ### Implementation for User Story 4
 
-- [ ] T032 [P] [US4] 이벤트 `BE/post/PostDeletingEvent.java`(`record(Long postId)`, `post` 맨 위 패키지). 주석에 "`005`의 댓글·좋아요·태그 연결·이미지 기록·글 신고·댓글 신고(D-7)는 이것을 `@EventListener`로 **같은 트랜잭션 안에서** 듣고 자기 표를 지운다. 이미지 파일은 트랜잭션 뒤에 지운다(research R-1)"를 적는다. 지금은 듣는 쪽이 없다 (FR-022, data-model 5)
-- [ ] T033 [US4] `BE/post/domain/Post.java`에 `update(categoryId, topicId, title, content, visibility, now)`: 정리한 값을 지금 값과 하나씩 비교해 **하나라도 다를 때만** 바꾸고 `updatedAt = now`(`Clock`), 바뀌었는지를 돌려준다. `createdAt`은 바꾸는 방법이 없다 (research B-7, R-2, FR-020, SC-009)
-- [ ] T034 [US4] `BE/post/service/PostEditService.java`: `editView`·`update`·`delete` 모두 **먼저 주인을 확인**하고 아니면 `POST_NOT_FOUND`(contracts `요청 검사 순서`). 그래서 수정 요청 본문은 컨트롤러의 `@Valid`가 아니라 주인 확인 **뒤에** `jakarta.validation.Validator`로 검사한다. 분류·주제 확인은 T022와 같다. 삭제는 `PostDeletingEvent` 발행 → 글 삭제를 한 트랜잭션에서 (FR-019 ~ FR-022, FR-041, FR-044) — T032, T033 다음
-- [ ] T035 [US4] `PostController`에 `GET /api/posts/{postId}/edit`, `PUT /api/posts/{postId}`(`{ postId, changed, updatedAt }`), `DELETE /api/posts/{postId}`(`204`) (contracts 12 ~ 14)
-- [ ] T036 [US4] 탈퇴 정리: `BE/post/service/PostBlogClosingCleaner.java` — `002` T032의 `BlogClosingEvent`를 `@EventListener`로 받아 그 블로그의 모든 글마다 `PostDeletingEvent`를 내고 글을 지운다(분류보다 **먼저**, 같은 트랜잭션). `002` T035에 적어 둔 약속을 채우는 것이다 (`002` FR-024) — `002` T032 merge 뒤
-- [ ] T037 [US4] 화면: `FE/post/PostEditorPage.tsx`에 수정 모드(`/write/:postId`, `GET …/edit`로 채움, 바뀐 것이 없으면 저장 버튼 잠금, `requestKey` 없음), 상세의 `삭제` → `<dialog>` "삭제하면 되돌릴 수 없습니다. 삭제할까요?", **취소하면 요청을 보내지 않음**, 성공하면 내 블로그(`/blog/:blogId`)로 (FR-019 ~ FR-022)
+- [x] T032 [P] [US4] 이벤트 `BE/post/PostDeletingEvent.java`(`record(Long postId)`, `post` 맨 위 패키지). 주석에 "`005`의 댓글·좋아요·태그 연결·이미지 기록·글 신고·댓글 신고(D-7)는 이것을 `@EventListener`로 **같은 트랜잭션 안에서** 듣고 자기 표를 지운다. 이미지 파일은 트랜잭션 뒤에 지운다(research R-1)"를 적는다. 지금은 듣는 쪽이 없다 (FR-022, data-model 5)
+- [x] T033 [US4] `BE/post/domain/Post.java`에 `update(categoryId, topicId, title, content, visibility, now)`: 정리한 값을 지금 값과 하나씩 비교해 **하나라도 다를 때만** 바꾸고 `updatedAt = now`(`Clock`), 바뀌었는지를 돌려준다. `createdAt`은 바꾸는 방법이 없다 (research B-7, R-2, FR-020, SC-009)
+- [x] T034 [US4] `BE/post/service/PostEditService.java`: `editView`·`update`·`delete` 모두 **먼저 주인을 확인**하고 아니면 `POST_NOT_FOUND`(contracts `요청 검사 순서`). 그래서 수정 요청 본문은 컨트롤러의 `@Valid`가 아니라 주인 확인 **뒤에** `jakarta.validation.Validator`로 검사한다. 분류·주제 확인은 T022와 같다. 삭제는 `PostDeletingEvent` 발행 → 글 삭제를 한 트랜잭션에서 (FR-019 ~ FR-022, FR-041, FR-044) — T032, T033 다음
+- [x] T035 [US4] `PostController`에 `GET /api/posts/{postId}/edit`, `PUT /api/posts/{postId}`(`{ postId, changed, updatedAt }`), `DELETE /api/posts/{postId}`(`204`) (contracts 12 ~ 14)
+- [x] T036 [US4] 탈퇴 정리: `BE/post/service/PostBlogClosingCleaner.java` — `002` T032의 `BlogClosingEvent`를 `@EventListener`로 받아 그 블로그의 모든 글마다 `PostDeletingEvent`를 내고 글을 지운다(분류보다 **먼저**, 같은 트랜잭션). `002` T035에 적어 둔 약속을 채우는 것이다 (`002` FR-024) — `002` T032 merge 뒤
+- [x] T037 [US4] 화면: `FE/post/PostEditorPage.tsx`에 수정 모드(`/write/:postId`, `GET …/edit`로 채움, 바뀐 것이 없으면 저장 버튼 잠금, `requestKey` 없음), 상세의 `삭제` → `<dialog>` "삭제하면 되돌릴 수 없습니다. 삭제할까요?", **취소하면 요청을 보내지 않음**, 성공하면 내 블로그(`/blog/:blogId`)로 (FR-019 ~ FR-022)
 
 **Checkpoint**: T030, T031이 통과하고 S-7, S-8(1 ~ 2, 7 ~ 8)을 화면으로 확인한다. S-8의 3 ~ 6은 `005` 뒤에 (PR 하나)
 
@@ -191,9 +191,9 @@ description: "003 블로그·분류·글 작업 목록"
 
 > 규칙 자체는 T010(`PostVisibility`)과 T027에서 이미 만들었다. 이 단계는 남은 화면과 넓은 확인이다.
 
-- [ ] T038 [P] [US5] `BE-TEST/post/controller/PostVisibilityTest.java`: S-9의 1·2·10(비공개 글을 주인은 읽고, 공개 → 비공개 하면 바로 남에게 `404`), S-9a의 1·6 ~ 8(분류를 비공개로 해도 글의 `visibility`는 그대로, `미분류`도 비공개 가능, 다시 공개하면 보임, 공개 분류로 옮긴 글만 보임), 이전·다음·분류 개수에 비공개가 섞이지 않음 (FR-028 ~ FR-031, FR-048, SC-002, SC-013)
-- [ ] T039 [US5] 화면: 수정 모드에서 비공개 → 공개로 바꿔 저장할 때 `<dialog>` "공개로 바꾸면 누구나 볼 수 있습니다", 취소하면 요청을 보내지 않고 계속 비공개. 주인이 보는 상세에 "비공개" 표시 (FR-032, FR-033)
-- [ ] T040 [US5] `004`로 넘길 약속을 적어 둔다: `PostVisibility`의 주석과 `004` 작업 목록을 만들 때 "목록·검색은 이 조건을 그대로 쓰고, 검색은 주인이어도 비공개를 넣지 않으며(contracts 15), 주인의 목록에는 `visibility`를 담는다(FR-032)"를 확인한다 (FR-030, FR-032)
+- [x] T038 [P] [US5] `BE-TEST/post/controller/PostVisibilityTest.java`: S-9의 1·2·10(비공개 글을 주인은 읽고, 공개 → 비공개 하면 바로 남에게 `404`), S-9a의 1·6 ~ 8(분류를 비공개로 해도 글의 `visibility`는 그대로, `미분류`도 비공개 가능, 다시 공개하면 보임, 공개 분류로 옮긴 글만 보임), 이전·다음·분류 개수에 비공개가 섞이지 않음 (FR-028 ~ FR-031, FR-048, SC-002, SC-013)
+- [x] T039 [US5] 화면: 수정 모드에서 비공개 → 공개로 바꿔 저장할 때 `<dialog>` "공개로 바꾸면 누구나 볼 수 있습니다", 취소하면 요청을 보내지 않고 계속 비공개. 주인이 보는 상세에 "비공개" 표시 (FR-032, FR-033)
+- [x] T040 [US5] `004`로 넘길 약속을 적어 둔다: `PostVisibility`의 주석과 `004` 작업 목록을 만들 때 "목록·검색은 이 조건을 그대로 쓰고, 검색은 주인이어도 비공개를 넣지 않으며(contracts 15), 주인의 목록에는 `visibility`를 담는다(FR-032)"를 확인한다 (FR-030, FR-032)
 
 **Checkpoint**: T038이 통과하고 S-9(목록·검색 줄은 `004` 뒤), S-9a(1, 4, 6 ~ 8)를 확인한다 (PR 하나, US4와 묶어도 된다)
 
