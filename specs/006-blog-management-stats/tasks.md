@@ -96,7 +96,7 @@ description: "006 블로그 관리와 통계 작업 목록"
 - [x] T011 [P] `BE-TEST/stats/service/StatsCleanerTest.java` (클래스 전체 `@Transactional` 쓰지 않음, 끝에서 지움): 일별 통계·글별 통계 줄이 있는 회원이 탈퇴하면 성공하고 두 표에 그 블로그·글의 줄이 남지 않는다(`002` `WithdrawalFlowTest`처럼), `post_daily_stat` 줄이 있는 글을 지우면 `204`이고 줄이 사라진다, 다른 블로그의 줄은 그대로다
 - [x] T012 [P] 관리 화면 틀: `FE/manage/manageApi.ts`(contracts 1, 2, 3-1, 5, 6, 7의 요청 함수와 응답 타입. 분류·설정은 `003`의 `FE/blog/blogApi.ts`를 그대로 쓴다), `FE/manage/ManageLayout.tsx` + `manage.css`(원고지 토큰): 왼쪽 메뉴 `대시보드`·`글 관리`·`분류 관리`·`댓글 관리`·`통계`·`설정`, 오른쪽 `<Outlet />`, 휴대폰 화면에서는 메뉴가 위로(NF-03). `FE/App.tsx`: `<RequireLogin><ManageLayout/></RequireLogin>` 아래에 `/manage`(대시보드), `/manage/posts`, `/manage/categories`(`003`의 분류 관리 화면), `/manage/comments`, `/manage/stats`, `/manage/blog`(`003`의 블로그 설정 화면). `003` T012가 따로 만든 두 주소를 이 틀 안으로 옮긴다 (FR-001)
 
-> **구현 메모 (2026-10-08, PR #32)**: 표는 `V6__blog_stats.sql`(`post_daily_stat`의 기본키는 ERD 요청서대로 `post_daily_stat_id`). 설정에 `stats.visitor.cookie-name`(`MYBLOG_VISITOR`)을 더했다. `BlogDirectory.BlogInfo`에 `intro`를 더해 머리 정보가 쓴다. T008·T009의 틀은 채우는 이야기(US2, Phase 9, US7)에서 함께 더한다. 아직 없는 관리 화면은 "준비 중" 자리(`ManagePlaceholder`)
+> **구현 메모 (2026-10-08, PR #32)**: 표는 `V9__blog_stats.sql`(005의 V6~V8과 겹치지 않게)(`post_daily_stat`의 기본키는 ERD 요청서대로 `post_daily_stat_id`). 설정에 `stats.visitor.cookie-name`(`MYBLOG_VISITOR`)을 더했다. `BlogDirectory.BlogInfo`에 `intro`를 더해 머리 정보가 쓴다. T008·T009의 틀은 채우는 이야기(US2, Phase 9, US7)에서 함께 더한다. 아직 없는 관리 화면은 "준비 중" 자리(`ManagePlaceholder`)
 
 **Checkpoint**: `mvn verify`(CI)와 `ModularityTest`가 통과한다(`stats`가 맨 위, 고리 없음). 탈퇴·글 삭제가 통계 줄이 있어도 성공한다(T011). `/manage/...` 주소가 왼쪽 메뉴와 빈 내용으로 열린다
 
