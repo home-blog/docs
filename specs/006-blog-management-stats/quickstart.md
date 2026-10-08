@@ -218,6 +218,16 @@
 
 ## 구현 뒤에 채울 것
 
-- [ ] 서버 실행 방법과 테스트 실행 명령
-- [ ] 화면에서 확인하는 순서 (스크린샷 위치)
+- [x] 서버 실행 방법과 테스트 실행 명령 (2026-10-08)
+  - 준비: `docker compose up -d --wait` (PostgreSQL, Redis). 서버: `cd backend && mvn spring-boot:run` (또는 jar). 화면: `cd frontend && npm ci && npx vite` → http://localhost:5173
+  - 서버 테스트: `cd backend && mvn verify`. 006 테스트는 `stats/` (ManageHeaderTest, StatsCleanerTest, StatsQueryTest, DashboardTest, ManageAccessTest, ViewCountingTest, ViewCountingFailureTest), `post/controller/ManagePostListTest`, `comment/controller/ManageCommentListTest`·`NewCommentCountTest`, `comment/service/CommentsReadRaceTest`, `blog/controller/CategoryColorTest`. 시각은 `support/TestClock`, 통계 줄 준비는 `support/TestStats`
+- [x] 화면에서 확인하는 순서 (2026-10-08, Playwright로 확인. 스크린샷은 저장소에 올리지 않음)
+  1. 회원 둘(블로그 주인 A, 읽는 사람 B)로 가입. A로 로그인 → 머리글 `블로그 관리` → 대시보드(S-1, S-9)
+  2. `글 관리`: 거르기·쪽 넘기기·삭제 확인 창 취소/확인 (S-2)
+  3. `분류 관리`: 추가하면 색 점이 차례로, 위·아래, 아래 안내 (S-3). `설정`: 이름 저장 → 왼쪽 위 이름이 바로 바뀜 (S-10)
+  4. B로 A의 블로그 첫 화면과 글 두 번 → A의 대시보드 오늘 조회 1·방문자 1, 로그인하지 않은 브라우저로 같은 글 → 조회 2·방문자 2, `MYBLOG_VISITOR` 쿠키(HttpOnly, SameSite=Lax, 1년). A가 자기 글을 열면 그대로 (S-6, S-7, S-11의 5)
+  5. B가 댓글 → A의 머리글·메뉴에 숫자 → `댓글 관리`를 열면 NEW 표시, 숫자 0, 새로 고치면 NEW 없음 (S-4, S-5)
+  6. `통계`: 7일/30일, 그래프 위에 마우스를 올리면 그날 숫자, `숫자로 보기` 표. 휴대폰 폭(390px)에서 가로 스크롤 없음 (S-8)
+- [x] T063 성능 (2026-10-08, 4코어 개발 컨테이너, 한 사람이 차례로): 글 1,000개·365일 통계·글별 7일 7천 줄·댓글 3,000개인 블로그에서 대시보드 0.13초, 통계 30일 0.04초, 글 관리 50쪽 0.03초, 댓글 관리 100쪽 0.05초, 새 댓글 수 0.02초, 비회원 글 상세(세기 포함) 0.05초. 2초 목표 안이라 인덱스·D-3 B 검토는 하지 않았다
+- [x] T065 (2026-10-08): 블로그 이름 `<script>alert(1)</script>`, 분류 이름 `<b>굵게</b><i>x</i>`가 관리 화면에 글자 그대로 보이고 창이 뜨지 않음. 방문자 쿠키는 32자 무작위 16진수, HttpOnly, SameSite=Lax, 유지 365일
 - [x] `D-2`, `D-4`, `D-5`가 정해진 뒤 S-6 ~ S-9의 "정해지면 확정" 줄 고치기 (2026-10-08 반영. `D-1`, `D-6`, `D-7`은 2026-10-07에 정해서 반영함)
