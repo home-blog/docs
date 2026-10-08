@@ -238,7 +238,8 @@ description: "003 블로그·분류·글 작업 목록"
 
 ## Phase 10: Polish & Cross-Cutting Concerns
 
-- [ ] T051 [P] 결정·구현에 맞게 문서를 같이 고친다 (헌법 `작업 흐름`): plan `Technical Context`(버전·테스트 `미정` → `001`·`002`에서 쓰는 것, Redis 줄은 헌법 1.1.0 문구로), `Constitution Check`의 "결정 대기 7건", FR-011·FR-018·FR-045 줄의 `미정`(D-1·D-6은 결정됨), contracts 9·10의 "`D-6`에서 A를 고르면", 11의 "`D-1`이 정해지기 전에는", research B-8의 "`005` 모듈의 입구를 부른다"(→ 이벤트, T032), data-model 1의 "`002`에서 정한다"(→ 지운다), data-model 9(→ `ERD-변경-요청.md`의 T-1 ~ T-3, E-4 기준), 주소·이벤트·설정 이름이 가안에서 바뀌었으면 그것도. research B-4·data-model 6의 "공백만인 본문은 `D-2`"(→ 결정 내용)
+- [x] T051 [P] 결정·구현에 맞게 문서를 같이 고친다 (헌법 `작업 흐름`): plan `Technical Context`(버전·테스트 `미정` → `001`·`002`에서 쓰는 것, Redis 줄은 헌법 1.1.0 문구로), `Constitution Check`의 "결정 대기 7건", FR-011·FR-018·FR-045 줄의 `미정`(D-1·D-6은 결정됨), contracts 9·10의 "`D-6`에서 A를 고르면", 11의 "`D-1`이 정해지기 전에는", research B-8의 "`005` 모듈의 입구를 부른다"(→ 이벤트, T032), data-model 1의 "`002`에서 정한다"(→ 지운다), data-model 9(→ `ERD-변경-요청.md`의 T-1 ~ T-3, E-4 기준), 주소·이벤트·설정 이름이 가안에서 바뀌었으면 그것도. research B-4·data-model 6의 "공백만인 본문은 `D-2`"(→ 결정 내용)
+  - **2026-10-08 정리함**: plan(버전·테스트·Redis·Constitution Check·FR-011/018/022/045·D-8), research(B-1 가입 이벤트, B-4, B-8 이벤트), data-model(1 탈퇴 때 실제 삭제, 3 `request_key` E-4·`content`, 6, 9 머리말), contracts(9·10 `requestKey`, `POST_ALREADY_SAVED` 추가, 11 마크다운, 8 `postCount` 칸 없음, 숫자 자리 글자 404/400), quickstart S-12의 4
 - [ ] T052 [P] research B-10의 보안 헤더(Content-Security-Policy) 검토: 선택지와 추천을 research에 적고 사용자 확인을 받는다. 이미지 주소는 `005`와 함께 정한다
 - [ ] T053 [P] quickstart S-12(제목·본문·이름의 `<script>`, `<img onerror>`, `javascript:` 링크, 마크다운 문법, SQL 같은 글자, CSRF, 이상한 JSON)를 화면에서 실행한다 (FR-045, SC-012)
 - [ ] T054 quickstart S-13: 한 블로그에 글 1,000개를 넣고 상세(이전·다음 포함)와 분류 목록이 2초 안인지 본다. 느리면 T003의 인덱스부터 확인한다 (NF-09)
