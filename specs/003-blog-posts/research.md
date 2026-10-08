@@ -97,7 +97,7 @@
 
 - **SQL**: 모든 조회는 JPA 또는 파라미터를 따로 넘기는 쿼리로 만든다. 문자열을 이어 붙이지 않는다. (상세/07, 헌법 원칙 IV)
 - **스크립트**: 제목, 블로그 이름, 소개, 분류 이름은 **글자 그대로** 보여 준다 (React의 기본 이스케이프, 상세/07). 본문은 마크다운이라 이것만으로는 부족하다 → **`D-1`**.
-- **서버 쪽 보조 장치 (가안)**: 응답에 브라우저가 스크립트 실행을 제한하도록 하는 보안 헤더(Content-Security-Policy)를 거는 것을 검토한다. 이미지 주소(`005`)와 함께 정해야 하므로 `tasks`에서 다시 본다.
+- **서버 쪽 보조 장치**: 보안 헤더(Content-Security-Policy) → **`D-9`** (2026-10-08 선택지 정리, 사용자 결정 대기).
 
 ## C. 위험과 확인할 점
 
@@ -288,6 +288,20 @@
 
 - **추천**: **A. react-markdown + remark-gfm** — 설정 없이 D-1의 세 가지를 모두 지키고, HTML 글자를 화면에 꽂아 넣는 방식(`dangerouslySetInnerHTML`)을 쓰지 않아 실수할 틈이 가장 적다. 크기는 글 상세 화면에서만 불러오게 나눠 줄인다.
 - **영향**: 고르면 plan `Technical Context`의 `주요 도구` 줄과 `기술스택-아키텍처.md`를 고치고, T029의 `MarkdownView`가 이 도구로 그린다. quickstart S-12의 2 ~ 4로 확인한다.
+
+### D-9. 보안 헤더(Content-Security-Policy)를 걸까, 어디에 걸까 — **결정 대기** (FR-045, SC-012, `tasks.md` T052)
+
+- **쉬운 설명**: CSP는 브라우저에게 "이 사이트는 이 주소의 스크립트·그림만 써라"라고 알려 주는 헤더다. 혹시 화면에 스크립트가 끼어들어도 브라우저가 실행을 막는 **두 번째 울타리**다. 첫 번째 울타리(React의 글자 그대로 보여 주기, react-markdown의 HTML 무시·위험 링크 차단, D-1·D-8)는 이미 있다.
+- **알아 둘 점 (2026-10-08 확인)**: CSP는 **화면(HTML)을 내려주는 곳**에 걸어야 효과가 있다. 지금 서버(Spring)는 JSON만 주고 화면은 Vite(개발)나 배포 때 정할 곳(미정, `001` D-5)이 준다. 그래서 Spring 응답에만 걸면 효과가 거의 없다. 화면은 Google Fonts(`fonts.googleapis.com`, `fonts.gstatic.com`)를 쓰고, 글 본문 이미지는 바깥 주소일 수 있다(`005` 이미지 저장 위치 미정).
+
+| 선택지 | 쉬운 설명 | 장점 | 단점 |
+|---|---|---|---|
+| A. 지금은 걸지 않고, **배포를 정할 때 화면을 내려주는 곳**(예: Nginx)에 건다 | 정책 글은 미리 적어 두고, 배포 설정에 넣는다 | 효과가 있는 곳에 한 번만 건다. 개발 화면(Vite)을 깨지 않는다 | 배포 전까지는 두 번째 울타리가 없다 (첫 번째 울타리는 있다) |
+| B. 화면 빌드 결과(`index.html`)에 `<meta http-equiv="Content-Security-Policy">`를 넣는다 | 배포 방식과 상관없이 붙어 다닌다 | 어디에 배포해도 걸린다 | 개발 화면(Vite)은 바로 실행 스크립트를 넣어서 빌드 때만 넣게 따로 만들어야 한다. `frame-ancestors` 같은 일부 규칙은 meta로 안 된다 |
+| C. Spring 응답에 건다 | Spring Security 설정 한 줄 | 쉽다 | 화면을 Spring이 주지 않으면 **효과가 거의 없다** |
+
+- **추천**: **A**. 정책 초안: `default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https: data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'`. 이미지 주소(`img-src`)는 `005`에서 저장 위치가 정해지면 좁힌다.
+- **영향**: 정하면 배포 문서(`001` D-5)와 `기술스택-아키텍처.md`의 보안 줄에 적는다. 코드 변경은 배포 때.
 
 ## E. 요약
 
