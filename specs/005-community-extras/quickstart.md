@@ -232,7 +232,18 @@
 
 ## 구현 뒤에 채울 것
 
-- [ ] 서버 실행 방법과 테스트 실행 명령
-- [ ] 이미지 저장소(`D-1`) 띄우는 방법과 저장소 안을 들여다보는 방법
-- [ ] 화면에서 확인하는 순서 (스크린샷 위치)
+- [x] 서버 실행 방법과 테스트 실행 명령 (2026-10-08)
+  - 코드 저장소(`home-blog/blog`) 맨 위에서 `docker compose up -d --wait` (PostgreSQL, Redis, MinIO)
+  - 테스트: `cd backend && mvn verify` (이미지는 테스트용 메모리 저장소를 써서 MinIO 없이도 돈다)
+  - 서버: `cd backend && mvn spring-boot:run`. 이미지 저장소 접속 키는 **환경 변수로만** 넣는다: `IMAGE_S3_ACCESS_KEY`, `IMAGE_S3_SECRET_KEY` (개발용 값은 `docker-compose.yml`의 MinIO 설정과 같다). 키를 넣지 않으면 이미지 올리기가 `503 STORAGE_UNAVAILABLE`이 된다
+  - 화면: `cd frontend && npm ci && npx vite` → `http://localhost:5173`
+- [x] 이미지 저장소(`D-1`) 띄우는 방법과 저장소 안을 들여다보는 방법 (2026-10-08)
+  - MinIO는 compose가 `127.0.0.1:9000`(저장소)과 `127.0.0.1:9001`(관리 화면)에만 연다. 관리 화면에 compose의 개발용 계정으로 들어가 버킷 `myblog-images`의 `posts/` 아래를 본다
+  - 버킷은 처음 올릴 때 서버가 만든다. 서버 디스크로 바꾸려면 `community.image.storage: disk`와 저장 폴더 설정
+  - DB 쪽은 `select post_id, users_id, storage_key, created_at from post_image` (연결 전 이미지는 `post_id`가 비어 있다)
+- [x] 화면에서 확인하는 순서 (2026-10-08, Playwright `/opt/node-tools/node_modules/playwright`로 확인. 스크린샷은 각 PR 설명에)
+  1. 가입·로그인 → 글쓰기에서 이미지 올리기(여러 장은 커서 자리에 차례로 들어감) → 저장 → 글 상세에 그림이 보임
+  2. 다른 계정으로 그 글에 댓글 쓰기(5초 간격), 좋아요 누르기·취소, 신고(같은 글 두 번은 거절)
+  3. 글 수정에서 태그 넣기 → 태그를 누르면 `/tags/{태그}` 목록
+  4. 글 삭제 → 댓글·좋아요·태그 연결·이미지·신고 모두 0건 (T064, `PostDeletionCascadeTest`)
 - [x] `D-5`, `D-10`, `D-3`의 정리 시간이 정해진 뒤 위 기대 결과의 "~일 때" 표시 정리 (2026-10-08 반영. `D-2`, `D-3`, `D-9`, `D-11`은 2026-10-07에 정해서 반영함)
