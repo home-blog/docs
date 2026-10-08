@@ -9,28 +9,28 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 
 **Prerequisites**: [plan.md](plan.md), [spec.md](spec.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/community-api.md](contracts/community-api.md), [quickstart.md](quickstart.md)
 
-**결정 반영 (2026-10-08)**: research의 `D-1 ~ D-11` 중 **7개는 정해졌고 4개(`D-1`, `D-5`, `D-6`, `D-10`)는 아직 `미정`** 이다. 이 목록은 정해진 것만 따른다. 미정 항목에 기대는 작업은 "`D-n` 결정에 따름 (추천: …)"으로 적고, **뒤쪽 단계(태그, 이미지)로 미뤘다.** 사용자가 고르기 전에는 시작하지 않는다 (헌법 II).
+**결정 반영 (2026-10-08)**: research의 `D-1 ~ D-11`은 **모두 정해졌다.** 7개는 2026-10-07에, 남은 4개(`D-1`, `D-5`, `D-6`, `D-10`)와 D-3의 정리 시간은 2026-10-08 밤에 사용자가 추천대로 정했다 ("추천대로 진행해"). 정리 시간 24시간과 "태그만 바꾼 수정도 수정됨"(T044)은 `가안`이라 사용자가 아침에 다시 확인한다. 태그·이미지 단계는 처음 순서대로 뒤에 둔다.
 
 | ID | 결정 | 상태 | 이 목록에서 |
 |---|---|---|---|
-| D-1 | 이미지 파일 저장 위치 (프로젝트 전체에서도 `미정`: 헌법 `기술 제약`, CLAUDE.md 5절). 추천: **개발은 MinIO**, 저장 코드를 `ImageStorage`로 감싸 서버 디스크로 바꿔 끼울 수 있게. 배포 때 무엇을 쓸지는 배포 환경(`001` D-5)과 함께 | **미정** | T002, T049, T051 |
+| D-1 | 이미지 파일 저장 위치: **개발은 MinIO**, 저장 코드를 `ImageStorage`로 감싸 서버 디스크로 바꿔 끼울 수 있게. 배포 때 어디에 둘지는 배포 환경(`001` D-5)과 함께 (그래서 헌법의 `미정` 목록에는 남는다) | 결정됨 (2026-10-08, 추천대로) | T002, T049, T051 |
 | D-2 | 댓글 5초 간격은 DB의 마지막 댓글 시각으로 세고, 동시 요청은 회원별 잠금으로 막는다. Redis 안 씀 | 결정됨 | T014, T015, T018 |
 | D-3 | 이미지는 먼저 올려 "아직 글 없음"으로 기록하고, 글을 저장할 때 본문에 남은 것만 연결한다. 오래 연결되지 않은 것은 `@Scheduled`가 지운다. `post_image`는 팀 ERD 요청 T-1 모양으로 만든다 | 결정됨 | T052, T055, T057, T058 |
-| (값) | D-3의 **"몇 시간 뒤에 지울지"** 숫자. 새 숫자라 `상세/05` `기본값` 표에 먼저 적어야 한다. research에 추천 숫자가 없다 → 사용자에게 묻는다 | **미정** | T002, T049, T053, T058 |
+| (값) | D-3의 **"몇 시간 뒤에 지울지"**: **24시간** (`가안`, 사용자 아침 확인). `상세/05` `기본값` 표에 먼저 적었다 | 결정됨 (2026-10-08, 가안) | T002, T049, T053, T058 |
 | D-4 | 본문 안 이미지는 마크다운 이미지 문법, 주소는 **우리 서버 주소만** (`003` D-1과 같음) | 결정됨 | T057, T059 |
-| D-5 | 글 삭제 때 DB와 파일이 어긋나면. 추천: **A. DB 먼저 지우고, 끝난 뒤 파일 삭제. 실패한 파일은 정리 작업이 다시 지운다** | **미정** | T002, T049, T058 |
-| D-6 | 이미지 형식을 무엇으로 확인할까. 추천: **B. 파일 앞부분의 형식 표시(시그니처)** | **미정** | T002, T049, T054 |
+| D-5 | 글 삭제 때 DB와 파일이 어긋나면: **A. DB 먼저 지우고, 끝난 뒤 파일 삭제. 실패한 파일은 정리 작업이 다시 지운다** | 결정됨 (2026-10-08, 추천대로) | T002, T049, T058 |
+| D-6 | 이미지 형식 확인: **B. 파일 앞부분의 형식 표시(시그니처)** | 결정됨 (2026-10-08, 추천대로) | T002, T049, T054 |
 | D-7 | 팀 ERD `comment`의 `UNIQUE(users_id, post_id)`는 없앤다(팀 ERD 최신판에서 이미 지워짐). `parent_id`, `is_secret`은 두되 쓰지 않는다 | 결정됨 | T015, T016 |
 | D-8 | 팀 ERD `comment_report`는 이번에 쓰지 않는다 (표도 만들지 않음) | 결정됨 | T015, T026 |
 | D-9 | 탈퇴한 작성자는 회원 줄의 `deleted_at`으로 판단해 "탈퇴한 사용자"로 보여 준다 (`002` D-1과 같음) | 결정됨 | T008, T018, T023 |
-| D-10 | 태그를 어떤 모양으로 저장할까. 추천: **A. 소문자로 바꿔 저장** (팀 ERD `tag.name`의 `UNIQUE` 그대로 대소문자 무시가 됨) | **미정** | T002, T041, T042, T043 |
+| D-10 | 태그 저장 모양: **A. 소문자로 바꿔 저장** (팀 ERD `tag.name`의 `UNIQUE` 그대로 대소문자 무시가 됨) | 결정됨 (2026-10-08, 추천대로) | T002, T041, T042, T043 |
 | D-11 | 글을 지우면 그 글의 신고 기록도 함께 지운다 (`003` D-7과 같음) | 결정됨 | T034, T038 |
 | `002` D-1, D-5 | 탈퇴해도 남의 글에 단 댓글은 남고 "탈퇴한 사용자"로 보인다. **내가 한 신고는 남긴다.** 내가 누른 좋아요는 지운다 (`MemberWithdrawnEvent` 주석) | 결정됨 | T023, T026, T032, T038 |
 | (도구) | 본문 마크다운을 그리는 화면 도구 이름은 `003` research D-8(`003` T025)에서 **아직 정하지 않았다.** 그 전에는 본문 안 이미지가 그림으로 보이지 않는다 | **미정** (`003`의 일) | T059 |
 
 **Tests**: `001`·`002`·`003`처럼 **사용자 이야기마다 서버 테스트 작업**을 넣었다 (`@SpringBootTest` + MockMvc + `springSecurity()`, 실제 PostgreSQL). 테스트 이름에는 [quickstart.md](quickstart.md)의 시나리오 번호를 붙인다. 동시 요청을 보는 테스트는 클래스 전체에 `@Transactional`을 걸지 않는다 (`002` T021과 같은 이유). 화면에는 테스트 도구가 없어서(`frontend/package.json`) 각 단계 끝의 `Checkpoint`에서 손으로(또는 Playwright로) 확인한다.
 
-**Organization**: 사용자 이야기(US)별로 묶었다. PR도 이야기 하나에 하나 (CLAUDE.md `커밋과 올리기`). 코드는 `home-blog/blog`, 이 목록은 `home-blog/docs`에 있다. **단계 순서는 명세의 우선순위와 조금 다르다**: 정해지지 않은 것이 없는 이야기(US1 → US2 → US3 → US6)를 먼저 하고, 미정 항목에 기대는 US5(태그, `D-10`)와 US4(이미지, `D-1`·`D-5`·`D-6`)를 뒤로 미뤘다.
+**Organization**: 사용자 이야기(US)별로 묶었다. PR도 이야기 하나에 하나 (CLAUDE.md `커밋과 올리기`). 코드는 `home-blog/blog`, 이 목록은 `home-blog/docs`에 있다. **단계 순서는 명세의 우선순위와 조금 다르다**: 정해지지 않은 것이 없던 이야기(US1 → US2 → US3 → US6)를 먼저 하고, 결정을 기다리던 US5(태그, `D-10`)와 US4(이미지, `D-1`·`D-5`·`D-6`)를 뒤로 미뤘다. 2026-10-08에 모두 정해졌지만 순서는 그대로 둔다.
 
 ## Format: `[ID] [P?] [Story] 설명`
 
@@ -60,9 +60,9 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 | `AccountProperties`(`@ConfigurationProperties` record, DB 칸보다 크면 서버가 켜지지 않음, `@ConfigurationPropertiesScan`) | 같은 모양으로 `CommentProperties`, `ReportProperties`, `TagProperties`, `ImageProperties` (`community.*`, plan `설정값 목록`) |
 | `CurrentMemberService`(세션 회원을 DB에서 다시 확인) → `003` T007의 `LoggedInMember`로 다른 모듈에 알려 줌 | 모든 컨트롤러가 `LoggedInMember`로만 회원 번호를 얻는다. 주소나 본문에서 받지 않는다 |
 | `createBrowserRouter`(`FE/App.tsx`), `RequireLogin`, `useLoginPrompt`(`FE/auth/loginPrompt.ts`, 로그인 창 띄우기), `api/client.ts`의 `ApiError`, `index.css`의 원고지 토큰 | 댓글·좋아요·신고 영역은 글 상세에, 태그 입력·이미지 올리기는 글쓰기 화면에 붙인다. 새 화면 주소는 `/tags/:tagName` 하나 (가안) |
-| `docker-compose.yml`에는 PostgreSQL, Redis만 있다 | 이미지 저장소는 `D-1` 결정 뒤에 더한다 (T051) |
+| `docker-compose.yml`에는 PostgreSQL, Redis만 있다 | 개발용 MinIO를 T051에서 더한다 (`D-1`) |
 
-**모듈 방향** (Spring Modulith, `ModularityTest`): `user ← blog ← post ← comment/community/image`. 이 목록은 코드 저장소 CLAUDE.md의 모듈 이름을 따라 **댓글은 `comment`, 좋아요·신고는 `community`, 이미지는 `image`** 에 두고, **태그는 `post` 안에** 둔다 (가안. 태그는 글 저장과 한 묶음이고 태그별 목록은 글 목록이기 때문. plan `Project Structure`와 다른 점은 T060에서 맞춘다). 아래 모듈(`post`)은 위 모듈(`comment` 등)을 부르지 않는다. 그래서 글 상세의 댓글 수·좋아요 수는 `post`가 **질문 틀**을 두고 위 모듈이 채우며(T010, `003`의 `CategoryPostCounter`와 같은 방식), 글 삭제와 글 저장은 `post`가 **이벤트를 내고** 위 모듈이 듣는다(`PostDeletingEvent`, T057의 이벤트). 모든 듣는 쪽은 `@EventListener`로 **같은 트랜잭션 안에서** 돈다. 이미지 **파일** 지우기만 트랜잭션이 끝난 뒤다 (`D-5`).
+**모듈 방향** (Spring Modulith, `ModularityTest`): `user ← blog ← post ← comment/community/image`. 이 목록은 코드 저장소 CLAUDE.md의 모듈 이름을 따라 **댓글은 `comment`, 좋아요·신고는 `community`, 이미지는 `image`** 에 두고, **태그는 `post` 안에** 둔다 (2026-10-08 결정. 태그는 글 저장과 한 묶음이고 태그별 목록은 글 목록이기 때문. plan `Project Structure`도 이대로 고쳤다). 아래 모듈(`post`)은 위 모듈(`comment` 등)을 부르지 않는다. 그래서 글 상세의 댓글 수·좋아요 수는 `post`가 **질문 틀**을 두고 위 모듈이 채우며(T010, `003`의 `CategoryPostCounter`와 같은 방식), 글 삭제와 글 저장은 `post`가 **이벤트를 내고** 위 모듈이 듣는다(`PostDeletingEvent`, T057의 이벤트). 모든 듣는 쪽은 `@EventListener`로 **같은 트랜잭션 안에서** 돈다. 이미지 **파일** 지우기만 트랜잭션이 끝난 뒤다 (`D-5`).
 
 ---
 
@@ -77,8 +77,8 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
   - **US5, US4** (글 저장·수정에 붙음): `003` US2 **T017 ~ T024** (`PostWriteService.create`, `PostRequests`, `PostEditorPage`)와 US4 **T033 ~ T035, T037** (`PostEditService.update`, 수정 화면)
   - **US4의 본문 안 이미지 보이기**: `003` **T025**(마크다운 표시 도구, `003` research D-8 `미정`)와 **T029**의 `MarkdownView`
   - `002`의 `MemberWithdrawnEvent`(T030), `BlogClosingEvent`(T032)는 이미 merge됨 (PR #19)
-- [ ] T002 **미정 항목을 사용자에게 묻는 때를 정해 둔다** (헌법 II, 정하지 않고 묻기만 한다): ① US5(Phase 7)를 시작하기 전에 `D-10` ② US4(Phase 8)를 시작하기 전에 `D-1`, `D-5`, `D-6`, D-3의 **정리 시간 숫자**. 물을 때는 research의 선택지·추천·이유를 그대로 보여 준다. 고르면 research D-항목과 E 표, plan `정해야 할 것 요약`과 FR 연결표의 해당 줄을 같이 고친다. `D-1`을 고르면 헌법의 `미정` 목록, `상세/05`·`상세/07` 구현 방식, `기술스택-아키텍처.md` 2.6도 같이 맞춘다 (research D-1 `영향`)
-- [ ] T003 [P] ERD 문서 맞추기 (**사용자 확인 뒤**, CLAUDE.md `ERD를 고칠 때`): `post_report`의 `UNIQUE(users_id, post_id)`(FR-019, SC-003, data-model 4)가 `docs/3-설계/ERD-변경-요청.md`의 T·E 어디에도 없다. 내 확장 **E-7**로 더하고 Crowfoot `myblog-제안`(666)에도 반영할지 묻는다. `post_image.storage_key` 중복 불가(data-model 5)도 같이 묻는다. 팀 요청 T-1(`post_image`)과 T-3(`reason` CHECK)은 팀 답이 없어도 `003`이 T-2·T-3을 그랬듯 내 코드에는 먼저 넣는다 (T035, T052)
+- [x] T002 **미정 항목을 사용자에게 묻는 때를 정해 둔다** (헌법 II. 2026-10-08 끝: 사용자가 모두 추천대로 골랐고 research·plan·`상세/05`·`상세/07`·기술스택 2.6을 맞췄다. 헌법의 `미정` 목록은 배포 위치가 남아 그대로): ① US5(Phase 7)를 시작하기 전에 `D-10` ② US4(Phase 8)를 시작하기 전에 `D-1`, `D-5`, `D-6`, D-3의 **정리 시간 숫자**. 물을 때는 research의 선택지·추천·이유를 그대로 보여 준다. 고르면 research D-항목과 E 표, plan `정해야 할 것 요약`과 FR 연결표의 해당 줄을 같이 고친다. `D-1`을 고르면 헌법의 `미정` 목록, `상세/05`·`상세/07` 구현 방식, `기술스택-아키텍처.md` 2.6도 같이 맞춘다 (research D-1 `영향`)
+- [ ] T003 [P] ERD 문서 맞추기 (CLAUDE.md `ERD를 고칠 때`): `post_report`의 `UNIQUE(users_id, post_id)`(FR-019, SC-003, data-model 4)는 2026-10-08 사용자 결정으로 `docs/3-설계/ERD-변경-요청.md`에 내 확장 **E-7**로 더했다. 남은 것: Crowfoot `myblog-제안`(666)에 E-7 반영. `post_image.storage_key` 중복 불가(data-model 5)도 같이 묻는다. 팀 요청 T-1(`post_image`)과 T-3(`reason` CHECK)은 팀 답이 없어도 `003`이 T-2·T-3을 그랬듯 내 코드에는 먼저 넣는다 (T035, T052)
 - [ ] T004 [P] `※` 문구를 `docs/2-요구사항/상세/05-소통-부가.md`의 `안내 문구` 표에 먼저 올린다 (**사용자 확인 뒤**, contracts 머리말: "화면을 만들기 전에 먼저 추가"): 댓글 빈 칸·500자 초과·5초 제한, 댓글 삭제 권한 없음·없는 댓글, 자기 글 좋아요·신고, 신고 사유 없음·설명 200자 초과, 태그 5개 초과·형식·중복, 이미지 10장 초과, 저장소 연결 실패. 문장은 "~합니다 / ~해 주세요" (spec Assumptions)
 
 ---
@@ -91,7 +91,7 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 
 - [ ] T005 [P] 모듈 뼈대: `BE/comment/package-info.java`(`@ApplicationModule(displayName = "댓글", allowedDependencies = {"post", "user", "common"})`), `BE/community/package-info.java`(`displayName = "좋아요·신고"`, 같은 의존). `image` 모듈은 US4에서 만든다 (T050)
 - [ ] T006 [P] 설정값 묶음 (plan `설정값 목록`, 헌법 VI): `BE/comment/config/CommentProperties.java`(`community.comment`: `min-length` 1, `max-length` 500, `min-interval` 5s), `BE/community/config/ReportProperties.java`(`community.report.detail-max-length` 200)를 `AccountProperties`처럼 record로 만들고 `BE-RES/application.yml`에 더한다. 최대값이 DB 칸(`comment.body` 500, `post_report.detail` 200)보다 크면 서버가 켜지지 않게 한다. 태그·이미지 설정은 그 이야기에서 더한다 (T043, T053)
-- [ ] T007 [P] `BE/common/error/ErrorCode.java`에 이 기능의 오류를 더한다 (contracts 문구 그대로, `※`는 제안 문구, T004에서 확정되면 바꿈): `COMMENT_EMPTY`("※ 댓글 내용을 입력해 주세요"), `COMMENT_TOO_LONG`(숫자는 설정값에서), `COMMENT_TOO_FREQUENT`(429), `COMMENT_DELETE_FORBIDDEN`(403), `COMMENT_NOT_FOUND`(404), `SELF_LIKE_NOT_ALLOWED`(403), `SELF_REPORT_NOT_ALLOWED`(403), `ALREADY_REPORTED`(409 "이미 신고한 글입니다"), `REPORT_REASON_REQUIRED`, `REPORT_DETAIL_TOO_LONG`, `TAG_TOO_MANY`, `TAG_INVALID`, `TAG_DUPLICATED`, `IMAGE_LIMIT_EXCEEDED`(409), `INVALID_IMAGE`(400 "이미지는 5MB 이하의 jpg, png, gif, webp만 올릴 수 있습니다"), `STORAGE_UNAVAILABLE`(503 "※ 잠시 뒤 다시 시도해 주세요") (FR-002, FR-004, FR-008, FR-012, FR-014, FR-017 ~ FR-019, FR-024, FR-025)
+- [ ] T007 [P] `BE/common/error/ErrorCode.java`에 이 기능의 오류를 더한다 (contracts 문구 그대로, `※`는 제안 문구, T004에서 확정되면 바꿈): `COMMENT_EMPTY`("※ 댓글 내용을 입력해 주세요"), `COMMENT_TOO_LONG`(숫자는 설정값에서), `COMMENT_TOO_FREQUENT`(429), `COMMENT_NOT_FOUND`(404, 남의 댓글을 지우려 할 때도 이것), `SELF_LIKE_NOT_ALLOWED`(403), `SELF_REPORT_NOT_ALLOWED`(403), `ALREADY_REPORTED`(409 "이미 신고한 글입니다"), `REPORT_REASON_REQUIRED`, `REPORT_DETAIL_TOO_LONG`, `TAG_TOO_MANY`, `TAG_INVALID`, `TAG_DUPLICATED`, `IMAGE_LIMIT_EXCEEDED`(409), `INVALID_IMAGE`(400 "이미지는 5MB 이하의 jpg, png, gif, webp만 올릴 수 있습니다"), `STORAGE_UNAVAILABLE`(503 "※ 잠시 뒤 다시 시도해 주세요") (FR-002, FR-004, FR-008, FR-012, FR-014, FR-017 ~ FR-019, FR-024, FR-025)
 - [ ] T008 [P] **회원 이름을 다른 모듈에 알려 주는 틀** `BE/user/MemberNames.java`(`user` 맨 위, 가안): `Map<Long, MemberName> namesOf(Collection<Long> memberIds)`, `MemberName(Long id, String nickname, boolean withdrawn)`. 탈퇴한 회원(`deleted_at` 있음)은 `withdrawn = true`이고 **번호와 닉네임을 비운다** (contracts 1, D-9, `002` D-1). `user` 안쪽(`BE/user/service/MemberNamesAdapter.java`)에서 `UserRepository`로 한 번에 읽어 채운다(댓글마다 따로 읽지 않음) (FR-003, FR-007)
 - [ ] T009 **볼 수 있는 글인지 알려 주는 입구** `BE/post/PostLookup.java`(`post` 맨 위, 가안): `Optional<PostRef> findVisible(Long postId, Long viewerIdOrNull)` → `PostRef(postId, blogId, ownerId)`. 볼 수 없으면 비어 있고, 부르는 쪽이 **없는 글과 같은** `POST_NOT_FOUND`로 답한다 (research B-1의 2단계, R-3, CF-09-4). `BE/post/service/PostLookupAdapter.java`가 `003` T010의 `PostVisibility`와 `BlogDirectory`(글 → 분류 → 블로그 → 주인, research B-1)로 채운다 (FR-029)
 - [ ] T010 **글 상세에 더할 칸의 질문 틀** (`post` 맨 위, 가안): `BE/post/PostCommentCounter.java`(`long count(postId)`, `comment`가 채움), `BE/post/PostLikeSummary.java`(`LikeSummary summary(postId, viewerIdOrNull)` → `likeCount`, `likedByMe`, `community`가 채움). `003`의 `PostReadService`와 글 상세 응답(`003` contracts 11)에 `commentCount`, `likeCount`, `likedByMe`를 더한다 (contracts 7). 채우는 쪽이 아직 없으면 0·`false` (`ObjectProvider`로 받음) (FR-003, FR-011)
@@ -139,12 +139,12 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 
 ### Tests for User Story 2
 
-- [ ] T022 [P] [US2] `BE-TEST/comment/controller/CommentDeleteTest.java`: S-4의 3 ~ 9 서버 쪽(작성자 `204`이고 줄이 실제로 없음, 블로그 주인 `204`, 다른 회원 `403 COMMENT_DELETE_FORBIDDEN`이고 그대로, 남의 블로그 주인 `403`, 로그인 안 하면 `401`, 남의 비공개 글의 댓글 → `404 COMMENT_NOT_FOUND`, 댓글 `PUT`·`PATCH` 주소가 없음(`405`)) (FR-004, FR-005, FR-029, SC-006)
+- [ ] T022 [P] [US2] `BE-TEST/comment/controller/CommentDeleteTest.java`: S-4의 3 ~ 9 서버 쪽(작성자 `204`이고 줄이 실제로 없음, 블로그 주인 `204`, 다른 회원 `404 COMMENT_NOT_FOUND`(없는 댓글과 같은 응답)이고 그대로, 남의 블로그 주인 `404`, 로그인 안 하면 `401`, 남의 비공개 글의 댓글 → `404 COMMENT_NOT_FOUND`, 댓글 `PUT`·`PATCH` 주소가 없음(`405`)) (FR-004, FR-005, FR-029, SC-006)
 - [ ] T023 [P] [US2] `BE-TEST/comment/service/CommentCleanupTest.java` (클래스 전체 `@Transactional` 쓰지 않음): S-11의 댓글 줄 — 글을 지우면 그 글의 댓글 0건, 테스트용 듣는 쪽이 `PostDeletingEvent`에서 예외를 던지면 글과 댓글이 **모두 그대로**(한 묶음). S-5의 1 ~ 5 — C가 탈퇴하면 A의 글에 단 C의 댓글은 남고 `withdrawn: true`·닉네임 없음, C의 블로그 글에 B가 단 댓글은 블로그와 함께 없음(`BlogClosingEvent` → `003` T036 → `PostDeletingEvent` → T025), 새 회원이 C의 옛 닉네임으로 가입해도 C의 댓글은 "탈퇴한 사용자" (FR-006, FR-007, SC-005, D-9, `002` D-1)
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] `CommentService.delete` + `CommentController`에 `DELETE /api/comments/{commentId}`(`204`): 댓글을 찾고 → 그 글을 요청한 사람이 볼 수 없으면 `COMMENT_NOT_FOUND`(댓글이 있다는 것도 알리지 않음, contracts 3) → 작성자도 블로그 주인도 아니면 `COMMENT_DELETE_FORBIDDEN` → 줄을 **실제로** 지운다 (research B-3, FR-004, SC-006)
+- [ ] T024 [US2] `CommentService.delete` + `CommentController`에 `DELETE /api/comments/{commentId}`(`204`): 댓글을 찾고 → 그 글을 요청한 사람이 볼 수 없으면 `COMMENT_NOT_FOUND`(댓글이 있다는 것도 알리지 않음, contracts 3) → 작성자도 블로그 주인도 아니면 **같은 `COMMENT_NOT_FOUND`**(남의 댓글이 있다는 것도 알리지 않음, 2026-10-08 결정 — `006`과 같음) → 줄을 **실제로** 지운다 (research B-3, FR-004, SC-006)
 - [ ] T025 [US2] `BE/comment/service/CommentPostCleaner.java`: `003` T032의 `PostDeletingEvent`를 `@EventListener`로 받아 그 글의 댓글을 지운다(같은 트랜잭션, `@Modifying` 쿼리) (FR-006, data-model 7의 1번)
 - [ ] T026 [US2] 탈퇴 정리 맞추기 (`002` T035에 적어 둔 약속): 댓글은 **`MemberWithdrawnEvent`를 듣지 않는다**(남의 글에 단 댓글은 남는 것이 규칙, FR-007, `002` D-1). 내 블로그 글의 댓글은 `003` T036이 낸 `PostDeletingEvent`로 T025가 지운다. 그래서 `BlogClosingEvent`도 따로 듣지 않는다(가안). `BE/user/MemberWithdrawnEvent.java`와 `BE/blog/BlogClosingEvent.java`의 주석을 실제 듣는 쪽에 맞게 고친다: "005 comment: `PostDeletingEvent`로 글의 댓글 / community: `PostDeletingEvent`로 좋아요·글 신고, `MemberWithdrawnEvent`로 내가 누른 좋아요 / 댓글 신고는 쓰지 않음(005 D-8)" (FR-006, FR-007)
 - [ ] T027 [US2] 화면: `CommentSection`의 댓글마다 `canDelete`일 때만 `삭제` 버튼 → `<dialog>` "댓글을 삭제할까요?", **취소하면 요청을 보내지 않음**, 성공하면 목록에서 빼고 수 -1. 댓글 고치기 버튼은 없다 (FR-004, FR-005)
@@ -185,7 +185,7 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 
 **Independent Test**: quickstart S-10, S-11(신고 줄)
 
-**먼저 merge**: `003` T026 ~ T029, T032, T034, T036. T003(E-7) 사용자 확인
+**먼저 merge**: `003` T026 ~ T029, T032, T034, T036. E-7은 2026-10-08 결정(T003)
 
 ### Tests for User Story 6
 
@@ -209,20 +209,20 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 
 **Independent Test**: quickstart S-9, S-11(태그 줄)
 
-**먼저 merge**: `003` T017 ~ T024, T026 ~ T029, T033 ~ T035, T037. **`D-10` 결정** (T041)
+**먼저 merge**: `003` T017 ~ T024, T026 ~ T029, T033 ~ T035, T037. (`D-10`은 2026-10-08 결정: 소문자로 저장)
 
 ### Tests for User Story 5
 
-- [ ] T040 [P] [US5] `BE-TEST/post/controller/PostTagTest.java`: S-9의 1 ~ 12(`#여행`은 `여행`으로, 태그 없이 저장, 6개 → `TAG_TOO_MANY`이고 글도 저장 안 됨, 16자·공백·쉼표 → `tags[n]` `TAG_INVALID`, 15자와 `#`+15자 통과, `Java`+`java` → `TAG_DUPLICATED`, 태그 목록은 공개 글만 최신순(**주인이 봐도 자기 비공개 글은 안 나옴**), 비공개로 바꾸면 바로 빠짐, 수정에서 빼고 더하기, 화면 없이 6개 거절, DB에서 한 글 5개 초과·겹침 0), S-11의 태그 줄(글을 지우면 연결 0건, `tag` 줄은 남음). S-9의 1에서 **보이는 모양(`java`)은 `D-10` 결정에 따라** 기대값을 정한다 (FR-013 ~ FR-016, FR-028, FR-029, SC-004, SC-005, SC-008)
+- [ ] T040 [P] [US5] `BE-TEST/post/controller/PostTagTest.java`: S-9의 1 ~ 12(`#여행`은 `여행`으로, 태그 없이 저장, 6개 → `TAG_TOO_MANY`이고 글도 저장 안 됨, 16자·공백·쉼표 → `tags[n]` `TAG_INVALID`, 15자와 `#`+15자 통과, `Java`+`java` → `TAG_DUPLICATED`, 태그 목록은 공개 글만 최신순(**주인이 봐도 자기 비공개 글은 안 나옴**), 비공개로 바꾸면 바로 빠짐, 수정에서 빼고 더하기, 화면 없이 6개 거절, DB에서 한 글 5개 초과·겹침 0), S-11의 태그 줄(글을 지우면 연결 0건, `tag` 줄은 남음). S-9의 1에서 보이는 모양은 **소문자 `java`** (D-10 A) (FR-013 ~ FR-016, FR-028, FR-029, SC-004, SC-005, SC-008)
 
 ### Implementation for User Story 5
 
-- [ ] T041 [US5] **`D-10` 결정 받기** (T002): research D-10의 선택지(A. 소문자로 바꿔 저장 / B. 처음 입력한 모양으로 저장하고 소문자로 비교)와 추천(A)을 보여 주고 사용자가 고른다. 고르기 전에는 T042 ~ T046을 시작하지 않는다. 고르면 research·plan의 D-10 줄을 고친다
-- [ ] T042 [US5] Flyway `V{다음 번호}__tag.sql`: `post_tag`(`post_id` → `post`, `tag_id` → `tag`, 기본키 `(post_id, tag_id)`, 연쇄 삭제 없음) + 인덱스 `post_tag (tag_id)`(data-model 3, 태그로 찾기). `tag`(`tag_id` 자동 증가, `name` VARCHAR(15) NOT NULL)의 중복 불가 규칙은 **D-10 결정에 따름** (추천: A면 팀 ERD의 `UNIQUE(name)` 그대로. B면 `lower(name)` 중복 불가 인덱스를 내 확장으로) (FR-014, SC-004)
-- [ ] T043 [P] [US5] `BE/post/config/TagProperties.java`(`community.tag`: `max-per-post` 5, `min-length` 1, `max-length` 15(DB 칸 15보다 크면 서버가 안 켜짐), `page-size` 10) + `application.yml`. `BE/post/tag/TagNormalizer.java`(research B-6 순서): 앞뒤 공백 지우기 → 앞의 `#` 모두 지우기 → 1 ~ 15자(코드 포인트), 공백·쉼표 없음 → 대소문자 무시로 겹침 확인(조용히 합치지 않고 `TAG_DUPLICATED`) → 5개 이하. 오류는 `tags` / `tags[n]` 칸으로. **저장하는 모양은 D-10 결정에 따름** (추천: 소문자로 바꿈) (FR-013, FR-014)
-- [ ] T044 [US5] `post` 모듈 안의 태그 저장: `BE/post/domain/Tag.java`, `PostTag.java`, `TagRepository`, `PostTagRepository`, `BE/post/service/PostTagService.replaceTags(postId, tags)` — 보낸 목록이 **새 전체 목록**(빠진 연결 삭제, 새것 추가), 이름이 있으면 그 줄, 없으면 새로 만들고 동시에 같은 새 태그가 만들어져 중복 제약에 걸리면 다시 읽어 쓴다(research B-6). `003`의 `PostRequests`(T023)에 `tags`를 더하고 `PostWriteService.create`(T022)·`PostEditService.update`(T034) 안에서 같은 트랜잭션으로 부른다. 수정 화면 응답(`GET …/edit`)에 지금 태그. **글 삭제**는 같은 모듈이므로 `PostEditService.delete`의 삭제 순서에 `post_tag` 지우기를 넣는다(글보다 먼저). `tag` 줄은 남긴다 (FR-013, FR-014, FR-016, FR-028). ⚠ **태그만 바꾼 수정**을 `changed: true`(수정 시각 갱신)로 볼지는 명세에 없다 → 구현 전에 사용자에게 묻는다 (`003` FR-020)
+- [x] T041 [US5] **`D-10` 결정 받기** (T002): 2026-10-08 사용자가 추천대로 **A. 소문자로 바꿔 저장**을 골랐다. research·plan의 D-10 줄을 고쳤다
+- [ ] T042 [US5] Flyway `V{다음 번호}__tag.sql`: `post_tag`(`post_id` → `post`, `tag_id` → `tag`, 기본키 `(post_id, tag_id)`, 연쇄 삭제 없음) + 인덱스 `post_tag (tag_id)`(data-model 3, 태그로 찾기). `tag`(`tag_id` 자동 증가, `name` VARCHAR(15) NOT NULL)의 중복 불가 규칙은 팀 ERD의 `UNIQUE(name)` 그대로 (D-10 A: 소문자로 저장하므로 대소문자 무시가 된다) (FR-014, SC-004)
+- [ ] T043 [P] [US5] `BE/post/config/TagProperties.java`(`community.tag`: `max-per-post` 5, `min-length` 1, `max-length` 15(DB 칸 15보다 크면 서버가 안 켜짐), `page-size` 10) + `application.yml`. `BE/post/tag/TagNormalizer.java`(research B-6 순서): 앞뒤 공백 지우기 → 앞의 `#` 모두 지우기 → 1 ~ 15자(코드 포인트), 공백·쉼표 없음 → 대소문자 무시로 겹침 확인(조용히 합치지 않고 `TAG_DUPLICATED`) → 5개 이하. 오류는 `tags` / `tags[n]` 칸으로. **소문자로 바꿔 저장한다** (D-10 A) (FR-013, FR-014)
+- [ ] T044 [US5] `post` 모듈 안의 태그 저장: `BE/post/domain/Tag.java`, `PostTag.java`, `TagRepository`, `PostTagRepository`, `BE/post/service/PostTagService.replaceTags(postId, tags)` — 보낸 목록이 **새 전체 목록**(빠진 연결 삭제, 새것 추가), 이름이 있으면 그 줄, 없으면 새로 만들고 동시에 같은 새 태그가 만들어져 중복 제약에 걸리면 다시 읽어 쓴다(research B-6). `003`의 `PostRequests`(T023)에 `tags`를 더하고 `PostWriteService.create`(T022)·`PostEditService.update`(T034) 안에서 같은 트랜잭션으로 부른다. 수정 화면 응답(`GET …/edit`)에 지금 태그. **글 삭제**는 같은 모듈이므로 `PostEditService.delete`의 삭제 순서에 `post_tag` 지우기를 넣는다(글보다 먼저). `tag` 줄은 남긴다 (FR-013, FR-014, FR-016, FR-028). **태그만 바꾼 수정**도 `changed: true`(수정 시각 갱신, "수정됨")로 본다 (2026-10-08 `가안`, 사용자 아침 확인. `003` FR-020의 판단과 맞춘다)
 - [ ] T045 [US5] 태그 보기: 글 상세 응답에 `tags`(contracts 7). `GET /api/tags/{tagName}/posts?page=` (`BE/post/controller/TagPostController.java`, contracts 9): 주소의 이름을 T043과 같은 방법으로 정리한 뒤 찾는다. **보는 사람과 상관없이** `PostVisibility`의 "주인이 아닐 때" 조건(글 공개 + 분류 공개)만 쓴다(SC-008). 최신순, `page-size`개씩, 없는 페이지면 마지막 페이지(`004` CF-10-4를 빌린 가안). 한 줄 정보는 contracts 9 그대로 두고 `004`의 목록 계약이 정해지면 맞춘다. 없는 태그는 빈 목록 `200` (FR-015, SC-008)
-- [ ] T046 [US5] 화면: `FE/post/TagInput.tsx`를 `003`의 `PostEditorPage`에 붙인다(Enter·쉼표로 하나씩 더하기, 같은 규칙으로 바로 안내(보조), 서버의 `tags[n]` 오류를 그 태그 아래에). 글 상세 **아래**에 태그 목록(누르면 `/tags/:tagName`). 새 화면 `FE/post/TagPostsPage.tsx`(`/tags/:tagName`, 누구나, 글이 없으면 "글이 없습니다"(`상세/04`)). 보이는 모양은 D-10 결정대로이고, A면 "태그는 소문자로 보입니다"를 입력칸 옆에 안내한다(research D-10 `영향`) (FR-013 ~ FR-016)
+- [ ] T046 [US5] 화면: `FE/post/TagInput.tsx`를 `003`의 `PostEditorPage`에 붙인다(Enter·쉼표로 하나씩 더하기, 같은 규칙으로 바로 안내(보조), 서버의 `tags[n]` 오류를 그 태그 아래에). 글 상세 **아래**에 태그 목록(누르면 `/tags/:tagName`). 새 화면 `FE/post/TagPostsPage.tsx`(`/tags/:tagName`, 누구나, 글이 없으면 "글이 없습니다"(`상세/04`)). 보이는 모양은 소문자(D-10 A)이므로 "태그는 소문자로 보입니다"를 입력칸 옆에 안내한다(research D-10 `영향`) (FR-013 ~ FR-016)
 
 **Checkpoint**: T040이 통과하고 S-9를 화면으로 확인한다 (PR 하나)
 
@@ -230,7 +230,7 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 
 ## Phase 8: User Story 4 - 글에 이미지 올리기 (Priority: P2)
 
-> 명세의 우선순위는 P2지만 **`D-1`, `D-5`, `D-6`과 정리 시간이 `미정`** 이라 맨 뒤에 둔다. 결정 없이 할 수 있는 테스트·표·설정을 먼저 하고, 결정에 기대는 것(T051, T054, T058)은 결정 뒤에 한다.
+> 명세의 우선순위는 P2지만 **`D-1`, `D-5`, `D-6`과 정리 시간을 기다리느라** 맨 뒤에 두었다. 2026-10-08에 모두 정해졌으므로(개발은 MinIO, DB 먼저·파일 나중, 시그니처 확인, 24시간) 결정을 기다릴 작업은 없다.
 
 **Goal**: 글을 쓰는 중에 jpg·png·gif·webp 이미지(5MB 이하, 글당 10장)를 올리고, 본문 안에서 본다. 글을 지우면 이미지도 지워진다
 
@@ -241,20 +241,20 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 ### Tests for User Story 4
 
 - [ ] T047 [P] [US4] `BE-TEST/image/controller/ImageUploadTest.java` (저장소는 테스트용 가짜 `ImageStorage`): S-7의 1 ~ 7·10(4.9MB png 통과, **정확히 5MB 통과**, 5.1MB → `400 INVALID_IMAGE`(프레임워크가 먼저 막아도 같은 문구, research R-6), gif·webp 통과, bmp 거절, 새 글 기준 11번째·저장한 글의 수정에서 11번째 → `409 IMAGE_LIMIT_EXCEEDED`, 로그인 안 하면 `401`이고 파일 없음), S-8의 1 ~ 7(이름만 `.png`인 HTML 거절, `.jpg`로 바꾼 png는 png로 저장·응답, `../../test.png` 이름을 쓰지 않음, `nosniff`, 남의 비공개 글 이미지 `404`, 연결 전 남의 이미지 `404`, 오류 응답에 경로·예외 이름 없음), `postId`가 남의 글이면 `404` (FR-022 ~ FR-026, FR-029, SC-004)
-- [ ] T048 [P] [US4] `BE-TEST/image/service/ImageCleanupTest.java` (클래스 전체 `@Transactional` 쓰지 않음): S-11의 2·4·7·8(글을 지우면 `post_image` 0건, 파일도 없음(`D-5` 결정에 따라 정리 작업 뒤에 확인할 수 있음), 지운 글의 이미지 주소 `404`), S-11의 10(저장하지 않고 나간 글의 이미지는 정리 시간이 지나면 기록·파일 삭제), 글 저장 때 본문에서 뺀 이미지 삭제, S-8의 8(저장소가 꺼지면 `503 STORAGE_UNAVAILABLE`이고 서버가 죽지 않음) (FR-027, SC-005)
+- [ ] T048 [P] [US4] `BE-TEST/image/service/ImageCleanupTest.java` (클래스 전체 `@Transactional` 쓰지 않음): S-11의 2·4·7·8(글을 지우면 `post_image` 0건, 파일도 없음(D-5 A: 파일 삭제가 실패했으면 정리 작업 뒤에 확인), 지운 글의 이미지 주소 `404`), S-11의 10(저장하지 않고 나간 글의 이미지는 정리 시간이 지나면 기록·파일 삭제), 글 저장 때 본문에서 뺀 이미지 삭제, S-8의 8(저장소가 꺼지면 `503 STORAGE_UNAVAILABLE`이고 서버가 죽지 않음) (FR-027, SC-005)
 
 ### Implementation for User Story 4
 
-- [ ] T049 [US4] **결정 받기** (T002): `D-1`(저장 위치), `D-5`(DB와 파일이 어긋날 때), `D-6`(형식 확인 방법)과 D-3의 **정리 시간 숫자**를 research의 선택지·추천과 함께 묻는다. 정리 시간은 고른 뒤 `상세/05`의 `기본값` 표에 먼저 적고 plan `설정값 목록`에 옮긴다(plan, research D-3). 고르기 전에는 T051, T054, T058을 시작하지 않는다
+- [x] T049 [US4] **결정 받기** (T002): 2026-10-08 사용자가 추천대로 골랐다 — `D-1` 개발은 MinIO(`ImageStorage`로 교체 가능), `D-5` DB 먼저·파일 나중·실패는 정리 작업, `D-6` 파일 앞부분의 형식 표시, D-3 정리 시간 **24시간**(`가안`). 정리 시간은 `상세/05`의 `기본값` 표에 먼저 적고 plan `설정값 목록`에 옮겼다
 - [ ] T050 [US4] `image` 모듈 뼈대 `BE/image/package-info.java`(`@ApplicationModule(displayName = "이미지", allowedDependencies = {"post", "user", "common"})`)와 저장소 틀 `BE/image/storage/ImageStorage.java`(가안, research A "저장소 감싸기"): `put(key, InputStream, size, contentType)`, `open(key)`, `delete(key)`. 저장소에 연결할 수 없으면 `STORAGE_UNAVAILABLE`로 바꾼다. 테스트용 메모리 구현 `BE-TEST/image/storage/InMemoryImageStorage.java` (FR-026)
-- [ ] T051 [US4] 저장소 구현: **D-1 결정에 따름** (추천: 개발은 **MinIO** — `docker-compose.yml`에 MinIO 서비스(`127.0.0.1`에만 열기), `pom.xml`에 AWS SDK for Java v2의 S3 클라이언트, `BE/image/storage/S3ImageStorage.java`, 접속값은 환경 변수(개발 기본값만 yml에). 서버 디스크 구현으로 **설정 하나로 바꿔 끼울 수 있게**(`@ConditionalOnProperty`, 가안). 서버 디스크를 고르면 `DiskImageStorage`와 저장 폴더 설정). 배포 때의 선택은 `001` D-5와 함께 (research D-1, R-5)
+- [ ] T051 [US4] 저장소 구현: **D-1 결정대로 개발은 MinIO** ( `docker-compose.yml`에 MinIO 서비스(`127.0.0.1`에만 열기), `pom.xml`에 AWS SDK for Java v2의 S3 클라이언트, `BE/image/storage/S3ImageStorage.java`, 접속값은 환경 변수(개발 기본값만 yml에). 서버 디스크 구현으로 **설정 하나로 바꿔 끼울 수 있게**(`@ConditionalOnProperty`, 가안). 서버 디스크로 바꿀 때는 `DiskImageStorage`와 저장 폴더 설정). 배포 때의 선택은 `001` D-5와 함께 (research D-1, R-5)
 - [ ] T052 [US4] Flyway `V{다음 번호}__post_image.sql`: `post_image`(`post_image_id` 자동 증가, `post_id` **NULL 허용** → `post`, `users_id` NOT NULL → `users`, `storage_key` VARCHAR(500) NOT NULL **중복 불가**, `created_at` NOT NULL). 팀 요청 T-1(D-3)과 T003의 `storage_key` 중복 불가를 맨 위 주석에 적는다. 인덱스 `(post_id)`, 연결 전 이미지 찾기용 `(users_id, created_at) WHERE post_id IS NULL` (가안) (FR-024, FR-027)
-- [ ] T053 [P] [US4] `BE/image/config/ImageProperties.java`(`community.image`: `max-size` 5MB, `max-per-post` 10, `allowed-types` jpg·png·gif·webp, **연결 전 이미지 정리 시간은 T049에서 정한 값**) + `application.yml`. `spring.servlet.multipart.max-file-size`와 `max-request-size`는 **`${community.image.max-size}`에서 값을 가져온다**(숫자를 두 곳에 쓰지 않음, plan). `GlobalExceptionHandler`에 `MaxUploadSizeExceededException` → `400 INVALID_IMAGE`를 더한다(R-6). 정확히 5MB가 통과하는지 T047로 확인 (FR-023, FR-025)
-- [ ] T054 [US4] 형식 확인 `BE/image/service/ImageTypeDetector.java`: **D-6 결정에 따름** (추천: **B. 파일 앞부분의 형식 표시** — jpg `FF D8 FF`, png `89 50 4E 47 0D 0A 1A 0A`, gif `GIF87a`/`GIF89a`, webp `RIFF....WEBP`). 확장자와 브라우저가 보낸 형식은 믿지 않는다. 저장 확장자와 내려 줄 `Content-Type`은 **확인한 형식**으로. SVG는 받지 않는다 (FR-022, SC-004)
+- [ ] T053 [P] [US4] `BE/image/config/ImageProperties.java`(`community.image`: `max-size` 5MB, `max-per-post` 10, `allowed-types` jpg·png·gif·webp, **연결 전 이미지 정리 시간 `orphan-ttl` 24시간**(`가안`, `상세/05` 기본값)) + `application.yml`. `spring.servlet.multipart.max-file-size`와 `max-request-size`는 **`${community.image.max-size}`에서 값을 가져온다**(숫자를 두 곳에 쓰지 않음, plan). `GlobalExceptionHandler`에 `MaxUploadSizeExceededException` → `400 INVALID_IMAGE`를 더한다(R-6). 정확히 5MB가 통과하는지 T047로 확인 (FR-023, FR-025)
+- [ ] T054 [US4] 형식 확인 `BE/image/service/ImageTypeDetector.java`: **D-6 결정(B)대로 파일 앞부분의 형식 표시로 확인** ( jpg `FF D8 FF`, png `89 50 4E 47 0D 0A 1A 0A`, gif `GIF87a`/`GIF89a`, webp `RIFF....WEBP`). 확장자와 브라우저가 보낸 형식은 믿지 않는다. 저장 확장자와 내려 줄 `Content-Type`은 **확인한 형식**으로. SVG는 받지 않는다 (FR-022, SC-004)
 - [ ] T055 [US4] `BE/image/service/ImageUploadService.java` + `BE/image/controller/ImageController.java`의 `POST /api/images`(`multipart/form-data`, `file`, 선택 `postId`, `201 { imageId, url }`): 로그인 → `postId`가 있으면 **내 글**인지(`PostLookup`, 아니면 `POST_NOT_FOUND`) → 용량 → 형식(T054) → 개수(수정 중이면 그 글의 이미지 수, 새 글이면 **아직 연결되지 않은 내 이미지 수**, D-3) → 새 이름 `posts/{UUID}.{확인한 확장자}`(사용자 파일 이름은 쓰지도 돌려주지도 않음) → `ImageStorage.put` → DB 기록(DB가 실패하면 방금 올린 파일을 지움) (contracts 10, research B-5, FR-022 ~ FR-025)
 - [ ] T056 [US4] `ImageController`의 `GET /api/images/{fileName}`: 기록을 찾고, 연결된 글이면 `PostLookup.findVisible(postId, 보는 사람)`, 연결 전이면 **올린 사람만**. 아니면 `404`. `Content-Type`은 확인한 형식, `X-Content-Type-Options: nosniff`, 비공개 글·연결 전 이미지는 공용 캐시에 남지 않게(`Cache-Control: private`, 가안) (contracts 11, research B-5, R-7, FR-026)
 - [ ] T057 [US4] **글 저장 때 이미지 연결** (D-3, D-4): `post` 맨 위에 이벤트 `BE/post/PostContentSavedEvent.java`(`record(Long postId, Long ownerId, String content)`, 가안)를 두고 `003`의 `PostWriteService.create`·`PostEditService.update`가 같은 트랜잭션에서 낸다. `BE/image/service/ImageLinker.java`(`@EventListener`): 본문에서 **우리 서버 주소(`/api/images/…`)의 마크다운 이미지만** 찾아 내가 올린 연결 전 이미지와 이 글의 이미지를 이 글에 연결하고, 10장을 넘으면 `fieldErrors.content` `IMAGE_LIMIT_EXCEEDED`로 거절(저장 전체 취소, contracts 8), 이 글에 있었는데 본문에서 빠진 이미지는 기록을 지우고 파일은 T058과 같은 방법으로 지운다. 남이 올린 이미지 주소는 연결하지 않는다 (FR-024, FR-026, SC-004)
-- [ ] T058 [US4] 이미지 정리: ① `BE/image/service/ImagePostCleaner.java` — `PostDeletingEvent`로 그 글의 `storage_key`를 읽어 두고 기록을 지운다(같은 트랜잭션). **파일 삭제는 D-5 결정에 따름** (추천: **A. 트랜잭션이 끝난 뒤** 지우고(`@TransactionalEventListener(phase = AFTER_COMMIT)` 등), 실패하면 로그를 남기고 ②가 다시 지운다) ② `BE/image/service/OrphanImageCleaner.java`(`@Scheduled`, `@EnableScheduling`은 `common`에 한 번): 정리 시간(T049)보다 오래된 연결 전 이미지의 기록·파일을 지운다. D-5의 A면 저장소 목록과 DB를 비교해 주인 없는 파일도 지운다(`ImageStorage`에 목록 보기가 필요하면 T050에 더함). 탈퇴한 회원의 연결 전 이미지도 이 작업이 지운다(따로 듣지 않음, 가안) (FR-027, SC-005, research D-3, D-5)
+- [ ] T058 [US4] 이미지 정리: ① `BE/image/service/ImagePostCleaner.java` — `PostDeletingEvent`로 그 글의 `storage_key`를 읽어 두고 기록을 지운다(같은 트랜잭션). **파일 삭제는 D-5 결정(A)대로 트랜잭션이 끝난 뒤** 지우고(`@TransactionalEventListener(phase = AFTER_COMMIT)` 등), 실패하면 로그를 남기고 ②가 다시 지운다) ② `BE/image/service/OrphanImageCleaner.java`(`@Scheduled`, `@EnableScheduling`은 `common`에 한 번): 정리 시간(24시간, T053)보다 오래된 연결 전 이미지의 기록·파일을 지운다. D-5가 A이므로 저장소 목록과 DB를 비교해 주인 없는 파일도 지운다(`ImageStorage`에 목록 보기가 필요하면 T050에 더함). 탈퇴한 회원의 연결 전 이미지도 이 작업이 지운다(따로 듣지 않음, 가안) (FR-027, SC-005, research D-3, D-5)
 - [ ] T059 [US4] 화면: `003`의 `PostEditorPage`에 `FE/image/ImageUploadButton.tsx`(파일 고르기 `accept`는 jpg·png·gif·webp, 크기를 화면에서도 먼저 보고(보조), **한 장씩** 보냄, 받은 주소를 커서 자리에 `![](주소)`로 넣음(D-4), 실패 문구는 서버 것 그대로, 수정 중이면 `postId`를 같이 보냄). 글 상세의 본문 안 이미지는 `003` T029의 `MarkdownView`가 그린다 — **`003` T025(마크다운 표시 도구, `미정`)가 정해지기 전에는 원문 글자로 보인다.** 정해지면 이미지 주소는 우리 서버 주소만 그리게 한다(D-4, S-12의 5). 글 목록의 대표 이미지는 만들지 않는다 (FR-022 ~ FR-026)
 
 **Checkpoint**: T047, T048이 통과하고 S-7, S-8, S-11(10)을 화면으로 확인한다. 본문 안 그림은 `003` T025 뒤에 S-7의 8을 다시 본다 (PR 하나)
@@ -333,19 +333,16 @@ description: "005 소통과 부가 기능 (댓글·좋아요·태그·신고·�
 - **US2 (P2)**: US1 다음 + `003` US4(T030 ~ T037) merge 뒤
 - **US3 (P2)**: Foundational + `003` US3·US4 다음. US1·US2와 서로 기대지 않는다
 - **US6 (P3)**: Foundational + `003` US3·US4 + T003 다음. **정해지지 않은 것이 없어** US5·US4보다 먼저 한다
-- **US5 (P3)**: `003` US2·US4 merge 뒤 + **`D-10` 결정(T041)** 뒤
-- **US4 (P2)**: `003` US2·US4 merge 뒤 + **`D-1`, `D-5`, `D-6`, 정리 시간 결정(T049)** 뒤. 본문 안 그림은 `003` T025 뒤
+- **US5 (P3)**: `003` US2·US4 merge 뒤 (`D-10`은 결정됨)
+- **US4 (P2)**: `003` US2·US4 merge 뒤 (`D-1`, `D-5`, `D-6`, 정리 시간은 결정됨). 본문 안 그림은 `003` T025 뒤
 - **Polish**: 원하는 이야기가 끝난 뒤. T064는 US2·US3·US6·US5·US4가 모두 끝난 뒤
 
 ### 미정 항목이 막는 작업
 
+`D-10`, `D-1`, `D-5`, `D-6`과 정리 시간은 2026-10-08에 정해져서 더 막는 작업이 없다. 남은 것은 아래 한 줄이다.
+
 | 미정 | 막는 작업 | 결정 전에 해도 되는 것 |
 |---|---|---|
-| D-10 | T042(중복 불가 규칙), T043(저장 모양), T044 ~ T046 | T040(테스트, 보이는 모양 줄만 비워 둠) |
-| D-1 | T051(저장소 구현, Compose, `pom.xml`) | T047, T048(가짜 저장소), T050(틀), T052, T053, T055 ~ T057(가짜 저장소로) |
-| D-5 | T058의 파일 삭제 순서와 정리 작업 범위 | T058의 기록 삭제 |
-| D-6 | T054 | T047의 S-8 줄은 미리 써 둔다 |
-| 정리 시간 | T053의 값, T058의 ② | 나머지 |
 | `003` D-8 (마크다운 도구) | T059의 본문 안 그림, T061의 S-12 5 | 이미지 올리기와 주소 넣기 |
 
 ### Within Each User Story
@@ -390,8 +387,8 @@ Task: "T017 @ValidCommentBody (코드 포인트, 공백만이면 비어 있음)"
 1. US2(댓글 삭제·정리) → 확인
 2. US3(좋아요) → 확인
 3. US6(신고) → 확인
-4. `D-10`을 물어 정한 뒤 US5(태그) → 확인
-5. `D-1`, `D-5`, `D-6`, 정리 시간을 물어 정한 뒤 US4(이미지) → 확인. `003` T025가 정해지면 본문 안 그림을 다시 확인
+4. US5(태그, `D-10` 결정됨) → 확인
+5. US4(이미지, `D-1`, `D-5`, `D-6`, 정리 시간 결정됨) → 확인. `003` T025가 정해지면 본문 안 그림을 다시 확인
 6. T064로 글 삭제·탈퇴 연쇄 전체를 다시 확인
 
 ---
@@ -401,4 +398,4 @@ Task: "T017 @ValidCommentBody (코드 포인트, 공백만이면 비어 있음)"
 - 작업 하나 또는 묶음 하나를 끝낼 때마다 커밋하고, 커밋 메시지에 작업 ID를 적는다 (예: `005 T018`). PR은 이야기 하나에 하나
 - `가안`인 주소, 오류 이름, 설정 이름, 입구·이벤트 이름(`MemberNames`, `PostLookup`, `PostCommentCounter`, `PostLikeSummary`, `PostContentSavedEvent`, `ImageStorage`)과 모듈 나누기를 바꾸면 T060처럼 문서도 같이 고친다
 - `003`은 다른 세션이 만드는 중이다. `003`의 클래스·이벤트 이름이 계획(`003` tasks.md)과 달라지면 이 목록의 이름도 그에 맞춘다
-- 남은 결정: **`D-1`, `D-5`, `D-6`, `D-10`, 정리 시간 숫자** (사용자 확인 전에는 정하지 않는다), 그리고 `003`의 마크다운 표시 도구. 확인할 위험: research R-1(좋아요·신고 동시 요청, T030·T037), R-2(글 상세 2초, T063), R-3(남의 비공개 글에 직접 요청, T009), R-6(5MB 경계, T053), R-7(이미지 주소, T056)
+- 남은 결정: 이 기능의 D-항목은 없다 (2026-10-08 모두 결정. 정리 시간 24시간과 태그만 바꾼 수정의 "수정됨"은 사용자 아침 확인). 남은 것은 `003`의 마크다운 표시 도구. 확인할 위험: research R-1(좋아요·신고 동시 요청, T030·T037), R-2(글 상세 2초, T063), R-3(남의 비공개 글에 직접 요청, T009), R-6(5MB 경계, T053), R-7(이미지 주소, T056)
