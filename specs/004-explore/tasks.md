@@ -151,8 +151,8 @@ description: "004 글 탐색 (글 목록과 검색) 작업 목록"
 
 **Independent Test**: quickstart S-3
 
-- [ ] T021 [P] [US3] `BE-TEST/post/controller/PostListEmptyTest.java`: S-3의 1 ~ 5 — 글 없는 C를 방문자로 → `200`, `totalCount: 0`, `isOwner: false`, C 본인 → `isOwner: true`, 비공개 글만 있는 D를 방문자로 → `totalCount: 0`, D 본인 → 비공개 글이 보임. 오류가 아니다 (FR-008, US3)
-- [ ] T022 [US3] 화면 `BlogPostList`: `totalCount`가 0이면 "글이 없습니다", `isOwner`면 "첫 글을 써 보세요"와 `글쓰기` 버튼(`/write`, `003` T024). 분류를 골랐는데 0개여도 같은 안내 (US4-4). "첫 글을 써 보세요"는 상세/04 `안내 문구` 표에 없다(contracts ※) → T041에서 표에 더할지 사용자 확인 (FR-008) — `003` T024 다음
+- [x] T021 [P] [US3] `BE-TEST/post/controller/PostListEmptyTest.java`: S-3의 1 ~ 5 — 글 없는 C를 방문자로 → `200`, `totalCount: 0`, `isOwner: false`, C 본인 → `isOwner: true`, 비공개 글만 있는 D를 방문자로 → `totalCount: 0`, D 본인 → 비공개 글이 보임. 오류가 아니다 (FR-008, US3) — **완료**: PR #25
+- [x] T022 [US3] 화면 `BlogPostList`: `totalCount`가 0이면 "글이 없습니다", `isOwner`면 "첫 글을 써 보세요"와 `글쓰기` 버튼(`/write`, `003` T024). 분류를 골랐는데 0개여도 같은 안내 (US4-4). "첫 글을 써 보세요"는 상세/04 `안내 문구` 표에 없다(contracts ※) → T041에서 표에 더할지 사용자 확인 (FR-008) — `003` T024 다음 — **완료**: PR #25
 
 **Checkpoint**: T021이 통과하고 S-3을 화면으로 확인한다 (PR 하나, US4와 묶어도 된다)
 
@@ -166,12 +166,12 @@ description: "004 글 탐색 (글 목록과 검색) 작업 목록"
 
 ### Tests for User Story 4
 
-- [ ] T023 [P] [US4] `BE-TEST/post/controller/PostListCategoryTest.java`: S-4의 1 ~ 6 — 고르지 않으면 모든 공개 글, `일상`만 "13개의 글", `일상`을 고른 채 2페이지도 `일상`만, **모든 페이지**에 다른 분류 0건(SC-006), 공개 글 없는 분류는 `totalCount: 0`. 그리고 B 블로그의 분류 번호·없는 번호를 넣으면 **A·B 어느 쪽 글도 섞여 오지 않는다**(응답 모양은 T038에서 확인) (FR-007, SC-006)
+- [x] T023 [P] [US4] `BE-TEST/post/controller/PostListCategoryTest.java`: S-4의 1 ~ 6 — 고르지 않으면 모든 공개 글, `일상`만 "13개의 글", `일상`을 고른 채 2페이지도 `일상`만, **모든 페이지**에 다른 분류 0건(SC-006), 공개 글 없는 분류는 `totalCount: 0`. 그리고 B 블로그의 분류 번호·없는 번호를 넣으면 **A·B 어느 쪽 글도 섞여 오지 않는다**(응답 모양은 T038에서 확인) (FR-007, SC-006) — **완료**: PR #25
 
 ### Implementation for User Story 4
 
-- [ ] T024 [US4] `PostListService`에 `categoryId`: **보이는 분류 묶음(T015의 ③) 안에 있을 때만** 조건에 더한다. 묶음 밖(다른 블로그의 분류, 없는 번호, 방문자가 보낸 비공개 분류 번호, 숫자 아닌 값)은 **메서드 하나**(`unknownCategory…`)로 모은다 — 비공개 분류도 없는 분류와 **똑같이** 다뤄 있다는 것을 드러내지 않는다(D-7). 그 메서드의 응답은 **`404 CATEGORY_NOT_FOUND` "존재하지 않는 분류입니다"** (D-2 가) → T038. 응답의 `categoryId`에 적용한 값 (FR-006, FR-007, contracts 1 동작 3)
-- [ ] T025 [US4] 화면 `FE/explore/CategoryFilter.tsx`(블로그 화면): 분류 고르기는 `003`의 분류 목록(`blogApi.ts`)을 쓴다 — 방문자에게는 비공개 분류가 빠져 온다. 고르면 주소 `?category=`에 담고 `page`는 1로, 페이지를 넘길 때 같은 값을 계속 보낸다, `전체`로 선택 풀기 (FR-007, contracts 1 `화면이 하는 일`) — `003` T016 다음
+- [x] T024 [US4] `PostListService`에 `categoryId`: **보이는 분류 묶음(T015의 ③) 안에 있을 때만** 조건에 더한다. 묶음 밖(다른 블로그의 분류, 없는 번호, 방문자가 보낸 비공개 분류 번호, 숫자 아닌 값)은 **메서드 하나**(`unknownCategory…`)로 모은다 — 비공개 분류도 없는 분류와 **똑같이** 다뤄 있다는 것을 드러내지 않는다(D-7). 그 메서드의 응답은 **`404 CATEGORY_NOT_FOUND` "존재하지 않는 분류입니다"** (D-2 가) → T038. 응답의 `categoryId`에 적용한 값 (FR-006, FR-007, contracts 1 동작 3) — **완료**: PR #25
+- [x] T025 [US4] 화면 `FE/explore/CategoryFilter.tsx`(블로그 화면): 분류 고르기는 `003`의 분류 목록(`blogApi.ts`)을 쓴다 — 방문자에게는 비공개 분류가 빠져 온다. 고르면 주소 `?category=`에 담고 `page`는 1로, 페이지를 넘길 때 같은 값을 계속 보낸다, `전체`로 선택 풀기 (FR-007, contracts 1 `화면이 하는 일`) — `003` T016 다음 — **완료**: PR #25
 
 **Checkpoint**: T023이 통과하고 S-4(1 ~ 6)를 화면으로 확인한다 (PR 하나)
 
@@ -224,8 +224,8 @@ description: "004 글 탐색 (글 목록과 검색) 작업 목록"
 
 **Independent Test**: quickstart S-7
 
-- [ ] T035 [P] [US7] `BE-TEST/post/controller/ExploreAnonymousTest.java`: S-7의 1 — 로그인 없이 목록, 분류별 목록, 검색, 2페이지가 모두 `200`(어느 것도 `401` 아님, SC-010). 30일이 지난 세션·로그아웃한 쿠키로도 `200`. `POST /api/posts`가 로그인 없이 `401 UNAUTHENTICATED`인 것은 `003` T017에 있으면 다시 쓰지 않는다 (FR-019, FR-020, SC-010)
-- [ ] T036 [US7] 화면 확인·보완: 로그아웃 상태에서 목록·검색이 `onUnauthenticated`(로그인 창) 신호를 한 번도 내지 않는지, 머리글·빈 목록의 `글쓰기`(`/write`, `RequireLogin`)를 누르면 로그인 창 → 로그인하면 돌아오는지(`001` contracts 9, `003` T012). 댓글·좋아요·신고 버튼은 `005`가 만든 뒤 S-7의 5를 다시 본다 (FR-020)
+- [x] T035 [P] [US7] `BE-TEST/post/controller/ExploreAnonymousTest.java`: S-7의 1 — 로그인 없이 목록, 분류별 목록, 검색, 2페이지가 모두 `200`(어느 것도 `401` 아님, SC-010). 30일이 지난 세션·로그아웃한 쿠키로도 `200`. `POST /api/posts`가 로그인 없이 `401 UNAUTHENTICATED`인 것은 `003` T017에 있으면 다시 쓰지 않는다 (FR-019, FR-020, SC-010) — **완료**: PR #25 (검색은 PR #26에 더함)
+- [x] T036 [US7] 화면 확인·보완: 로그아웃 상태에서 목록·검색이 `onUnauthenticated`(로그인 창) 신호를 한 번도 내지 않는지, 머리글·빈 목록의 `글쓰기`(`/write`, `RequireLogin`)를 누르면 로그인 창 → 로그인하면 돌아오는지(`001` contracts 9, `003` T012). 댓글·좋아요·신고 버튼은 `005`가 만든 뒤 S-7의 5를 다시 본다 (FR-020) — **완료**: PR #25 화면 확인(로그인 창 신호 0번, 빈 목록 `글쓰기`는 `/write`의 RequireLogin). 댓글·좋아요·신고는 005 뒤에 S-7의 5
 
 **Checkpoint**: T035가 통과하고 S-7(1 ~ 4)을 화면으로 확인한다 (US3이나 US4 PR에 넣어도 된다)
 
@@ -236,7 +236,7 @@ description: "004 글 탐색 (글 목록과 검색) 작업 목록"
 **Purpose**: T002의 결정(2026-10-08, 추천대로)을 코드에 넣는다. 각 작업은 앞 단계가 남겨 둔 "한곳"만 채운다. 해당 이야기의 PR에 같이 넣어도 된다
 
 - [x] T037 [US1] [US5] **D-2(A) — 잘못된 페이지 번호: 1보다 작거나 숫자가 아니면 1페이지, 너무 크면 마지막 페이지. 검색 결과도 같다**: `PageNumbers`(T007)의 `outOfRange…`를 채우고 `PageNumbersTest`, `PostListTest`, `PostSearchTest`에 S-9의 2(`0`, `-1`, `abc`, `1 OR 1=1`, 아주 큰 숫자 → 서버 오류 없음, 응답에 내부 정보 없음) 줄을 더한다. `INVALID_PAGE` 오류는 만들지 않는다 (FR-004, FR-014, SC-005) — **완료**: PR #22 (목록), 검색은 검색 PR
-- [ ] T038 [US4] [US2] **D-2(가) — 남의·없는·비공개 분류 번호는 `404 CATEGORY_NOT_FOUND` "존재하지 않는 분류입니다"**: T024의 `unknownCategory…`를 채우고 `PostListCategoryTest`에 S-4의 7, S-2a의 3·4(방문자가 비공개 분류 번호를 보낸 응답 = 아무 데도 없는 번호의 응답, **상태 코드·본문이 글자 단위로 같다**), `categoryId=abc`, S-9의 2 줄을 더한다. 화면 `CategoryFilter`는 그 응답을 받으면 선택을 풀고 안내 (FR-006, FR-007, SC-006)
+- [x] T038 [US4] [US2] **D-2(가) — 남의·없는·비공개 분류 번호는 `404 CATEGORY_NOT_FOUND` "존재하지 않는 분류입니다"**: T024의 `unknownCategory…`를 채우고 `PostListCategoryTest`에 S-4의 7, S-2a의 3·4(방문자가 비공개 분류 번호를 보낸 응답 = 아무 데도 없는 번호의 응답, **상태 코드·본문이 글자 단위로 같다**), `categoryId=abc`, S-9의 2 줄을 더한다. 화면 `CategoryFilter`는 그 응답을 받으면 선택을 풀고 안내 (FR-006, FR-007, SC-006) — **완료**: PR #25
 - [ ] T039 [US5] **D-3(A) — 검색 미리보기 길이는 글 목록과 같은 100자·같은 설정값**: T029의 길이 읽는 곳을 `explore.list.preview-length`로 채운다(새 설정을 만들지 않는다). C(검색어 주변 보여 주기)는 "추후 확장 후보". `PostSearchTest`에 S-5의 7 길이 줄 (FR-015)
 - [ ] T040 [US6] **D-1(A) — 50자 넘는 검색어: 화면 검색창은 50자까지만 받고, 화면을 거치지 않은 요청은 서버가 `400 SEARCH_KEYWORD_TOO_LONG` "검색어는 50자까지 입력할 수 있습니다"**: 문구는 상세/04 `안내 문구` 표에 이미 더했다(2026-10-08). `ErrorCode`, `SearchKeyword`(T027, `explore.search.keyword-max-length`, 코드 포인트), 화면(`SearchBox`의 입력 제한·안내)을 고친다. `PostSearchKeywordTest`에 S-6의 10 (FR-010)
 - [x] T041 결정 내용을 문서에 같이 반영한다 (헌법 `작업 흐름`, T002. 2026-10-08 끝, `D-4`·`D-5`와 상세/07 측정 조건도 같이): research `D-1 ~ D-3` 절과 `E. 요약`, plan 연결표(FR-004, FR-007, FR-010, FR-014, FR-015 줄의 `미정`)와 `정해야 할 것 요약`, contracts 1·2의 `D-n` 문장과 오류 표, quickstart S-2a(3), S-4(7), S-6(10), S-9(2)의 기대 결과와 `구현 뒤에 채울 것`, 상세/04 `안내 문구` 표(새 문구, "첫 글을 써 보세요" 추가 여부 확인), 이 목록 맨 위 표
