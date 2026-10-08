@@ -59,7 +59,7 @@ description: "003 블로그·분류·글 작업 목록"
 
 ---
 
-> **진행 (2026-10-08)**: 바탕 + US1 = 코드 PR #20, US2 = PR #21 (둘 다 merge). US2 리뷰에서 "같은 `requestKey`에 다른 내용이면 `409 POST_ALREADY_SAVED`"를 더했다(contracts 10). US3 = PR #23, US4·US5 = PR #24 (merge, 리뷰에서 글 번호가 바뀌면 상세·수정 화면을 새로 만들도록 고침). US6 = PR #27. US7은 브랜치에 만들어 두고 이어서 올린다. T011의 글 요청 함수(`postApi.ts`)와 `rules.ts`는 US2에서, T012의 `/write`·`/posts/:postId` 주소는 US2·US3에서 더했다. T012의 `useUnsavedChangesPrompt`를 `components/`로 옮기는 것은 하지 않았다(`002` 화면들이 같은 파일을 쓰고 있어, 옮기면 얻는 것보다 바꿀 곳이 많다). 머리글의 `내 블로그`는 `/me/blog`(내 블로그 번호를 물어 이동)로 만들었다.
+> **진행 (2026-10-08)**: 바탕 + US1 = 코드 PR #20, US2 = PR #21 (둘 다 merge). US2 리뷰에서 "같은 `requestKey`에 다른 내용이면 `409 POST_ALREADY_SAVED`"를 더했다(contracts 10). US3 = PR #23, US4·US5 = PR #24 (merge, 리뷰에서 글 번호가 바뀌면 상세·수정 화면을 새로 만들도록 고침). US6 = PR #27 (merge). US7 = PR #28. T011의 글 요청 함수(`postApi.ts`)와 `rules.ts`는 US2에서, T012의 `/write`·`/posts/:postId` 주소는 US2·US3에서 더했다. T012의 `useUnsavedChangesPrompt`를 `components/`로 옮기는 것은 하지 않았다(`002` 화면들이 같은 파일을 쓰고 있어, 옮기면 얻는 것보다 바꿀 곳이 많다). 머리글의 `내 블로그`는 `/me/blog`(내 블로그 번호를 물어 이동)로 만들었다.
 
 ## Phase 1: Setup (공통 준비)
 
@@ -207,15 +207,15 @@ description: "003 블로그·분류·글 작업 목록"
 
 ### Tests for User Story 6
 
-- [ ] T041 [P] [US6] `BE-TEST/blog/controller/CategoryManageTest.java` (동시 요청 줄은 `@Transactional` 없이): S-10의 1 ~ 15(맨 아래 추가, ` 일상 `·`daily` 중복, 동시 추가 하나만, 다른 블로그와는 같은 이름 허용, 이름 바꾸면 상세에도 반영, 순서, 번호 빠지면 `INVALID_CATEGORY_ORDER`, 글 2개(공개 1·비공개 1)면 "글이 2개 있어", 옮긴 뒤 삭제, `미분류` 삭제 거절·이름 바꾸기 허용, 개수 B 1·A 2, 남의 분류 `404`, 삭제와 글쓰기 동시 → 분류 없는 글 0), S-9a의 2·3·9 (FR-034 ~ FR-043, FR-047, SC-004 ~ SC-006, SC-010)
+- [x] T041 [P] [US6] `BE-TEST/blog/controller/CategoryManageTest.java` (동시 요청 줄은 `@Transactional` 없이): S-10의 1 ~ 15(맨 아래 추가, ` 일상 `·`daily` 중복, 동시 추가 하나만, 다른 블로그와는 같은 이름 허용, 이름 바꾸면 상세에도 반영, 순서, 번호 빠지면 `INVALID_CATEGORY_ORDER`, 글 2개(공개 1·비공개 1)면 "글이 2개 있어", 옮긴 뒤 삭제, `미분류` 삭제 거절·이름 바꾸기 허용, 개수 B 1·A 2, 남의 분류 `404`, 삭제와 글쓰기 동시 → 분류 없는 글 0), S-9a의 2·3·9 (FR-034 ~ FR-043, FR-047, SC-004 ~ SC-006, SC-010)
 
 ### Implementation for User Story 6
 
-- [ ] T042 [P] [US6] `BE/blog/validation/ValidCategoryName.java` + 검사기(앞뒤 공백 제거 뒤 1 ~ `category.name.max-length`, 코드 포인트), `BE/blog/validation/BlogFieldErrorMessages.java`(분류·블로그 문구의 숫자를 설정에서, T048도 이 파일에 더한다) (FR-036)
-- [ ] T043 [US6] `BE/blog/domain/Category.java`에 `create(blogId, name, sortOrder, visibility)`, `rename(name)`, `changeVisibility(visibility)`, `moveTo(sortOrder)`를 더한다. `미분류`는 `isDefaultCategory()`로 알아본다(이름이 아님) (FR-037, FR-042, FR-047, D-5)
-- [ ] T044 [US6] `BE/blog/service/CategoryService.java`: 추가(가장 큰 `sort_order` + 1), 이름 중복은 소문자로 먼저 보고 **DB의 `uq_category_blog_name`이 마지막 방어선** → `CATEGORY_NAME_DUPLICATED`, 자기 자신과는 비교하지 않음. 순서 바꾸기는 내 분류 번호가 빠짐·겹침 없이 다 있어야 하고 1, 2, 3…으로 다시 매김. 삭제는 남의 분류 → `CATEGORY_NOT_FOUND`, 기본 분류 → `DEFAULT_CATEGORY_NOT_DELETABLE`, `CategoryPostCounter.countAll`이 1 이상 → `CATEGORY_HAS_POSTS`("글이 {N}개"), 세고 지우는 사이 글이 들어와 외래 키가 거절하면 다시 세어 같은 오류 (research R-3). 내 블로그는 세션으로만 (FR-035 ~ FR-042, FR-047)
-- [ ] T045 [US6] `BE/blog/controller/CategoryController.java`: `POST /api/me/blog/categories`(`201`), `PATCH …/{categoryId}`(보낸 칸만), `PUT …/order`, `DELETE …/{categoryId}`(`204`). PATCH도 T034처럼 **내 분류인지 먼저** 보고 그 뒤에 검사한다 (contracts 5 ~ 8, FR-044)
-- [ ] T046 [US6] 분류 관리 화면 `FE/blog/CategoryManagePage.tsx`(`/manage/categories`): 목록(주인 기준 개수, "비공개" 표시), 추가, 이름 바꾸기, 공개/비공개, 위·아래로 순서 바꾸기, `미분류`에는 삭제 버튼 없음, 거절 문구는 서버 것 그대로. `006`의 관리 화면(BM-04)에 들어갈 수 있게 컴포넌트로 만든다 (FR-035 ~ FR-043, FR-047)
+- [x] T042 [P] [US6] `BE/blog/validation/ValidCategoryName.java` + 검사기(앞뒤 공백 제거 뒤 1 ~ `category.name.max-length`, 코드 포인트), `BE/blog/validation/BlogFieldErrorMessages.java`(분류·블로그 문구의 숫자를 설정에서, T048도 이 파일에 더한다) (FR-036)
+- [x] T043 [US6] `BE/blog/domain/Category.java`에 `create(blogId, name, sortOrder, visibility)`, `rename(name)`, `changeVisibility(visibility)`, `moveTo(sortOrder)`를 더한다. `미분류`는 `isDefaultCategory()`로 알아본다(이름이 아님) (FR-037, FR-042, FR-047, D-5)
+- [x] T044 [US6] `BE/blog/service/CategoryService.java`: 추가(가장 큰 `sort_order` + 1), 이름 중복은 소문자로 먼저 보고 **DB의 `uq_category_blog_name`이 마지막 방어선** → `CATEGORY_NAME_DUPLICATED`, 자기 자신과는 비교하지 않음. 순서 바꾸기는 내 분류 번호가 빠짐·겹침 없이 다 있어야 하고 1, 2, 3…으로 다시 매김. 삭제는 남의 분류 → `CATEGORY_NOT_FOUND`, 기본 분류 → `DEFAULT_CATEGORY_NOT_DELETABLE`, `CategoryPostCounter.countAll`이 1 이상 → `CATEGORY_HAS_POSTS`("글이 {N}개"), 세고 지우는 사이 글이 들어와 외래 키가 거절하면 다시 세어 같은 오류 (research R-3). 내 블로그는 세션으로만 (FR-035 ~ FR-042, FR-047)
+- [x] T045 [US6] `BE/blog/controller/CategoryController.java`: `POST /api/me/blog/categories`(`201`), `PATCH …/{categoryId}`(보낸 칸만), `PUT …/order`, `DELETE …/{categoryId}`(`204`). PATCH도 T034처럼 **내 분류인지 먼저** 보고 그 뒤에 검사한다 (contracts 5 ~ 8, FR-044)
+- [x] T046 [US6] 분류 관리 화면 `FE/blog/CategoryManagePage.tsx`(`/manage/categories`): 목록(주인 기준 개수, "비공개" 표시), 추가, 이름 바꾸기, 공개/비공개, 위·아래로 순서 바꾸기, `미분류`에는 삭제 버튼 없음, 거절 문구는 서버 것 그대로. `006`의 관리 화면(BM-04)에 들어갈 수 있게 컴포넌트로 만든다 (FR-035 ~ FR-043, FR-047)
 
 **Checkpoint**: T041이 통과하고 S-10, S-9a(2, 3, 9)를 화면으로 확인한다 (PR 하나)
 
