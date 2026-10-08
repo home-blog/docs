@@ -130,14 +130,14 @@ description: "006 블로그 관리와 통계 작업 목록"
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] `BE-TEST/post/controller/ManagePostListTest.java`: S-2의 1(글 없음 → `items` 빈 배열, `hasAnyPost: false`), 2(공개 6·비공개 5 → 1쪽 10개, 2쪽 1개, 빠짐·겹침 없음, 같은 시각이면 번호 큰 것 먼저), 3(제목·분류·작성일·공개 여부·`views`·`commentCount`), 4(`all`/`public`/`private` → 11/6/5), 5(분류 + `private` 함께 → 둘 다 맞는 글만, 없으면 `items` 비고 `hasAnyPost: true`), 9(`visibility=abc`, `page=-1`, `page=0` → `400`, 내부 정보 없음), 남의 `categoryId` → `404`, 비공개 분류의 글도 주인에게는 나온다, 회원 B는 A의 글을 하나도 받지 않는다 (FR-012 ~ FR-014, FR-017, SC-002)
+- [x] T017 [P] [US2] `BE-TEST/post/controller/ManagePostListTest.java`: S-2의 1(글 없음 → `items` 빈 배열, `hasAnyPost: false`), 2(공개 6·비공개 5 → 1쪽 10개, 2쪽 1개, 빠짐·겹침 없음, 같은 시각이면 번호 큰 것 먼저), 3(제목·분류·작성일·공개 여부·`views`·`commentCount`), 4(`all`/`public`/`private` → 11/6/5), 5(분류 + `private` 함께 → 둘 다 맞는 글만, 없으면 `items` 비고 `hasAnyPost: true`), 9(`visibility=abc`, `page=-1`, `page=0` → `400`, 내부 정보 없음), 남의 `categoryId` → `404`, 비공개 분류의 글도 주인에게는 나온다, 회원 B는 A의 글을 하나도 받지 않는다 (FR-012 ~ FR-014, FR-017, SC-002)
 
 ### Implementation for User Story 2
 
-- [ ] T018 [US2] `BE/post/service/ManagePostQueryService.java` + `PostRepository` 쿼리: 내 블로그 분류 번호(`BlogDirectory.categoriesOf`)에 속한 글을 **비공개 포함**, `visibility`는 정해진 값(`all`/`public`/`private`)만, `categoryId`는 내 블로그 것이 아니면 `CATEGORY_NOT_FOUND`(404), (작성 시각, 글 번호) 최신순, 한 쪽 `manage.page-size`, `hasAnyPost`(거르기 전 내 글이 있는지), 분류 이름은 `BlogDirectory`에서, 댓글 수는 **그 쪽의 글 번호로 한 번에** `PostCommentCounter`에 묻는다 (research B-2, FR-012 ~ FR-014, FR-017, FR-037)
-- [ ] T019 [P] [US2] `comment`가 T008에서 넓힌 틀을 채운다: `005` T020의 `BE/comment/service/CommentCounterAdapter.java`에 `countByPostIds` — 글 번호 목록의 댓글 수를 `GROUP BY` 쿼리 하나로 (FR-013)
-- [ ] T020 [US2] `BE/post/controller/ManagePostController.java`: `GET /api/manage/posts?visibility&categoryId&page`(`page`는 1부터). 응답은 contracts 3-1 그대로 (FR-012 ~ FR-014, FR-017) — T018, T019 다음
-- [ ] T021 [US2] `FE/manage/ManagePostsPage.tsx`(`/manage/posts`): 목록 한 줄(제목, 분류, 작성일, 공개 여부, 조회수, 댓글 수), 공개 여부·분류 고르기(주소의 쿼리에 남겨 새로고침해도 유지), 쪽 넘기기, `보기` → `/posts/:postId`, `수정` → `/write/:postId`, `삭제` → `<dialog>` "삭제하면 되돌릴 수 없습니다. 삭제할까요?", **취소하면 요청을 보내지 않음**, 확인하면 `003`의 `DELETE /api/posts/{postId}` 뒤 목록 다시 읽기, 목록 위 `글쓰기` → `/write`, 빈 상태 "아직 쓴 글이 없습니다"+글쓰기 버튼 / "글이 없습니다" (FR-015 ~ FR-017, SC-003)
+- [x] T018 [US2] `BE/post/service/ManagePostQueryService.java` + `PostRepository` 쿼리: 내 블로그 분류 번호(`BlogDirectory.categoriesOf`)에 속한 글을 **비공개 포함**, `visibility`는 정해진 값(`all`/`public`/`private`)만, `categoryId`는 내 블로그 것이 아니면 `CATEGORY_NOT_FOUND`(404), (작성 시각, 글 번호) 최신순, 한 쪽 `manage.page-size`, `hasAnyPost`(거르기 전 내 글이 있는지), 분류 이름은 `BlogDirectory`에서, 댓글 수는 **그 쪽의 글 번호로 한 번에** `PostCommentCounter`에 묻는다 (research B-2, FR-012 ~ FR-014, FR-017, FR-037)
+- [x] T019 [P] [US2] `comment`가 T008에서 넓힌 틀을 채운다: `005` T020의 `BE/comment/service/CommentCounterAdapter.java`에 `countByPostIds` — 글 번호 목록의 댓글 수를 `GROUP BY` 쿼리 하나로 (FR-013)
+- [x] T020 [US2] `BE/post/controller/ManagePostController.java`: `GET /api/manage/posts?visibility&categoryId&page`(`page`는 1부터). 응답은 contracts 3-1 그대로 (FR-012 ~ FR-014, FR-017) — T018, T019 다음
+- [x] T021 [US2] `FE/manage/ManagePostsPage.tsx`(`/manage/posts`): 목록 한 줄(제목, 분류, 작성일, 공개 여부, 조회수, 댓글 수), 공개 여부·분류 고르기(주소의 쿼리에 남겨 새로고침해도 유지), 쪽 넘기기, `보기` → `/posts/:postId`, `수정` → `/write/:postId`, `삭제` → `<dialog>` "삭제하면 되돌릴 수 없습니다. 삭제할까요?", **취소하면 요청을 보내지 않음**, 확인하면 `003`의 `DELETE /api/posts/{postId}` 뒤 목록 다시 읽기, 목록 위 `글쓰기` → `/write`, 빈 상태 "아직 쓴 글이 없습니다"+글쓰기 버튼 / "글이 없습니다" (FR-015 ~ FR-017, SC-003)
 
 **Checkpoint**: T017이 통과하고 S-2를 화면으로 확인한다. 삭제한 글의 댓글·글별 통계도 사라진다(`005`, T010) (PR 하나)
 
