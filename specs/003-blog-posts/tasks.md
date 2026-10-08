@@ -242,7 +242,7 @@ description: "003 블로그·분류·글 작업 목록"
   - **2026-10-08 정리함**: plan(버전·테스트·Redis·Constitution Check·FR-011/018/022/045·D-8), research(B-1 가입 이벤트, B-4, B-8 이벤트), data-model(1 탈퇴 때 실제 삭제, 3 `request_key` E-4·`content`, 6, 9 머리말), contracts(9·10 `requestKey`, `POST_ALREADY_SAVED` 추가, 11 마크다운, 8 `postCount` 칸 없음, 숫자 자리 글자 404/400), quickstart S-12의 4
 - [x] T052 [P] research B-10의 보안 헤더(Content-Security-Policy) 검토: 선택지와 추천을 research에 적고 사용자 확인을 받는다. 이미지 주소는 `005`와 함께 정한다
   - **2026-10-08**: research `D-9` — A(지금은 걸지 않고 배포 때 화면을 내려주는 곳에), 정책 초안 적음. 사용자 "추천대로"
-- [ ] T053 [P] quickstart S-12(제목·본문·이름의 `<script>`, `<img onerror>`, `javascript:` 링크, 마크다운 문법, SQL 같은 글자, CSRF, 이상한 JSON)를 화면에서 실행한다 (FR-045, SC-012)
+- [x] T053 [P] quickstart S-12(제목·본문·이름의 `<script>`, `<img onerror>`, `javascript:` 링크, 마크다운 문법, SQL 같은 글자, CSRF, 이상한 JSON)를 화면에서 실행한다 (FR-045, SC-012)
 - [x] T054 quickstart S-13: 한 블로그에 글 1,000개를 넣고 상세(이전·다음 포함)와 분류 목록이 2초 안인지 본다. 느리면 T003의 인덱스부터 확인한다 (NF-09)
   - **2026-10-08 (클라우드 세션, Docker PostgreSQL)**: 글 1,003개(비공개 200개 섞음). 상세(이전·다음 포함) 첫 요청 0.52초(서버 예열), 이후 0.03~0.04초. 분류 목록 0.03~0.09초. 이전 글 쿼리는 이 크기에서 순차 읽기 0.36ms라 인덱스가 아직 필요 없다
 - [ ] T055 SC-011(제안값 3분): **사람이** 글쓰기 화면을 열어 저장한 글의 상세를 볼 때까지 시간을 잰다 (S-2의 6)

@@ -259,8 +259,11 @@
 
 ## 구현 뒤에 채울 것
 
-- [ ] 서버 실행 방법과 테스트 실행 명령
-- [ ] 화면에서 확인하는 순서 (스크린샷 위치)
-- [ ] `D-1`이 정해진 뒤 S-12 (2 ~ 4)의 기대 결과 다시 확인
+- [x] 서버 실행 방법과 테스트 실행 명령 (2026-10-08)
+  - 코드 저장소 `home-blog/blog`에서 `docker compose up -d --wait` → `cd backend && mvn verify`(서버 테스트 전체, 실제 PostgreSQL) → 서버는 `mvn -DskipTests package` 뒤 `java -jar target/myblog-server-*.jar`(8080), 화면은 `cd frontend && npm ci && npx vite`(5173, `/api`는 8080으로 넘김)
+  - 시나리오별 서버 테스트: S-1 `BlogReadTest`, S-2·S-2a·S-3·S-4·S-12(6~9) `PostCreateTest`, S-5 `PostRequestKeyTest`, S-6·S-9(5·6)·S-9a(4) `PostReadTest`, S-7·S-2a(5·6) `PostEditTest`, S-8(7·8)·탈퇴 `PostDeleteTest`, S-9·S-9a `PostVisibilityTest`·`CategoryManageTest`, S-10 `CategoryManageTest`·`CategoryConcurrencyTest`, S-11 `BlogSettingsTest`
+- [x] 화면에서 확인하는 순서 (2026-10-08, Playwright로 실행. 스크린샷은 남기지 않음)
+  - 로그인 없이 `/blog/{id}`(비공개 분류 안 보임) → 로그인 → 머리글 `내 블로그` → `분류 관리`(추가·중복·글 있는 분류 삭제 거절·순서·이름·삭제) → `블로그 설정`(빈 이름 거절, 저장 뒤 블로그 화면에 반영) → `글쓰기`(빈 저장 두 칸 문구, 나가기 확인, 저장 세 번 연속 클릭에 요청 1개) → 글 상세(마크다운, 이전·다음) → `수정`(바뀐 것 없으면 저장 잠금, 비공개→공개 확인 창 취소 시 요청 없음) → `삭제`(확인 창 취소 시 요청 없음, 확인하면 내 블로그로) → 휴대폰 폭(390px)
+- [x] `D-1`이 정해진 뒤 S-12 (2 ~ 4)의 기대 결과 다시 확인 (2026-10-08, react-markdown): 본문의 `<script>`·`<img onerror>`는 글자로 보이고 경고창 0, `[a](javascript:…)`는 링크가 아닌 글자, 굵게·목록·표·코드·인용은 그려짐. 제목·블로그 이름·분류 이름의 HTML도 글자 그대로 (S-12의 1·5)
 - [ ] `005`(댓글, 좋아요, 태그, 이미지)가 만들어진 뒤 S-8을 실제 데이터로 다시 확인
 - [ ] `004`(목록, 검색)가 만들어진 뒤 S-9 (3, 4), S-9a (5)를 다시 확인
