@@ -11,13 +11,13 @@
 
 | 명세의 개념 | 저장 위치 | 이 기능이 하는 일 | 종류 |
 |---|---|---|---|
-| 블로그 | PostgreSQL `blog` | 이름·소개 수정, 새 댓글 기준 시각 | 팀 ERD에 있음 (⚠ 칸 추가 필요, `D-8`) |
+| 블로그 | PostgreSQL `blog` | 이름·소개 수정, 새 댓글 기준 시각 | 팀 ERD에 있음 (`comments_read_at`은 내 확장 E-6, V2에 있음, `D-8`) |
 | 글 | PostgreSQL `post` | 관리 목록, 누적 조회수 +1 | 팀 ERD에 있음 (규칙은 `003`) |
-| 분류 | PostgreSQL `category` | 순서, 색, 글 개수 | 팀 ERD에 있음 (⚠ 순서·색 칸 없음) |
-| 댓글 | PostgreSQL `comment` | 관리 목록, 새 댓글 수, 일별 댓글 수 | 팀 ERD에 있음 (규칙은 `005`, ⚠ 중복 불가 표시 확인) |
-| 일별 통계 | PostgreSQL `blog_daily_stat` | 블로그·날짜별 조회수, 방문자 | 팀 ERD에 있음 (⚠ 중복 불가 규칙 위치) |
-| 글별 일별 조회수 | PostgreSQL `post_daily_stat` | 인기 글의 최근 7일 | **ERD에 없음 ⚠** (`D-6`) |
-| "30분 안에 봤다", "오늘 왔다" 표시 | **정하지 않음** (Redis 가안, 헌법과 충돌) | 중복 세기 막기 | `D-1` |
+| 분류 | PostgreSQL `category` | 순서, 색, 글 개수 | 팀 ERD에 있음 (순서 칸은 팀 ERD 최신판, 색 칸은 내 확장 E-3. 둘 다 V2에 있음) |
+| 댓글 | PostgreSQL `comment` | 관리 목록, 새 댓글 수, 일별 댓글 수 | 팀 ERD에 있음 (규칙은 `005`. 중복 불가 표시는 최신판에서 지워짐) |
+| 일별 통계 | PostgreSQL `blog_daily_stat` | 블로그·날짜별 조회수, 방문자 | 팀 ERD에 있음 (중복 불가 규칙 위치는 최신판에서 정리됨) |
+| 글별 일별 조회수 | PostgreSQL `post_daily_stat` | 인기 글의 최근 7일 | **ERD에 없음** — 내 확장 E-5로 더한다 (`D-6` A, 아직 표는 만들지 않음) |
+| "30분 안에 봤다", "오늘 왔다" 표시 | **Redis** (`D-1` A, 헌법 1.1.0에서 허용) | 중복 세기 막기 | `D-1` |
 | 방문자 쿠키 | 브라우저 쿠키 | 비회원 같은 사람 구분 | `D-2` |
 
 ## 1. 이 기능이 지키는 시간 규칙 (FR-036)
@@ -35,7 +35,7 @@
 | `users_id` | BIGINT, NOT NULL, UNIQUE, `users` 참조 | **세션 회원 → 블로그**를 찾는 칸. UNIQUE라 회원 1명 = 블로그 1개 | FR-002, FR-003 |
 | `name` | VARCHAR(30), NOT NULL | 1~30자, 앞뒤 공백 제거는 서버가 검사 (`003`) | FR-039, FR-040 |
 | `intro` | VARCHAR(500), NULL | 0~200자는 서버가 검사. 칸이 넉넉한 것은 괜찮다 | FR-039 |
-| `comments_read_at` | **없음 ⚠** | TIMESTAMPTZ, NULL. **댓글 관리를 마지막으로 연 시각** (`D-8` 추천 A. B면 `users`에 둔다) | FR-027, FR-029 |
+| `comments_read_at` | TIMESTAMPTZ, NULL (내 확장 E-6, `V2__auth_tables.sql`에 이미 있음) | **댓글 관리를 마지막으로 연 시각** (`D-8` A) | FR-027, FR-029 |
 
 - ⚠ 참고: 상세/03 `구현 방식`은 "회원–블로그는 1:N 구조로 만들고 서버에서 1개까지로 제한"이라 적었고, ERD는 `users_id`가 UNIQUE(1:1)다. 이 기능은 어느 쪽이든 **세션 회원의 블로그**를 찾으면 되지만, 두 문서를 맞춰 달라고 팀에 알린다.
 
@@ -53,9 +53,9 @@
 - **인덱스 (제안)**: 글 관리 목록과 최근 글을 빨리 읽도록 `(category_id, created_at)`. 정확한 모양은 `003`·`004` plan과 함께 정한다.
 - **댓글 수**는 칸으로 두지 않고 센다. (research B-2)
 
-## 4. 글별 일별 조회수 — `post_daily_stat` (**ERD에 없음 ⚠**, `D-6`)
+## 4. 글별 일별 조회수 — `post_daily_stat` (**ERD에 없음**, 내 확장 E-5, `D-6`)
 
-`D-6`에서 A 또는 B를 고를 때만 만든다.
+`D-6`이 A로 정해져서 만든다(2026-10-07). 팀에 요청하지 않고 내 확장 E-5로 더한다(2026-10-08 정리). 아직 코드 저장소에 표는 없다.
 
 | 칸 (가안) | 모양 | 뜻 |
 |---|---|---|
@@ -72,10 +72,10 @@
 |---|---|---|---|
 | `category_id` | BIGINT, 기본키 | — | — |
 | `blog_id` | BIGINT, `blog` 참조 | **내 블로그의 분류만** 다룬다 | FR-003, FR-019 |
-| `name` | VARCHAR(20), `UNIQUE(blog_id, name)` | 1~20자, 대소문자 무시 중복 불가(`003`). ERD의 UNIQUE는 대소문자를 구분하므로 `001`의 D-4와 같은 문제가 있다 → `003` plan에서 다룬다 | FR-019, FR-022 |
+| `name` | VARCHAR(20), `UNIQUE(blog_id, name)` | 1~20자, 대소문자 무시 중복 불가(`003`). ERD의 UNIQUE는 대소문자를 구분하므로, 내 확장 E-3으로 소문자 비교 인덱스(`uq_category_blog_name`)를 `V2__auth_tables.sql`에 이미 만들었다 | FR-019, FR-022 |
 | `is_default` | BOOLEAN | `미분류` 표시. 삭제 불가 | FR-019 |
-| `sort_order` | **없음 ⚠** | INTEGER, NOT NULL. 작을수록 위. 새 분류는 가장 큰 값 + 1 (상세/06 가안 "분류 표에 순서 칸") | FR-018, FR-019 |
-| `color_index` | **없음 ⚠** | SMALLINT, NOT NULL. 정해진 색 목록의 몇 번째 색 (`D-9` 추천 A) | FR-020 |
+| `sort_order` | INTEGER, NOT NULL (팀 ERD 최신판에 있음, `V2__auth_tables.sql`에 이미 있음) | 작을수록 위. 새 분류는 가장 큰 값 + 1 (상세/06 가안 "분류 표에 순서 칸") | FR-018, FR-019 |
+| `color_index` | SMALLINT, NOT NULL, 기본 0 (내 확장 E-3, `V2__auth_tables.sql`에 이미 있음) | 정해진 색 목록의 몇 번째 색 (`D-9` A. 색 목록은 미정) | FR-020 |
 | `visibility` | VARCHAR(10), NOT NULL, 기본 `public` | **쓴다** (2026-10-07). 분류 관리에서 `public` / `private`를 바꾸고, 비공개 분류에 "비공개" 표시. 보이는 규칙은 `003` (CF-08-10, `003` research D-5) | FR-042 |
 | `intro` | ERD에 있음 | 이 명세는 쓰지 않는다 (분류 소개는 요구사항에 없음) | — |
 
@@ -93,7 +93,7 @@
 
 | 칸 | 팀 ERD의 지금 모양 | 이 기능에서 | 관련 FR |
 |---|---|---|---|
-| `blog_stat_id` | BIGINT, 기본키. 설명에 `UNIQUE(blog_id, stat_date)` | ⚠ 중복 불가 규칙을 **`(blog_id, stat_date)` 두 칸에** 걸어야 한다(설명이 기본키 칸에 붙어 있음). 자동 증가 표시도 없다 | — |
+| `blog_stat_id` | BIGINT, 기본키. 설명에 `UNIQUE(blog_id, stat_date)` | 중복 불가 규칙을 **`(blog_id, stat_date)` 두 칸에** 건다. 예전 판은 설명이 기본키 칸에 붙어 있었지만 팀 ERD 최신판에서 위치가 정리됐다(`ERD-변경-요청.md` 0절). 자동 증가 표시는 구현 때 확인 | — |
 | `blog_id` | BIGINT, `blog` 참조 | 어느 블로그 | FR-006, FR-007 |
 | `stat_date` | DATE | **한국 날짜** (1번 규칙) | FR-036 |
 | `views` | INTEGER, NOT NULL | 그날 블로그 전체 조회수 | FR-006, FR-007, FR-032 |
@@ -124,7 +124,7 @@
 | 칸 | 팀 ERD | 이 기능에서 | 관련 FR |
 |---|---|---|---|
 | `comment_id` | BIGINT, 기본키 | 같은 시각이면 큰 번호 먼저 | FR-023 |
-| `users_id` | BIGINT, `users` 참조. 설명에 `UNIQUE(users_id, post_id)` | 작성자. **블로그 주인이 쓴 것은 새 댓글에서 뺀다.** ⚠ 이 UNIQUE대로면 한 회원이 한 글에 댓글을 하나만 쓸 수 있다 → 팀 확인 (research R-6) | FR-024, FR-027 |
+| `users_id` | BIGINT, `users` 참조. 설명에 `UNIQUE(users_id, post_id)` | 작성자. **블로그 주인이 쓴 것은 새 댓글에서 뺀다.** 예전 판의 이 UNIQUE는 팀 ERD 최신판에서 이미 지워졌다 (research R-6, `005` D-7) | FR-024, FR-027 |
 | `post_id` | BIGINT, `post` 참조 | 내 블로그 글 = `post → category → blog` | FR-023 |
 | `body` | VARCHAR(500) | 앞 50자를 서버가 잘라 준다(글자 수 기준) | FR-024 |
 | `created_at` | TIMESTAMPTZ | 최신순, 새 댓글 비교, 일별 묶기 | FR-023, FR-027, FR-032 |
@@ -148,9 +148,9 @@
 comments_read_at이 비어 있음 ─▶ 남이 쓴 모든 댓글이 새 댓글
 ```
 
-## 8. 중복 세기를 막는 표시 (`D-1`이 정해지기 전에는 만들지 않음)
+## 8. 중복 세기를 막는 표시 (Redis, `D-1` A)
 
-> 아래는 `D-1`에서 **A(Redis)** 를 고를 때의 모양입니다. B(PostgreSQL)를 고르면 같은 뜻의 표를 ERD에 요청합니다. 키 이름은 `가안`입니다.
+> `D-1`은 2026-10-07에 **A(Redis)** 로 정했고 헌법을 1.1.0으로 개정했습니다. 아래는 그 모양입니다. 키 이름은 `가안`입니다.
 
 | 키 (가안) | 값 | 만료 | 만드는 때 | FR |
 |---|---|---|---|---|
@@ -186,23 +186,23 @@ comments_read_at이 비어 있음 ─▶ 남이 쓴 모든 댓글이 새 댓글
 
 | 표 / 저장소 | 읽기 | 쓰기 | 언제 |
 |---|---|---|---|
-| `blog` | 세션 회원의 블로그, 이름·소개, 기준 시각 | 이름·소개, `comments_read_at` ⚠ | 모든 관리 요청, 설정 저장, 댓글 관리 열기 |
+| `blog` | 세션 회원의 블로그, 이름·소개, 기준 시각 | 이름·소개, `comments_read_at` (E-6) | 모든 관리 요청, 설정 저장, 댓글 관리 열기 |
 | `category` | 순서·색·글 개수 | 추가·이름·순서·삭제 (`003` 규칙) | 분류 관리 |
 | `post` | 관리 목록, 최근 글 | `views +1` | 글 관리, 대시보드, 글 상세 |
 | `comment`, `users` | 관리 목록, 새 댓글 수, 일별 댓글 수, 탈퇴 여부 | (삭제는 `005`) | 댓글 관리, 대시보드, 통계 |
 | `blog_daily_stat` | 오늘·어제·누적·기간 | 없으면 만들고 `+1` | 대시보드, 통계, 글 상세 |
-| `post_daily_stat` ⚠ | 최근 7일 인기 글 | 없으면 만들고 `+1` | 대시보드, 글 상세 (`D-6`) |
-| 표시 저장소 (`D-1`) | 30분·오늘 표시 확인 | 표시 만들기 | 글 상세 (`D-5`에 따라 블로그 화면) |
+| `post_daily_stat` (E-5) | 최근 7일 인기 글 | 없으면 만들고 `+1` | 대시보드, 글 상세 (`D-6`) |
+| 표시 저장소 (Redis, `D-1` A) | 30분·오늘 표시 확인 | 표시 만들기 | 글 상세 (`D-5`에 따라 블로그 화면) |
 
 ## 11. 팀에 요청할 ERD 변경 (⚠ 모음)
 
 | # | 표 | 요청 | 근거 | 조건 |
 |---|---|---|---|---|
-| 1 | `category` | `sort_order` 칸 추가 | FR-018, FR-019, 상세/06 가안 | 항상 |
-| 2 | `category` | `color_index` 칸 추가 | FR-020 | `D-9` A일 때 |
-| 3 | `blog` (또는 `users`) | `comments_read_at` 칸 추가 | FR-027 ~ 029 | `D-8` |
-| 4 | 새 표 `post_daily_stat` | 글·날짜별 조회수 | FR-008 | `D-6` A/B일 때 |
-| 5 | `blog_daily_stat` | `(blog_id, stat_date)` 중복 불가를 두 칸에, 기본키 자동 증가 표시 | research R-3 | 항상 |
-| 6 | `comment` | `UNIQUE(users_id, post_id)` 표시가 맞는지 확인 | research R-6, `005` | 확인 |
+| 1 | `category` | ~~`sort_order` 칸 추가~~ → 팀 ERD 최신판에 이미 있음 (끝남) | FR-018, FR-019, 상세/06 가안 | — |
+| 2 | `category` | `color_index` 칸 추가 → 팀에 요청하지 않고 내 확장 E-3으로 V2에 더함 | FR-020 | `D-9` A |
+| 3 | `blog` | `comments_read_at` 칸 추가 → 팀에 요청하지 않고 내 확장 E-6으로 V2에 더함 | FR-027 ~ 029 | `D-8` A |
+| 4 | 새 표 `post_daily_stat` | 글·날짜별 조회수 → 팀에 요청하지 않고 내 확장 E-5로 더한다 (아직 안 만듦) | FR-008 | `D-6` A |
+| 5 | `blog_daily_stat` | `(blog_id, stat_date)` 중복 불가 위치는 팀 ERD 최신판에서 정리됨. 기본키 자동 증가 표시만 구현 때 확인 | research R-3 | 확인 |
+| 6 | `comment` | ~~`UNIQUE(users_id, post_id)` 표시 확인~~ → 팀 ERD 최신판에서 지워짐 (끝남) | research R-6, `005` D-7 | — |
 | 7 | `blog` | 상세/03의 "1:N"과 ERD의 UNIQUE(1:1) 중 하나로 맞추기 | 2번 표 참고 | 확인 |
-| 8 | 표시 표 | 30분·오늘 표시를 PostgreSQL에 둘 때의 표 | FR-033, FR-034 | `D-1` B일 때만 |
+| 8 | 표시 표 | 필요 없음 (`D-1`이 A(Redis)로 정해짐) | FR-033, FR-034 | — |
