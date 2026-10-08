@@ -9,7 +9,7 @@ description: "003 블로그·분류·글 작업 목록"
 
 **Prerequisites**: [plan.md](plan.md), [spec.md](spec.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/blog-post-api.md](contracts/blog-post-api.md), [quickstart.md](quickstart.md)
 
-**결정 반영 (2026-10-08)**: research의 `D-1 ~ D-7`이 모두 정해졌다 (`D-2`는 2026-10-08). 이 목록은 그 결정을 따른다. 남은 `미정`은 마크다운 표시 도구의 이름 하나다 (T025, 헌법 II).
+**결정 반영 (2026-10-08)**: research의 `D-1 ~ D-7`이 모두 정해졌다 (`D-2`는 2026-10-08). 이 목록은 그 결정을 따른다. 마크다운 표시 도구도 2026-10-08에 정해졌다 (research D-8, T025).
 
 | ID | 결정 | 상태 | 이 목록에서 |
 |---|---|---|---|
@@ -20,7 +20,7 @@ description: "003 블로그·분류·글 작업 목록"
 | D-5 | `sort_order` 그대로, 이름은 소문자 비교로 중복 불가(`V2`의 `uq_category_blog_name`), `category.visibility` 사용 | 결정됨 | T010, T014, T043, T044 |
 | D-6 | 화면이 만든 1회용 요청 번호를 `post.request_key`(E-4)에 저장해 한 번만 만든다 | 결정됨 | T003, T018, T022, T024 |
 | D-7 | 글을 지우면 그 글·댓글의 신고 기록도 함께 지운다 (`005`가 듣는 쪽을 만든다) | 결정됨 | T032 |
-| (도구) | D-1을 지키는 **마크다운 표시 도구의 이름**은 plan `Technical Context`에서 아직 정하지 않았다 | **미정** | T025 |
+| D-8 | D-1을 지키는 마크다운 표시 도구: **react-markdown + remark-gfm** | 결정됨 (2026-10-08) | T025, T029 |
 
 **Tests**: `001`·`002`처럼 **사용자 이야기마다 서버 테스트 작업**을 넣었다 (`@SpringBootTest` + MockMvc + `springSecurity()`, 실제 PostgreSQL). 테스트 이름에는 [quickstart.md](quickstart.md)의 시나리오 번호를 붙인다. 화면에는 테스트 도구가 없어서(`frontend/package.json`) 각 단계 끝의 `Checkpoint`에서 손으로(또는 Playwright로) 확인한다.
 
@@ -59,12 +59,14 @@ description: "003 블로그·분류·글 작업 목록"
 
 ---
 
+> **진행 (2026-10-08)**: 바탕 + US1 = 코드 PR #20 (merge). US2 = PR #21. US3 이후는 이어서. T011의 글 요청 함수(`postApi.ts`)와 `rules.ts`는 US2에서, T012의 `/write`·`/posts/:postId` 주소는 US2·US3에서 더했다. T012의 `useUnsavedChangesPrompt`를 `components/`로 옮기는 것은 하지 않았다(`002` 화면들이 같은 파일을 쓰고 있어, 옮기면 얻는 것보다 바꿀 곳이 많다). 머리글의 `내 블로그`는 `/me/blog`(내 블로그 번호를 물어 이동)로 만들었다.
+
 ## Phase 1: Setup (공통 준비)
 
 **Purpose**: 새 프로젝트 준비는 없다 (`001`에서 끝남). 확인만 한다
 
-- [ ] T001 시작 전 확인: `002` US2가 `main`에 merge되어 있고 CI가 통과하는지 본다. T036은 `002` US3의 `BlogClosingEvent`(`002` T032)가 merge된 뒤에 한다. US마다 브랜치를 만든다 (`feat/003-us1-blog`, `feat/003-us2-write`, … 가안)
-- [ ] T002 D-2 결정(2026-10-08, A + 공백만 있으면 비어 있음)이 research D-2·E, plan, spec Assumptions에 반영됐는지 확인한다 (커밋 `a954069`). 남은 문서 정리는 T051
+- [x] T001 시작 전 확인: `002` US2가 `main`에 merge되어 있고 CI가 통과하는지 본다. T036은 `002` US3의 `BlogClosingEvent`(`002` T032)가 merge된 뒤에 한다. US마다 브랜치를 만든다 (`feat/003-us1-blog`, `feat/003-us2-write`, … 가안)
+- [x] T002 D-2 결정(2026-10-08, A + 공백만 있으면 비어 있음)이 research D-2·E, plan, spec Assumptions에 반영됐는지 확인한다 (커밋 `a954069`). 남은 문서 정리는 T051
 
 ---
 
@@ -74,14 +76,14 @@ description: "003 블로그·분류·글 작업 목록"
 
 **⚠️ CRITICAL**: 이 단계가 끝나기 전에는 사용자 이야기 작업을 시작하지 않는다
 
-- [ ] T003 [P] Flyway `BE-RES/db/migration/V3__blog_posts.sql`: ① `topic` 표(칸은 Crowfoot `myblog-제안`(666)의 DDL과 같게) + 주제 5줄(여행, 음식, 취미, 운동, 개발, `sort_order` 1 ~ 5) ② `post` 표: 팀 ERD 칸(`category_id` → `category`, `topic_id` → `topic` 외래 키, **연쇄 삭제 없음**, `title` VARCHAR(100), `content` TEXT, `visibility` 기본 `public`, `views` 기본 0, `created_at` NOT NULL, `updated_at` NULL) + T-2(`content` 기본값 없음) + T-3(`ck_post_visibility`) + E-4(`request_key` VARCHAR(36) NULL `UNIQUE`) ③ 인덱스 `post (category_id, created_at, post_id)` (data-model 3 추천, 가안). 맨 위 주석에 T·E 번호를 적는다 (`V2`처럼) (FR-018, FR-028, FR-034, FR-046, SC-005)
-- [ ] T004 `post` 모듈 뼈대 — T003 다음: `BE/post/package-info.java`(`@ApplicationModule(displayName = "글", allowedDependencies = {"blog", "user", "common"})`), `BE/post/domain/Post.java`, `BE/post/domain/Topic.java`(읽기만), `BE/post/repository/PostRepository.java`, `TopicRepository.java`. `Post.createdAt`은 `@CreatedDate`, **`updatedAt`에는 `@LastModifiedDate`를 쓰지 않는다**(research R-2: 서비스가 바뀌었을 때만 직접 넣는다). `ddl-auto: validate`로 `V3`와 맞는지 확인한다
-- [ ] T005 [P] 설정값 묶음 (plan `설정값 목록`, 헌법 VI): `BE/blog/config/BlogProperties.java`(`blog.name` 1/30, `blog.intro` 0/200), `BE/blog/config/CategoryProperties.java`(`category.name` 1/20), `BE/post/config/PostProperties.java`(`post.title` 1/100, `post.content` 1/10000)를 `AccountProperties`처럼 record로 만들고 `BE-RES/application.yml`에 더한다. 최대값이 DB 칸(`blog.name` 30, `blog.intro` 500, `category.name` 20, `post.title` 100)보다 크면 서버가 켜지지 않게 한다
-- [ ] T006 [P] `BE/common/error/ErrorCode.java`에 이 기능의 오류를 더한다 (contracts 문구 그대로, `※`는 제안 문구): `POST_NOT_FOUND`(404 "존재하지 않는 글입니다"), `BLOG_NOT_FOUND`(404), `CATEGORY_NOT_FOUND`(404), `INVALID_CATEGORY`(400), `CATEGORY_NAME_DUPLICATED`(409 "이미 있는 분류입니다"), `DEFAULT_CATEGORY_NOT_DELETABLE`(409), `CATEGORY_HAS_POSTS`(409, `{N}`은 서비스가 채움), `INVALID_CATEGORY_ORDER`(400), 칸별 `TITLE_REQUIRED`("제목을 입력해 주세요"), `TITLE_TOO_LONG`, `CONTENT_REQUIRED`("본문을 입력해 주세요"), `CONTENT_TOO_LONG`, `CATEGORY_REQUIRED`, `TOPIC_REQUIRED`("주제를 골라 주세요"), `VISIBILITY_INVALID`, `BLOG_NAME_REQUIRED`, `BLOG_NAME_TOO_LONG`, `BLOG_INTRO_TOO_LONG`, `CATEGORY_NAME_REQUIRED`, `CATEGORY_NAME_TOO_LONG` (FR-016, FR-026, FR-036, FR-040, FR-042, FR-046)
-- [ ] T007 [P] **로그인한 회원 번호를 다른 모듈에 알려 주는 틀** `BE/user/LoggedInMember.java`(`user` 맨 위, 가안): `Optional<Long> idOf(Authentication)`(읽기 주소용, 로그인 안 했으면 비움), `Long requireIdOf(Authentication)`(없거나 탈퇴했으면 `401 UNAUTHENTICATED`). `user` 안쪽에서 `CurrentMemberService`로 채운다(DB 다시 확인). `blog`·`post` 컨트롤러는 `MemberPrincipal`을 쓰지 않고 이것만 쓴다 (FR-008, FR-044, `002` research B-1)
-- [ ] T008 `BE/user/config/SecurityConfig.java`: 누구나 읽는 주소 `GET /api/blogs/**`, `GET /api/posts/{postId}`(숫자만, `/edit`는 빼고)를 `permitAll`에 더한다. 나머지(`/api/me/**`, 변경 요청)는 지금처럼 `anyRequest().authenticated()` → `401` (contracts 공통, FR-008)
-- [ ] T009 `blog` 모듈의 입구 (맨 위 패키지, 가안): ① `BE/blog/BlogDirectory.java` — `post`가 묻는 것: `myBlog(memberId)`, `category(categoryId)` → `CategoryInfo(categoryId, blogId, ownerId, blogName, name, visibility, isDefault)`, `categoriesOf(blogId)`, `publicCategoryIds(blogId)`. 채우기는 `BE/blog/service/BlogDirectoryAdapter.java` ② `BE/blog/CategoryPostCounter.java` — `blog`가 묻고 `post`가 채우는 틀: `countAll(categoryId)`(비공개 포함), `countVisible(categoryIds)`(공개 글만) (FR-034, FR-040, FR-043, research B-2)
-- [ ] T010 **"보이는 글" 조건을 한곳에** — T004, T009 다음: `BE/post/service/PostVisibility.java`(research B-3): 주인이면 모두, 아니면 `post.visibility = 'public'` **그리고** `category.visibility = 'public'`. 상세·분류 개수·이전/다음이 모두 이것을 쓴다(`004` 목록·검색도). `BE/post/service/CategoryPostCounterAdapter.java`가 T009의 틀을 이 조건으로 채운다 (FR-026, FR-030, FR-031, FR-043, FR-048, SC-002)
+- [x] T003 [P] Flyway `BE-RES/db/migration/V3__blog_posts.sql`: ① `topic` 표(칸은 Crowfoot `myblog-제안`(666)의 DDL과 같게) + 주제 5줄(여행, 음식, 취미, 운동, 개발, `sort_order` 1 ~ 5) ② `post` 표: 팀 ERD 칸(`category_id` → `category`, `topic_id` → `topic` 외래 키, **연쇄 삭제 없음**, `title` VARCHAR(100), `content` TEXT, `visibility` 기본 `public`, `views` 기본 0, `created_at` NOT NULL, `updated_at` NULL) + T-2(`content` 기본값 없음) + T-3(`ck_post_visibility`) + E-4(`request_key` VARCHAR(36) NULL `UNIQUE`) ③ 인덱스 `post (category_id, created_at, post_id)` (data-model 3 추천, 가안). 맨 위 주석에 T·E 번호를 적는다 (`V2`처럼) (FR-018, FR-028, FR-034, FR-046, SC-005)
+- [x] T004 `post` 모듈 뼈대 — T003 다음: `BE/post/package-info.java`(`@ApplicationModule(displayName = "글", allowedDependencies = {"blog", "user", "common"})`), `BE/post/domain/Post.java`, `BE/post/domain/Topic.java`(읽기만), `BE/post/repository/PostRepository.java`, `TopicRepository.java`. `Post.createdAt`은 `@CreatedDate`, **`updatedAt`에는 `@LastModifiedDate`를 쓰지 않는다**(research R-2: 서비스가 바뀌었을 때만 직접 넣는다). `ddl-auto: validate`로 `V3`와 맞는지 확인한다
+- [x] T005 [P] 설정값 묶음 (plan `설정값 목록`, 헌법 VI): `BE/blog/config/BlogProperties.java`(`blog.name` 1/30, `blog.intro` 0/200), `BE/blog/config/CategoryProperties.java`(`category.name` 1/20), `BE/post/config/PostProperties.java`(`post.title` 1/100, `post.content` 1/10000)를 `AccountProperties`처럼 record로 만들고 `BE-RES/application.yml`에 더한다. 최대값이 DB 칸(`blog.name` 30, `blog.intro` 500, `category.name` 20, `post.title` 100)보다 크면 서버가 켜지지 않게 한다
+- [x] T006 [P] `BE/common/error/ErrorCode.java`에 이 기능의 오류를 더한다 (contracts 문구 그대로, `※`는 제안 문구): `POST_NOT_FOUND`(404 "존재하지 않는 글입니다"), `BLOG_NOT_FOUND`(404), `CATEGORY_NOT_FOUND`(404), `INVALID_CATEGORY`(400), `CATEGORY_NAME_DUPLICATED`(409 "이미 있는 분류입니다"), `DEFAULT_CATEGORY_NOT_DELETABLE`(409), `CATEGORY_HAS_POSTS`(409, `{N}`은 서비스가 채움), `INVALID_CATEGORY_ORDER`(400), 칸별 `TITLE_REQUIRED`("제목을 입력해 주세요"), `TITLE_TOO_LONG`, `CONTENT_REQUIRED`("본문을 입력해 주세요"), `CONTENT_TOO_LONG`, `CATEGORY_REQUIRED`, `TOPIC_REQUIRED`("주제를 골라 주세요"), `VISIBILITY_INVALID`, `BLOG_NAME_REQUIRED`, `BLOG_NAME_TOO_LONG`, `BLOG_INTRO_TOO_LONG`, `CATEGORY_NAME_REQUIRED`, `CATEGORY_NAME_TOO_LONG` (FR-016, FR-026, FR-036, FR-040, FR-042, FR-046)
+- [x] T007 [P] **로그인한 회원 번호를 다른 모듈에 알려 주는 틀** `BE/user/LoggedInMember.java`(`user` 맨 위, 가안): `Optional<Long> idOf(Authentication)`(읽기 주소용, 로그인 안 했으면 비움), `Long requireIdOf(Authentication)`(없거나 탈퇴했으면 `401 UNAUTHENTICATED`). `user` 안쪽에서 `CurrentMemberService`로 채운다(DB 다시 확인). `blog`·`post` 컨트롤러는 `MemberPrincipal`을 쓰지 않고 이것만 쓴다 (FR-008, FR-044, `002` research B-1)
+- [x] T008 `BE/user/config/SecurityConfig.java`: 누구나 읽는 주소 `GET /api/blogs/**`, `GET /api/posts/{postId}`(숫자만, `/edit`는 빼고)를 `permitAll`에 더한다. 나머지(`/api/me/**`, 변경 요청)는 지금처럼 `anyRequest().authenticated()` → `401` (contracts 공통, FR-008)
+- [x] T009 `blog` 모듈의 입구 (맨 위 패키지, 가안): ① `BE/blog/BlogDirectory.java` — `post`가 묻는 것: `myBlog(memberId)`, `category(categoryId)` → `CategoryInfo(categoryId, blogId, ownerId, blogName, name, visibility, isDefault)`, `categoriesOf(blogId)`, `publicCategoryIds(blogId)`. 채우기는 `BE/blog/service/BlogDirectoryAdapter.java` ② `BE/blog/CategoryPostCounter.java` — `blog`가 묻고 `post`가 채우는 틀: `countAll(categoryId)`(비공개 포함), `countVisible(categoryIds)`(공개 글만) (FR-034, FR-040, FR-043, research B-2)
+- [x] T010 **"보이는 글" 조건을 한곳에** — T004, T009 다음: `BE/post/service/PostVisibility.java`(research B-3): 주인이면 모두, 아니면 `post.visibility = 'public'` **그리고** `category.visibility = 'public'`. 상세·분류 개수·이전/다음이 모두 이것을 쓴다(`004` 목록·검색도). `BE/post/service/CategoryPostCounterAdapter.java`가 T009의 틀을 이 조건으로 채운다 (FR-026, FR-030, FR-031, FR-043, FR-048, SC-002)
 - [ ] T011 [P] 화면 요청 함수와 규칙: `FE/blog/blogApi.ts`(contracts 1 ~ 8), `FE/post/postApi.ts`(contracts 9 ~ 14), 응답 타입은 contracts 그대로. `FE/post/rules.ts`에 글자 수와 문구(서버 설정·contracts와 같게)
 - [ ] T012 [P] 화면 주소(가안) `FE/App.tsx`: `/blog/:blogId`(블로그), `/posts/:postId`(글 상세), `<RequireLogin>`으로 `/write`(새 글), `/write/:postId`(수정), `/manage/blog`(이름·소개), `/manage/categories`(분류). `FE/components/SiteHeader.tsx`에 `글쓰기`, `내 블로그` 링크. `FE/account/useUnsavedChangesPrompt.ts`를 `FE/components/`로 옮겨 같이 쓴다 (FR-008, FR-017)
 
@@ -97,13 +99,13 @@ description: "003 블로그·분류·글 작업 목록"
 
 ### Tests for User Story 1
 
-- [ ] T013 [P] [US1] `BE-TEST/blog/controller/BlogReadTest.java`: S-1의 2·3(`GET /api/me/blog` 이름·빈 소개, 분류는 `미분류` 하나·`isDefault` 참), S-1의 5(같은 회원으로 블로그를 하나 더 저장하면 `uk_blog_users_id`가 거절, D-4), `GET /api/blogs/999999` → `404 BLOG_NOT_FOUND`, 로그인하지 않고 `GET /api/blogs/{id}`·`…/categories` 성공. S-1의 1·4·6(가입 묶음, 실패하면 모두 취소)은 `SignupFlowTest`에 이미 있으면 다시 쓰지 않는다 (FR-001 ~ FR-003, SC-001)
+- [x] T013 [P] [US1] `BE-TEST/blog/controller/BlogReadTest.java`: S-1의 2·3(`GET /api/me/blog` 이름·빈 소개, 분류는 `미분류` 하나·`isDefault` 참), S-1의 5(같은 회원으로 블로그를 하나 더 저장하면 `uk_blog_users_id`가 거절, D-4), `GET /api/blogs/999999` → `404 BLOG_NOT_FOUND`, 로그인하지 않고 `GET /api/blogs/{id}`·`…/categories` 성공. S-1의 1·4·6(가입 묶음, 실패하면 모두 취소)은 `SignupFlowTest`에 이미 있으면 다시 쓰지 않는다 (FR-001 ~ FR-003, SC-001)
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] `BE/blog/service/BlogQueryService.java`: `myBlog(memberId)`, `blog(blogId, viewerId)`(`isOwner`), `categories(blogId, viewerId)` — `sort_order`, 같으면 `category_id` 순서. 주인이 아니면 **비공개 분류를 빼고**, 글 개수는 `CategoryPostCounter`로 주인이면 비공개 포함·아니면 공개 글만. 이름은 요청마다 표에서 읽는다(캐시 없음) (contracts 1 ~ 3, FR-038, FR-039, FR-043, FR-048, SC-010)
-- [ ] T015 [US1] `BE/blog/controller/BlogController.java`: `GET /api/me/blog`, `GET /api/blogs/{blogId}`, `GET /api/blogs/{blogId}/categories`. 회원은 T007의 `LoggedInMember`로만 정한다 (FR-001, FR-006)
-- [ ] T016 [US1] 블로그 화면 `FE/pages/BlogHomePage.tsx` + `blog.css`(원고지 토큰): 이름, 소개, 분류 목록과 글 개수, 주인에게만 비공개 분류에 "비공개" 표시와 `블로그 설정` 버튼. 글 목록 자리는 `004`가 채운다. 마이페이지의 `/blog/{id}` 링크가 여기로 온다
+- [x] T014 [US1] `BE/blog/service/BlogQueryService.java`: `myBlog(memberId)`, `blog(blogId, viewerId)`(`isOwner`), `categories(blogId, viewerId)` — `sort_order`, 같으면 `category_id` 순서. 주인이 아니면 **비공개 분류를 빼고**, 글 개수는 `CategoryPostCounter`로 주인이면 비공개 포함·아니면 공개 글만. 이름은 요청마다 표에서 읽는다(캐시 없음) (contracts 1 ~ 3, FR-038, FR-039, FR-043, FR-048, SC-010)
+- [x] T015 [US1] `BE/blog/controller/BlogController.java`: `GET /api/me/blog`, `GET /api/blogs/{blogId}`, `GET /api/blogs/{blogId}/categories`. 회원은 T007의 `LoggedInMember`로만 정한다 (FR-001, FR-006)
+- [x] T016 [US1] 블로그 화면 `FE/pages/BlogHomePage.tsx` + `blog.css`(원고지 토큰): 이름, 소개, 분류 목록과 글 개수, 주인에게만 비공개 분류에 "비공개" 표시와 `블로그 설정` 버튼. 글 목록 자리는 `004`가 채운다. 마이페이지의 `/blog/{id}` 링크가 여기로 온다
 
 **Checkpoint**: T013이 통과하고 S-1을 화면으로 확인한다 (PR 하나)
 
@@ -141,7 +143,7 @@ description: "003 블로그·분류·글 작업 목록"
 
 > 상세 화면은 D-1(결정됨)을 지키는 **도구가 정해진 뒤에** 마크다운을 그린다. 그 전에는 원문 글자 그대로 보여 준다 (plan Constitution Check IV).
 
-- [ ] T025 [US3] **마크다운 표시 도구 고르기 (미정)**: D-1의 A(마크다운만 그림, HTML은 글자 그대로, 위험한 링크 차단)를 지키는 화면 도구 후보를 research에 새 `D-항목`으로 적는다 — 선택지, 쉬운 설명, 장단점, 추천, "HTML을 그리지 않는 설정·링크 주소 거르기가 기본인지". 사용자가 고르면 plan `Technical Context`의 `주요 도구` 줄을 고친다
+- [x] T025 [US3] **마크다운 표시 도구 고르기 (미정)**: D-1의 A(마크다운만 그림, HTML은 글자 그대로, 위험한 링크 차단)를 지키는 화면 도구 후보를 research에 새 `D-항목`으로 적는다 — 선택지, 쉬운 설명, 장단점, 추천, "HTML을 그리지 않는 설정·링크 주소 거르기가 기본인지". 사용자가 고르면 plan `Technical Context`의 `주요 도구` 줄을 고친다
 
 ### Tests for User Story 3
 

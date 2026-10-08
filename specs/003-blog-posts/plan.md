@@ -53,7 +53,7 @@
 | 통신 | REST API (JSON). [contracts/blog-post-api.md](contracts/blog-post-api.md) | 가안 |
 | 로그인 확인 | 서버 세션(쿠키). `001`의 방식을 그대로 쓴다 | 확정 (`001`) |
 | 글 편집기 | **마크다운 + 이미지 업로드** (기술스택-아키텍처 5장). 마크다운을 그리는 방식과 "글자만" 규칙의 관계는 `D-1` | 편집기 확정 / 그리는 방식 `미정` |
-| 주요 도구 | Spring Security, Bean Validation, JPA, 마크다운 표시 도구(화면, 이름은 `D-1`이 정해진 뒤) | 가안 |
+| 주요 도구 | Spring Security, Bean Validation, JPA, 마크다운 표시는 화면의 **react-markdown + remark-gfm** (research D-8, 2026-10-08 결정) | 가안 (마크다운 도구 확정) |
 | 저장소 | PostgreSQL (`blog`, `category`, `post`, 그리고 글 삭제 때 `comment`, `post_like`, `post_tag`, `post_image` 등) | 가안 |
 | 이미지 | 업로드와 저장 위치는 `005`의 일이다. 이 기능은 **글을 지울 때 함께 지운다**는 것만 책임진다 | 저장 위치 `미정` (상세/07) |
 | Redis | **쓰지 않는다** (연속 저장 방지도 Redis에 두지 않는다, `D-6`) | 확정 (헌법) |
