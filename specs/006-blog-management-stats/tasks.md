@@ -153,13 +153,13 @@ description: "006 블로그 관리와 통계 작업 목록"
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] `BE-TEST/blog/controller/CategoryColorTest.java`: 분류 목록·추가·고치기 응답에 `colorIndex`가 있다, 순서를 바꿔도 각 분류의 `colorIndex`가 그대로다(S-3의 4), 주인이 보는 글 개수는 비공개 글 포함(S-3a의 1), 회원 B의 요청은 A의 분류를 바꾸지 못한다(S-3a의 5, `404`). 나머지 S-3 줄은 `003` T041 `CategoryManageTest`가 덮으므로 다시 쓰지 않는다 (FR-018 ~ FR-020, FR-042, SC-004). 새 분류의 색 번호 순서 줄은 T025에서 더한다
+- [x] T022 [P] [US3] `BE-TEST/blog/controller/CategoryColorTest.java`: 분류 목록·추가·고치기 응답에 `colorIndex`가 있다, 순서를 바꿔도 각 분류의 `colorIndex`가 그대로다(S-3의 4), 주인이 보는 글 개수는 비공개 글 포함(S-3a의 1), 회원 B의 요청은 A의 분류를 바꾸지 못한다(S-3a의 5, `404`). 나머지 S-3 줄은 `003` T041 `CategoryManageTest`가 덮으므로 다시 쓰지 않는다 (FR-018 ~ FR-020, FR-042, SC-004). 새 분류의 색 번호 순서 줄은 T025에서 더한다
 
 ### Implementation for User Story 3
 
-- [ ] T023 [US3] `003`의 분류 응답(`GET /api/blogs/{blogId}/categories`, 추가·고치기 응답)에 `colorIndex`를 더한다 (`category.color_index`, contracts 4-1). `003` contracts 2·5·6은 T062에서 고친다 (FR-020)
-- [ ] T024 [US3] `003`의 `FE/blog/CategoryManagePage.tsx`를 `/manage/categories`에 넣고 더한다: 분류마다 색 점(`colorIndex`), "비공개" 표시, `위`·`아래` 버튼(이웃한 두 분류를 바꾼 **전체 순서**를 `003`의 `PUT /api/me/blog/categories/order`로 보낸다, 맨 위의 `위`·맨 아래의 `아래`는 요청을 보내지 않음), 화면 아래에 늘 "글이 하나라도 있는 분류는 삭제할 수 없습니다. 글은 글 수정에서 다른 분류로 옮길 수 있습니다.", 빈 이름 "분류 이름을 입력해 주세요". **색 값은 T025 전까지 한 가지(`--grid-strong`)로** 칠한다 (FR-018 ~ FR-022, FR-042)
-- [ ] T025 [US3] 새 분류의 색을 정해진 순서로 저절로 — **색 목록은 시안을 따르고, 색 개수·값은 이 작업에서 `index.css` 토큰으로 정한다** (2026-10-08 결정): ① 정한 색 개수·값을 `상세/06` `기본값` 표의 "분류 색 목록" 줄과 plan `설정값 목록`에 먼저 적고 ② `003`의 `CategoryProperties`(`003` T005)에 `category.color-count`를 더하고 ③ `003`의 `Category.create`(`003` T043)와 `CategoryService` 추가 처리에서 `colorIndex`를 정한다(가안: research D-9의 예처럼 "그 블로그의 분류 수 % 색 개수") ④ 색 값 목록은 `FE/manage/categoryColors.ts`에 두고 `index.css` 토큰 옆에 맞춘다 ⑤ T022에 "새 분류 둘을 추가하면 색 번호가 차례로"를 더한다 (FR-020, research D-9)
+- [x] T023 [US3] `003`의 분류 응답(`GET /api/blogs/{blogId}/categories`, 추가·고치기 응답)에 `colorIndex`를 더한다 (`category.color_index`, contracts 4-1). `003` contracts 2·5·6은 T062에서 고친다 (FR-020)
+- [x] T024 [US3] `003`의 `FE/blog/CategoryManagePage.tsx`를 `/manage/categories`에 넣고 더한다: 분류마다 색 점(`colorIndex`), "비공개" 표시, `위`·`아래` 버튼(이웃한 두 분류를 바꾼 **전체 순서**를 `003`의 `PUT /api/me/blog/categories/order`로 보낸다, 맨 위의 `위`·맨 아래의 `아래`는 요청을 보내지 않음), 화면 아래에 늘 "글이 하나라도 있는 분류는 삭제할 수 없습니다. 글은 글 수정에서 다른 분류로 옮길 수 있습니다.", 빈 이름 "분류 이름을 입력해 주세요". **색 값은 T025 전까지 한 가지(`--grid-strong`)로** 칠한다 (FR-018 ~ FR-022, FR-042)
+- [x] T025 [US3] 새 분류의 색을 정해진 순서로 저절로 — **색 목록은 시안을 따르고, 색 개수·값은 이 작업에서 `index.css` 토큰으로 정한다** (2026-10-08 결정): ① 정한 색 개수·값을 `상세/06` `기본값` 표의 "분류 색 목록" 줄과 plan `설정값 목록`에 먼저 적고 ② `003`의 `CategoryProperties`(`003` T005)에 `category.color-count`를 더하고 ③ `003`의 `Category.create`(`003` T043)와 `CategoryService` 추가 처리에서 `colorIndex`를 정한다(가안: research D-9의 예처럼 "그 블로그의 분류 수 % 색 개수") ④ 색 값 목록은 `FE/manage/categoryColors.ts`에 두고 `index.css` 토큰 옆에 맞춘다 ⑤ T022에 "새 분류 둘을 추가하면 색 번호가 차례로"를 더한다 (FR-020, research D-9)
 
 **Checkpoint**: T022가 통과하고 S-3, S-3a를 화면으로 확인한다 (색 순서 줄은 T025 뒤) (PR 하나)
 
@@ -216,8 +216,8 @@ description: "006 블로그 관리와 통계 작업 목록"
 
 > 규칙과 주소는 **`003`의 것**(`PUT /api/me/blog`, `003` T047 ~ T050)이다. contracts 8의 `PATCH /api/manage/blog`는 만들지 않는다(2026-10-08 결정, contracts 8은 이미 고쳤다). 다른 이야기와 기대는 것이 없어 US5 다음에 두었지만 언제 해도 된다.
 
-- [ ] T037 [P] [US8] `003` T047 `BlogSettingsTest`가 S-10의 2 ~ 4(빈 이름, 31자 이름, 201자 소개를 화면 없이)를 덮는지 확인하고, 빠진 줄(200자 소개 통과, 저장 뒤 `GET /api/manage/blog`의 이름이 새 값)만 더한다 (FR-039, FR-040, SC-010)
-- [ ] T038 [US8] `003`의 `FE/blog/BlogSettingsPage.tsx`를 `/manage/blog`에 넣고 더한다: 소개 아래 "n/200"(코드 포인트로 셈, 서버와 같게), 이름이 비면 칸 아래 "블로그 이름을 입력해 주세요", 저장하면 "저장했습니다", 저장 뒤 `ManageBlogContext.refresh()`로 관리 화면 위쪽 이름을 바로 바꾼다. "데모 데이터 초기화" 버튼은 없다 (FR-039 ~ FR-041, SC-010)
+- [x] T037 [P] [US8] `003` T047 `BlogSettingsTest`가 S-10의 2 ~ 4(빈 이름, 31자 이름, 201자 소개를 화면 없이)를 덮는지 확인하고, 빠진 줄(200자 소개 통과, 저장 뒤 `GET /api/manage/blog`의 이름이 새 값)만 더한다 (FR-039, FR-040, SC-010)
+- [x] T038 [US8] `003`의 `FE/blog/BlogSettingsPage.tsx`를 `/manage/blog`에 넣고 더한다: 소개 아래 "n/200"(코드 포인트로 셈, 서버와 같게), 이름이 비면 칸 아래 "블로그 이름을 입력해 주세요", 저장하면 "저장했습니다", 저장 뒤 `ManageBlogContext.refresh()`로 관리 화면 위쪽 이름을 바로 바꾼다. "데모 데이터 초기화" 버튼은 없다 (FR-039 ~ FR-041, SC-010)
 
 **Checkpoint**: S-10을 화면으로 확인한다 (이름이 보이는 다른 화면은 `004` 뒤에 다시) (PR 하나, US3와 묶어도 된다)
 
