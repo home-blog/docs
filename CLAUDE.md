@@ -93,8 +93,8 @@ MyBlog(임시 이름): 여러 사람이 각자 블로그를 운영하고, 방문
 | 글 본문 | 마크다운 문법만 그리고 HTML은 글자 그대로, 위험한 링크 차단 | 가안 |
 | 이미지 저장 | MinIO 또는 서버 디스크 | 미정 |
 | 메시지 큐 | 안 씀. `@Async`, `@Scheduled` | 확정 |
-| Crowfoot DB | 발급받은 PostgreSQL(`cf_u6_d2`, 문서 668에 연결)은 **ERD 확인용**. 실제 개발 DB는 내 컴퓨터 Docker, 표의 원본은 Flyway. Crowfoot에서 DB로 반영하지 않는다 | 확정 (2026-10-08) |
-| 배포 | GitHub Actions(`deploy.yml`)가 main CI 통과 뒤 이미지(`geulgyeol-server`, `geulgyeol-web`)를 만들어 SSH로 실습 서버 `~/geulgyeol`에 올리고 `deploy/remote-deploy.sh`로 켠다. 화면 입구 127.0.0.1:8410, DB는 실습 DB(`DB_SCHEMA`), Redis·MinIO는 내 컨테이너. 도메인 `geulgyeol`. HTTPS·DB TLS는 강사님 확인 대기 | 가안 (2026-10-11, 코드 PR #43·#44) |
+| Crowfoot DB | 발급받은 PostgreSQL(`cf_u6_d2`)은 **배포 DB**가 됐다 (2026-10-12, 사용자). 표는 배포 서버의 Flyway가 만든다(예전 ERD 내보내기로 생긴 빈 표는 사용자가 지우고 다시 만듦). **Crowfoot에서 DB로 반영하지 않는다**(Flyway 기록과 어긋난다). ERD는 DB → 문서 동기화로만 맞춘다. 개발 DB는 그대로 내 컴퓨터 Docker | 확정 (2026-10-12) |
+| 배포 | GitHub Actions(`deploy.yml`)가 main CI 통과 뒤 이미지(`geulgyeol-server`, `geulgyeol-web`)를 만들어 SSH로 실습 서버 `~/geulgyeol`에 올리고 `deploy/remote-deploy.sh`로 켠다. 화면 입구 127.0.0.1:8410, DB는 Crowfoot 발급 DB(`cf_u6_d2` 스키마, 문서 668에 연결됨), Redis·MinIO는 내 컨테이너. 도메인 `geulgyeol`. **2026-10-12 첫 배포 성공.** HTTPS·DB TLS는 강사님 확인 대기 | 가안 (2026-10-11, 코드 PR #43·#44) |
 
 **탈퇴**: 회원 줄은 남기고(soft delete) 이메일·비밀번호·닉네임·소개는 알아볼 수 없게 바꾼다 (2026-10-08, `002` D-2).
 
@@ -141,4 +141,4 @@ MyBlog(임시 이름): 여러 사람이 각자 블로그를 운영하고, 방문
 5. 배포(001 D-5, 정할 것 32): **실습 서버로 정함, Actions 자동 배포 PR #44.** 사용자가 Secret `SSH_KNOWN_HOSTS`(지문 확인 후)·`MAIL_*`를 넣고 Actions에서 배포를 확인한다. 강사님께 Nginx 적용·HTTPS·DB TLS 지원을 묻는다. SMTP 계정(31)이 있어야 가입이 된다. HTTPS가 붙으면 001·002 T041 마무리, 그다음 003 D-9 CSP, 006 요청 수 제한(정할 것 39).
 6. 사용자가 `docs/3-설계/ERD-변경-요청.md`를 팀에 공유하고 T-1~T-3 답을 받는다.
 7. 개인 기능(주제별 화면, 커뮤니티, 오늘의 이슈, 인기 검색어)을 명세할지 정한다.
-8. Crowfoot DB(문서 668에 연결됨, 지금 빈 DB): 표를 넣을 때는 서버(Flyway)를 그 DB에 붙여 만들고, Crowfoot은 DB → 문서 동기화(plan_sync)로 확인만 한다. 빈 DB 상태에서 apply_sync를 하지 않는다. 666(내 확장)으로 연결을 옮길지는 사용자 확인 필요.
+8. Crowfoot DB(`cf_u6_d2`, 지금 문서 668에 연결): 배포 서버의 Flyway가 표를 만들었다(2026-10-12). **추천: 연결을 666(내 확장)으로 옮긴 뒤 666에 DB → 문서 동기화**(668은 팀 합의만 두기). 연결 옮기기는 사용자가 Crowfoot 화면에서 한다(정할 것 42). 그 전에는 668에 apply_sync를 하지 않는다.
