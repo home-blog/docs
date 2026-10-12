@@ -1,6 +1,6 @@
 # Tasks: API 주소 버전과 릴리스 기록 (v0.4.0)
 
-> 2026-10-12: 코드 브랜치 `feat/v0.4-api-v1-release-docs` (썸네일 PR #50 위). PR #50이 합쳐지면 PR로 올린다.
+> 2026-10-12: 코드 브랜치 `feat/v0.4-api-v1-release-docs` → 코드 PR #51 (썸네일 PR #50 merge 뒤).
 
 **Input**: [spec.md](spec.md)
 
