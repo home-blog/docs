@@ -13,4 +13,4 @@
 - [x] T007 [US6] 마크: `favicon.svg`, 머리글 `BrandMark`(다크 모드 색), `apple-touch-icon.png`, `og-default.png`
 - [x] T008 확인: `mvn verify`, `npm run lint`, `npm run build`, Playwright로 첫 화면(밝게·어둡게·휴대폰)·블로그 목록·글쓰기 대표 고르기 화면 (클라우드 세션은 picsum에 못 나가 사진 자리에 대신 그림)
 - [ ] T009 사람 확인: 사용자가 로컬(5173)에서 확인 (SC-2). 마크 시안(E·F·H) 가운데 F로 넣음, 바꾸고 싶으면 고친다
-- [ ] T010 배포 뒤: Actions `예시 데이터` → `photos`로 배포 DB 예시 글에 사진 넣기
+- [x] T010 배포 뒤: Actions `예시 데이터` → `photos`로 배포 DB 예시 글에 사진 넣기 (2026-10-12, v0.4.0 배포 뒤 성공)
