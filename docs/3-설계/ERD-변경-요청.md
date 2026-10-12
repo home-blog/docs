@@ -58,6 +58,7 @@ ALTER TABLE comment_report ADD CONSTRAINT ck_comment_report_reason CHECK (reason
 | E-5 | **새 표** `post_daily_stat` | `post_id`, `stat_date`, `views` | 최근 7일 인기 글 | `006` D-6 |
 | E-6 | `blog` | `comments_read_at`(TIMESTAMPTZ, NULL) | 새 댓글 N개 | `006` D-8 |
 | E-7 | `post_report` | `UNIQUE(users_id, post_id)`를 **실제 제약으로** 둔다 | 같은 회원이 같은 글을 두 번 신고할 수 없다(CF-21-3). 팀 ERD 최신판에도 규칙은 적혀 있지만(0절), 내 DB에서는 이 제약이 동시에 두 번 눌러도 한 건만 남게 하는 마지막 방어선이라 내 마이그레이션에 확실히 넣는다 (2026-10-08 사용자 결정) | `005` FR-019, SC-003 |
+| E-8 | `users`, **새 표** `user_social_account` | `users.password`를 NULL 허용(소셜로만 가입한 회원). `user_social_account`(`users_id`, `provider` github·google·kakao·naver, `provider_user_id`, `linked_at`), `UNIQUE(provider, provider_user_id)`, `UNIQUE(users_id, provider)`. 회사 토큰은 두지 않는다 | 소셜 로그인 (2026-10-12, 개별 프로젝트 기능) | `010` D-4, D-7, D-10, Flyway V10 |
 
 ```sql
 -- E-1

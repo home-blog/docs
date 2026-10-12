@@ -1,6 +1,6 @@
 # Feature Specification: 소셜 로그인 (v0.5.0)
 
-**Feature**: `010-social-login` · **Created**: 2026-10-12 · **Status**: 구현 중 (코드 브랜치 `feat/v0.5-social-login`)
+**Feature**: `010-social-login` · **Created**: 2026-10-12 · **Status**: 구현 끝, 사용자 확인 대기 (코드 브랜치 `feat/v0.5-social-login`)
 
 **요청 (2026-10-12 사용자)**: 로드맵 [N-07](../../docs/2-요구사항/다음-기능.md) "GitHub·Kakao·Naver·Google 로그인"을 "추천대로" 넣는다. 이 문서는 그 가안을 명세로 옮기고, 빈 곳은 [research.md](research.md)의 D-항목(가안)으로 채운다.
 
