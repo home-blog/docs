@@ -11,6 +11,6 @@
 - [x] T005 [US3] 자동 API 문서(springdoc 3.1.1, 개발 설정에서만 `/swagger-ui.html`, 머리 "v1 · 릴리스 0.4.0", 주소의 `{version}`을 v1로 채움), 화면 바닥글
 - [x] T006 docs: 쉬운 설명(`docs/4-가이드/06-API-버전과-릴리스.md`), 계약 문서 6개 머리에 주소 버전 안내와 `thumbnail` 칸
 - [x] T007 확인: `mvn verify`, `npm run lint`, `npm run build`, actionlint, Playwright로 가입·로그인·글쓰기·로그아웃(모두 `/api/v1`)과 바닥글
-- [x] T010 릴리스는 작게 자주 (2026-10-12 사용자): 배포 작업 손 실행에 릴리스 번호 → check(번호·버전·CHANGELOG·태그 중복) → deploy → release(태그·GitHub 릴리스를 CHANGELOG 절로, 이 작업만 contents: write). CHANGELOG 머리·deploy/README·가이드 06·CLAUDE.md
+- [x] T010 릴리스 주기 (2026-10-12 사용자: 로컬에서 어느 정도 해 두고 버전을 올려 배포. "작게 자주"는 같은 날 바로잡음): 배포 작업 손 실행에 릴리스 번호 → check(번호·버전·CHANGELOG·태그 중복) → deploy → release(태그·GitHub 릴리스를 CHANGELOG 절로, 이 작업만 contents: write). CHANGELOG 머리·deploy/README·가이드 06·CLAUDE.md
 - [ ] T008 PR 올리고 CI·CodeRabbit 확인 뒤 merge
 - [ ] T009 사용자가 "배포해줘" 하면: Actions `배포`에 번호 `0.4.0` → 배포·릴리스 자동 → 예시 데이터 `photos`
