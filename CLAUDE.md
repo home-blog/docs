@@ -94,7 +94,7 @@
 | 이미지 저장 | MinIO 또는 서버 디스크 | 미정 |
 | 메시지 큐 | 안 씀. `@Async`, `@Scheduled` | 확정 |
 | Crowfoot DB | 발급받은 PostgreSQL(`cf_u6_d2`)은 **배포 DB**가 됐다 (2026-10-12, 사용자). 표는 배포 서버의 Flyway가 만든다(예전 ERD 내보내기로 생긴 빈 표는 사용자가 지우고 다시 만듦). **Crowfoot에서 DB로 반영하지 않는다**(Flyway 기록과 어긋난다). ERD는 DB → 문서 동기화로만 맞춘다. 개발 DB는 그대로 내 컴퓨터 Docker | 확정 (2026-10-12) |
-| 배포 | GitHub Actions(`deploy.yml`)가 main CI 통과 뒤 이미지(`geulgyeol-server`, `geulgyeol-web`)를 만들어 SSH로 실습 서버 `~/geulgyeol`에 올리고 `deploy/remote-deploy.sh`로 켠다. 화면 입구 127.0.0.1:8410, DB는 Crowfoot 발급 DB(`cf_u6_d2` 스키마, 문서 668에 연결됨), Redis·MinIO는 내 컨테이너. 도메인 `geulgyeol`. **2026-10-12 첫 배포 성공.** HTTPS·DB TLS는 강사님 확인 대기 | 가안 (2026-10-11, 코드 PR #43·#44) |
+| 배포 | GitHub Actions(`deploy.yml`)가 main CI 통과 뒤 이미지(`geulgyeol-server`, `geulgyeol-web`)를 만들어 SSH로 실습 서버 `~/geulgyeol`에 올리고 `deploy/remote-deploy.sh`로 켠다. 화면 입구 127.0.0.1:8410, DB는 Crowfoot 발급 DB(`cf_u6_d2` 스키마, 문서 668에 연결됨), Redis·MinIO는 내 컨테이너. 도메인 `geulgyeol`. **2026-10-12 첫 배포 성공.** 이후 배포는 릴리스를 낼 때만(사용자가 "배포해줘" 할 때). 인증 메일은 서비스 전용 Gmail(Secrets `MAIL_*`, 보내는 사람 이름 "글결"). HTTPS·DB TLS는 강사님 확인 대기 | 가안 (2026-10-11, 코드 PR #43·#44) |
 
 **탈퇴**: 회원 줄은 남기고(soft delete) 이메일·비밀번호·닉네임·소개는 알아볼 수 없게 바꾼다 (2026-10-08, `002` D-2).
 
@@ -120,6 +120,7 @@
 - **화면 디자인 (2026-10-12)**: **"원고지" 방향**으로 한다. 2026-10-09 코드 PR #40에서 `docs/DESIGN.md`(Cohere 스타일 에디토리얼)로 바꿨으나, 사용자가 원고지가 훨씬 낫다고 해서 코드 PR #45로 화면 변경을 되돌렸다. 토큰은 `frontend/src/index.css` 한곳(`--paper`, `--ink`, `--grid`, `--accent`). `docs/DESIGN.md`는 기록으로만 남기고 쓰지 않는다. IntelliJ 실행 설정(`.run/`)은 PR #40에서 넣은 그대로 쓴다.
 - **PR은 묶어서 적게 (2026-10-12 사용자)**: PR이 너무 많아 CodeRabbit·SonarQube·CI를 기다리느라 늦어진다고 해서, 작은 변경마다 PR을 올리지 않는다. 한 번의 작업(디자인 수정, 기능 추가 여러 개)을 브랜치 하나에 커밋으로 쌓고, 로컬(5173)에서 사용자가 확인한 뒤 끝날 때(또는 사용자가 "올려"라고 할 때) PR 하나로 올린다. push 전에 lint·build·`mvn verify`를 로컬에서 돌려 리뷰 수정을 줄인다. 브랜치 push만으로는 CI·Sonar가 돌지 않고(`pull_request`와 `main` push에서만 돈다) CodeRabbit은 draft PR을 건너뛴다. merge할 때마다 배포도 돈다. "사용자 이야기 하나 = PR 하나" 규칙을 대신한다.
 - **여러 세션이 동시에 일한다 (2026-10-12 사용자: PR 충돌 주의)**: 다른 Claude 세션도 `main`에 merge한다. 작업 시작 전, 커밋 묶음마다, PR 올리기 전에 `git fetch` 후 `origin/main` 위로 rebase하고(`--autostash`, IntelliJ가 `.run/`을 고쳐 둠), 열린 PR·원격 브랜치와 같은 파일을 건드리는지 본다. 한 브랜치가 건드리는 파일은 좁게 둔다. `main`이 바뀌면 로컬 서버를 다시 켜야 새 코드가 돈다.
+- **배포는 릴리스로, 사용자가 "배포해줘"라고 할 때만 (2026-10-12 사용자)**: 버전을 올려 가며 고치고, 사용자가 화면을 눈으로 확인해 문제가 없을 때 배포한다. main에 합쳐도 배포되지 않는다(코드 브랜치 `chore/mail-name-manual-deploy`부터). 배포 = GitHub 릴리스(태그 `v0.x.0`, 대상 `main`, 바뀐 것 요약)를 내면 `deploy.yml`이 그 버전을 올린다. 지금 서버에 있는 것(2026-10-12, 코드 PR #47까지)을 첫 버전 `v0.1.0`으로 본다. 명세(`specs/`)도 docs에서 계속 고쳐 나간다
 - PR 흐름(코드 저장소): 브랜치 push → REST로 PR 생성(`gh api repos/home-blog/myblog/pulls`, GraphQL인 `gh pr create`는 막힘) → CI·CodeRabbit 확인, 맞는 지적은 고침 → `gh api .../pulls/N/merge`. 원격 브랜치 삭제는 이 세션에서 막혀 있다. **Dependabot PR은 직접 merge하지 않는다**(안전장치가 막음). 같은 변경을 내 PR로 반영하면 Dependabot이 자기 PR을 닫는다.
 - **작업은 Claude Code 클라우드 세션에서 한다** (2026-10-08 사용자 결정. claude.ai 대화창은 더 쓰지 않는다). 클라우드 세션에서는 **Maven 빌드·테스트(`cd backend && mvn verify`)와 Docker가 된다**: `dockerd`를 켜고 `cp .env.example .env`(처음 한 번, 코드 PR #42부터 접속 정보는 루트 `.env` 하나), `docker compose up -d --wait` 뒤 서버를 직접 띄워 확인할 수 있다. PR을 올리기 전에 직접 돌려 본다.
 - 사용자는 IntelliJ로 작업을 지켜본다. 구현을 마치면 무엇을 만들었는지 **짧게 보고**한다.
