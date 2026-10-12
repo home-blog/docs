@@ -8,6 +8,8 @@
 
 **글결**(2026-10-12에 임시 이름 MyBlog에서 바꿈, 코드 PR #47. 코드 패키지 이름 `com.myblog`은 그대로): 여러 사람이 각자 블로그를 운영하고, 방문자는 한곳에서 둘러보는 티스토리형 멀티 블로그 서비스. 팀원 4명이 공통 요구사항을 함께 정하고, 구현은 각자 한다.
 
+- **2026-10-12부터 개별 프로젝트** (사용자): 공통 기능(001~006)은 만들어 두었고, 이제부터 더하는 기능(OAuth 소셜 로그인 GitHub·Naver·Kakao·Google, 관련 글 추천 등)은 팀 합의 없이 내 기능으로 정한다. 표·칸은 Crowfoot 666과 `ERD-변경-요청.md`의 E-항목에 적는다.
+
 - **저장소 두 개** (2026-10-08 사용자 결정):
   - **`home-blog/docs`(이 저장소)**: 문서만. `docs/`, `specs/`, 헌법(`.specify/memory/constitution.md`), 이 CLAUDE.md. **문서의 하나뿐인 원본**이다. 2026-10-08에 `home-blog/myblog`에서 커밋 기록째 옮겨 왔다.
   - **`home-blog/blog`**: 코드. `backend/`(서버), `frontend/`(화면), `docker-compose.yml`, CI·CodeRabbit·SonarQube 설정. 예전 `home-blog/myblog`의 이름을 바꾼 것이라 PR #1~#16과 설정이 그대로 있다. 그 저장소의 CLAUDE.md는 코드 규칙만 짧게 두고 이 파일을 가리킨다.
