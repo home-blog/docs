@@ -23,7 +23,7 @@
 - [x] T011 화면 Nginx `/oauth2/`, `/login/oauth2/`, 배포 작업·compose에 `SOCIAL_*` 환경 변수, `.env.example`, `deploy/README.md` 앱 등록 순서
 - [x] T012 `CHANGELOG.md` [0.5.0] 준비 중, 서버·화면 버전 0.5.0
 - [x] T013 테스트(연결·자동 연결·가입·해제·탈퇴·연결하기 만료, 회사 응답 판정), `mvn verify`, lint, build, actionlint, Playwright(버튼·소셜 가입 두 경우·연결 카드·휴대폰). 실제 회사 화면은 앱 등록 뒤 사용자가 로컬에서 확인
-- [ ] T014 사용자: 회사별 앱 등록과 열쇠 넣기 (아래)
+- [x] T014 사용자: 회사별 앱 등록과 열쇠 넣기 (아래). 2026-10-13 로컬 4곳 확인, 배포용 GitHub 앱·카카오·네이버 Secrets 넣음. Google 배포는 HTTPS 뒤
 
 ## 사용자가 할 일 (T014)
 콜백 주소는 로컬 `http://localhost:5173/login/oauth2/code/{회사}`, 배포 `http://geulgyeol.java21.net/login/oauth2/code/{회사}`.
