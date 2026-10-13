@@ -1,6 +1,6 @@
 # Tasks: 소셜 로그인 (v0.5.0)
 
-**Input**: [spec.md](spec.md), [research.md](research.md), [contracts/social-api.md](contracts/social-api.md) · 코드 브랜치 `feat/v0.5-social-login` (2026-10-12 커밋 7c22a14 push, PR은 사용자가 로컬에서 확인한 뒤)
+**Input**: [spec.md](spec.md), [research.md](research.md), [contracts/social-api.md](contracts/social-api.md) · 코드 브랜치 `feature/v0.5-social-login` (2026-10-12 커밋 7c22a14 push, PR은 사용자가 로컬에서 확인한 뒤)
 
 ## 바탕
 - [x] T001 Flyway V10: `users.password` NULL 허용, `user_social_account` 표(회원·회사·회사 쪽 번호·연결 시각, 중복 불가 둘). `ERD-변경-요청.md` E-8 (Crowfoot 666 반영은 남음: 배포 DB에 V10이 생긴 뒤 DB → 문서 동기화, 정할 것 42)
