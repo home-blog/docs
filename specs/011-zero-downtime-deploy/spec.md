@@ -1,6 +1,6 @@
 # Feature Specification: 무중단 배포 (v0.5.2)
 
-**Feature**: `011-zero-downtime-deploy` · **Created**: 2026-10-14 · **Status**: 구현 끝, 로컬 확인 끝, 사용자 확인 대기 (코드 브랜치 `feature/zero-downtime`)
+**Feature**: `011-zero-downtime-deploy` · **Created**: 2026-10-14 · **Status**: 구현 끝, 코드 PR #63 `develop` merge (2026-10-14), 배포 대기
 
 **요청 (2026-10-14 사용자, 강사님 안내)**: "Nginx 파일에 애플리케이션 두 개를 띄워서 트래픽이 어떤지 확인해 보고 무중단 배포를 해 봐라." 로드맵 v0.5.2 무중단 배포를 이 방향으로 만든다. 빈 곳은 [research.md](research.md)의 D-항목(가안)으로 채운다.
 
