@@ -1,6 +1,6 @@
 # Tasks: 글쓰기 도구 (v0.7.0)
 
-**Input**: [spec.md](spec.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/writing-tools-api.md](contracts/writing-tools-api.md) · 코드 브랜치 `feature/v0.7-writing-tools` → 코드 PR #72 (2026-10-15, 서버 새 테스트 71개·화면 37개, `mvn verify` 610개·화면 148개 통과, Playwright 확인)
+**Input**: [spec.md](spec.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/writing-tools-api.md](contracts/writing-tools-api.md) · 코드 브랜치 `feature/v0.7-writing-tools` → 코드 PR #72 `develop` merge (ac9619e, 2026-10-15, 리뷰 반영으로 연재 동시 요청 테스트 3개 더함, 서버 새 테스트 71개·화면 37개, `mvn verify` 610개·화면 148개 통과, Playwright 확인)
 
 테스트 전략(`docs/3-설계/테스트-전략.md`)대로 **테스트 작업을 구현 앞에** 둔다.
 
