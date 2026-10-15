@@ -34,4 +34,4 @@
 ## 마무리
 - [x] T018 CHANGELOG `[0.7.0] - 준비 중`, 버전 0.7.0, Swagger 묶음, REST Docs 흐름
 - [x] T019 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright로 화면 확인
-- [ ] T020 사용자: 로컬에서 확인 후 "배포해줘"
+- [x] T020 배포: 2026-10-16 v0.7.0 (사용자 "배포까지 완료해", 릴리스 PR #74 + 리뷰 반영(발행 한 트랜잭션·줄 잠금, `DraftPublishTransactionTest` 2개, 연재 관리 늦은 응답), 배포 실행 38769943357 성공, GitHub 릴리스 `v0.7.0`)
