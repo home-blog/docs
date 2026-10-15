@@ -18,7 +18,7 @@
 | D-12 | 잔디 기간·날짜 | 오늘 포함 365일, 한국 시간(`writing.activity.zone`, `Asia/Seoul`) | 52주 × 7 달력 정렬 | 서버가 날짜별 수만 주고, 달력 모양은 화면이 그린다 |
 | D-13 | 잔디에 세는 글 | 공개 분류의 공개 글만, 주인이 봐도 같다 | 주인에게는 비공개까지 | 남에게 보이는 기록과 같아야 헷갈리지 않는다 |
 | D-14 | 잔디 진하기 | 0 / 1 / 2 / 3~4 / 5 이상 (5단계) | 그 블로그의 최대값 대비 비율 | 글이 적은 블로그도 칸이 너무 진해지지 않게. 화면이 정한다 |
-| D-15 | 모듈 | 모두 글 모듈(`post`) 안에. 이미지 모듈은 새 이벤트(`DraftContentSavedEvent`, `DraftDeletingEvent`)를 듣는다 | 새 모듈 `series`·`draft` | 모두 글을 만들고 묶고 세는 일이라 글 모듈의 공개 규칙(`PostVisibility`)을 그대로 쓴다. 방향(`user ← blog ← post ← image`)은 그대로 |
+| D-15 | 모듈 | 모두 글 모듈(`post`) 안에. 이미지 모듈은 새 이벤트 `DraftContentSavedEvent`를 듣는다(임시 저장 글을 지우면 `post_image.post_draft_id`는 DB가 `ON DELETE SET NULL`로 비운다) | 새 모듈 `series`·`draft` | 모두 글을 만들고 묶고 세는 일이라 글 모듈의 공개 규칙(`PostVisibility`)을 그대로 쓴다. 방향(`user ← blog ← post ← image`)은 그대로 |
 
 ## 구현 방식 (가안)
 

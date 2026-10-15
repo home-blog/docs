@@ -70,11 +70,11 @@
 - `GET /api/v1/me/drafts` → `{ "items": [ { "draftId": 9, "title": "", "updatedAt": "…", "publishAt": null } ], "count": 1, "maxCount": 50 }` (마지막 저장 순)
 - `POST /api/v1/me/drafts` → 201 `{ "draftId": 9, "updatedAt": "…", "publishAt": null }`. 50개면 409 `DRAFT_LIMIT_EXCEEDED`.
 - `GET /api/v1/me/drafts/{draftId}` → 본문 칸 전부 + `draftId`, `updatedAt`, `publishAt`.
-- `PUT /api/v1/me/drafts/{draftId}` → 200 (POST와 같은 응답).
+- `PUT /api/v1/me/drafts/{draftId}` → 200 (POST와 같은 응답). 예약된 글이면 예약은 그대로 둔다(올릴 때 다시 검사하고, 걸리면 예약을 푼다).
 - `DELETE /api/v1/me/drafts/{draftId}` → 204.
 
 ### 3-1. 발행 `POST /api/v1/me/drafts/{draftId}/publish`
-본문은 글쓰기(003 contracts 10)와 같은 모양 + `seriesId`. 보통 글쓰기와 같은 검사를 하고, 글을 만든 뒤 임시 저장 글을 지운다. → 201 글쓰기 응답과 같음. 두 번 와도 글은 하나(임시 저장 글의 요청 번호).
+본문은 글쓰기(003 contracts 10)와 같은 모양 + `seriesId`. 보통 글쓰기와 같은 검사를 하고, 글을 만든 뒤 임시 저장 글을 지운다. → 201 `{ "postId": 41 }`. 동시에 두 번 와도 글은 하나(임시 저장 글의 요청 번호). 이미 발행해 임시 저장 글이 없으면 404.
 
 ## 4. 예약 (주인)
 
@@ -82,4 +82,7 @@
 - `DELETE /api/v1/me/drafts/{draftId}/schedule` → 200 (`publishAt: null`).
 
 ## 5. 글쓰기 설정 `GET /api/v1/me/blog/post-form` (기존, 칸 더하기)
-`draftAutosaveSeconds`(30), `draftMaxCount`(50), `scheduleMaxDays`(30)를 더한다.
+`series`(내 연재 `[{ seriesId, name }]`, 연재 고르기)와 `writing`(`draftAutosaveSeconds` 30, `draftMaxCount` 50, `scheduleMaxDays` 30)을 더한다.
+
+## 6. 분류 글 수 (기존 003 contracts 5·8, 뜻 넓힘)
+분류 삭제 거절(`CATEGORY_HAS_POSTS`)에 **예약된 글**도 센다(S4-6). 화면에 보이는 분류의 글 수에는 넣지 않는다(예약 글은 아직 목록에 없다). 예약 없는 임시 저장 글의 분류는 지우면 비워진다.
