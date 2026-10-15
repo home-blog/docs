@@ -1,6 +1,6 @@
 # Tasks: 공지사항 (v0.6.0)
 
-**Input**: [spec.md](spec.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/notice-api.md](contracts/notice-api.md) · 코드 브랜치 `feature/v0.6-notices` (2026-10-15 구현, 서버 테스트 37개는 구현 전 34개 실패 확인 → 모두 통과, 화면 테스트 37개는 일부러 틀리게 바꿔 실패 확인)
+**Input**: [spec.md](spec.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/notice-api.md](contracts/notice-api.md) · 코드 브랜치 `feature/v0.6-notices` → 코드 PR #69 `develop` merge (2026-10-15 구현, 서버 테스트 37개는 구현 전 34개 실패 확인 → 모두 통과, 화면 테스트 37개는 일부러 틀리게 바꿔 실패 확인)
 
 테스트 전략(`docs/3-설계/테스트-전략.md`)대로 **테스트 작업을 구현 앞에** 둔다. 테스트가 먼저 실패하는 것을 보고 구현한다.
 
