@@ -33,4 +33,4 @@
 ## 마무리
 - [x] T017 CHANGELOG `[0.12.0]`, 버전, REST Docs, V22 0.12.0 업데이트 공지, README, ERD E-14 (예시 글마당 글은 넣지 않음: 운영팀 글로 쓸 회원이 없어 공지로 안내만)
 - [x] T018 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright
-- [ ] T019 PR → 릴리스 0.12.0 → 배포 → 다시 합침
+- [x] T019 PR → 릴리스 0.12.0 → 배포 → 다시 합침 (기능 PR #89, 릴리스 PR #90, 배포 실행 39261106926, 태그·GitHub 릴리스 `v0.12.0`, 다시 합침 PR #91)
