@@ -4,7 +4,7 @@
 
 ## 1. 빨간 펜 `POST /api/v1/me/proofread` (로그인, CSRF)
 
-요청 `{ "content": "마크다운 본문" }`
+요청 `{ "content": "마크다운 본문", "aiConsent": true }`. `aiConsent`(0.9.0): 화면에서 "본문이 AI로 보내진다"에 동의했는지. 교정기가 바깥 AI(`mode: ai`)인데 참이 아니면 본문을 보내지 않고 409 `PROOFREAD_CONSENT_REQUIRED`(화면은 동의를 묻고 다시 보낸다). 규칙 교정은 보지 않는다.
 
 응답 200
 ```json
