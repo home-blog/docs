@@ -23,5 +23,5 @@
 ## 마무리
 - [x] T011 014 T022(몇 일이나·몇 일간의) 같이 넣기
 - [x] T012 CHANGELOG `[0.10.0]`, 버전, Swagger·REST Docs, V18 0.10.0 업데이트 공지, README
-- [ ] T013 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright
-- [ ] T014 PR → 릴리스 0.10.0 → 배포 → 다시 합침
+- [x] T013 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright
+- [x] T014 PR → 릴리스 0.10.0 → 배포 → 다시 합침 (기능 PR #83, 릴리스 PR #84, 배포 실행 39243416335, 다시 합침 PR #85, 2026-10-19)
