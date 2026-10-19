@@ -32,5 +32,5 @@
 - [x] T017 `OllamaEmbedder`(bge-m3), `LocalEmbedder`(개발·시험용), `related.provider` auto = Voyage → Ollama → without-key
 - [x] T018 배포: compose `ollama` 프로필(메모리 2GB·CPU 2), `remote-deploy.sh`가 `OLLAMA_ENABLED`·남은 메모리·디스크를 보고 켜고 모델을 뒤에서 받음, `deploy.yml`이 Variables 전달
 - [x] T019 V16 0.9.0 업데이트 공지, CHANGELOG `[0.9.0]`, 버전 0.9.0, README·deploy/README·.env.example·REST Docs 설명
-- [ ] T020 PR → 릴리스 0.9.0 → 배포 → 다시 합침
+- [x] T020 PR → 릴리스 0.9.0 → 배포 → 다시 합침. **2026-10-19 v0.9.0 배포**: 기능 PR #80(리뷰 반영: AI 보내기 동의를 서버가 확인 `aiConsent`·409, 아들께요 그대로, 임베딩 숫자 검사 `Vectors.usable`) → 릴리스 PR #81(리뷰 반영: 규칙의 낱말 경계 `-지 않되`·`호수 밖에`·`몇 일본인`·이름 속 `희안`, `몇 일이`도 며칠로, 로컬 Ollama 포트 127.0.0.1) → 배포 실행 39210501832(확인·배포·릴리스 모두 성공, a·b 두 벌 48a5a13 healthy, 태그·GitHub 릴리스 `v0.9.0`) → main을 develop에 다시 합침 PR #82
 - [ ] T021 (사용자, 선택) 서버 여유를 보고 강사님께 여쭌 뒤 Variables `OLLAMA_ENABLED=true` → 배포 다시 돌리기
