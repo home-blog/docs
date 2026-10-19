@@ -23,4 +23,4 @@
 ## 마무리
 - [x] T011 CHANGELOG `[0.8.0]`, 버전 0.8.0, Swagger 묶음, REST Docs 흐름, V15 업데이트 공지
 - [x] T012 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright(가짜 AI)
-- [ ] T013 배포 (사용자 "알아서 배포까지 다 완료해", 2026-10-19). AI를 켜려면 사용자가 GitHub Secrets에 `ANTHROPIC_API_KEY`, `VOYAGE_API_KEY`를 넣고 배포를 다시 돌린다
+- [x] T013 배포 (사용자 "알아서 배포까지 다 완료해", 2026-10-19). **2026-10-19 v0.8.0 배포**: 기능 PR #76 develop squash merge → 릴리스 PR #77 main merge commit → 배포 실행 39194893386(확인·배포·릴리스 모두 성공, a·b 두 벌 c5952874c80d healthy, 태그·GitHub 릴리스 `v0.8.0`) → main을 develop에 다시 합침 PR #79. 릴리스 리뷰에서 찾은 배포 막힘(YAML의 따옴표 없는 `off`가 false로 읽혀 prod 서버가 켜지지 않음)을 `ProdSettingsBindingTest`로 재현하고 고쳤다. **AI는 아직 꺼져 있다**: 사용자가 GitHub Secrets에 `ANTHROPIC_API_KEY`, `VOYAGE_API_KEY`를 넣고 Actions `배포`를 번호 없이 한 번 다시 돌리면 켜진다(사용자 할 일)
