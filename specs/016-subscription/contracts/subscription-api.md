@@ -4,7 +4,7 @@
 - `PUT /api/v1/blogs/{blogId}/subscription` `{ "emailEnabled": false }`(본문 없으면 false) → 200 `{ "subscribed": true, "emailEnabled": false, "subscriberCount": 12 }`
   - 400 `SELF_SUBSCRIBE_NOT_ALLOWED`, 404 `BLOG_NOT_FOUND`, 409 `SUBSCRIPTION_LIMIT_EXCEEDED`
 - `DELETE /api/v1/blogs/{blogId}/subscription` → 200 `{ "subscribed": false, "emailEnabled": false, "subscriberCount": 11 }`
-- `GET /api/v1/blogs/{blogId}`(블로그 머리)에 `subscriberCount`, `subscribedByMe`(로그인 안 했으면 false) 칸을 더한다.
+- `GET /api/v1/blogs/{blogId}`(블로그 머리)에 `subscriberCount`, `subscribedByMe`(로그인 안 했으면 false), `subscriptionEmail`(내가 메일로도 받는지) 칸을 더한다.
 - `GET /api/v1/me/subscriptions` → `{ "items": [ { "blogId", "blogName", "nickname", "emailEnabled", "createdAt" } ] }` 최근 순
 - `GET /api/v1/me/subscriptions/feed?page=` → 첫 화면 글 모음과 같은 모양 `{ totalCount, page, totalPages, pageSize, posts: [카드] }`
 
