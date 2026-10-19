@@ -21,7 +21,7 @@
 - 오류: 401, 400 `PROOFREAD_EMPTY`·`PROOFREAD_TOO_LONG`, 429 `PROOFREAD_LIMIT_EXCEEDED`, 503 `PROOFREAD_UNAVAILABLE`.
 
 ## 2. 빨간 펜 상태 `GET /api/v1/me/proofread` (로그인)
-`{ "enabled": true, "dailyLimit": 20, "remaining": 17, "maxLength": 10000 }`. AI가 꺼져 있으면(열쇠 없음) `enabled: false`, 화면은 단추를 숨긴다.
+`{ "enabled": true, "mode": "ai", "dailyLimit": 20, "remaining": 17, "maxLength": 10000 }`. `mode`(0.9.0): `ai`(바깥 AI, 화면이 보내기 동의를 묻고 하루 횟수를 센다), `rules`(서버 안의 규칙 교정, 동의·횟수 없음, `remaining`은 늘 하루 한도), `off`(`enabled: false`, 화면은 단추를 숨긴다).
 (처음에는 글쓰기 설정 post-form에 칸을 더하려 했으나, 남은 횟수도 함께 주려고 빨간 펜 모듈의 주소로 따로 뒀다. 글 모듈이 AI 모듈을 몰라도 된다)
 
 ## 3. 비슷한 글 `GET /api/v1/posts/{postId}/related` (누구나)
