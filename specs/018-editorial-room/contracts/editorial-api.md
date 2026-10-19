@@ -10,7 +10,7 @@
 - `GET /api/v1/editorial/reports/posts/{postId}` → `{ "postId", "blogName", "title", "excerpt", "visibility", "locked", "lockReason", "reports": [ { "reason", "detail", "createdAt" } ] }` · 404
 - `POST /api/v1/editorial/posts/{postId}/take-down` `{ "reason" }` → 204 · 400 `EDITORIAL_REASON_INVALID` · 409 `REPORT_ALREADY_RESOLVED`
 - `POST /api/v1/editorial/posts/{postId}/dismiss` → 204 · 409
-- `POST /api/v1/editorial/posts/{postId}/unlock` → 204 (잠기지 않았으면 그대로 204)
+- `POST /api/v1/editorial/posts/{postId}/unlock` → 200 `{ "unlocked": true }` (이미 풀려 있었으면 `false`, 기록도 남기지 않음)
 
 ## 3. 글마당 신고
 - `POST /api/v1/board/posts/{id}/reports` `{ "reason", "detail" }` (로그인) → 201 `{ "message" }` · 403 `SELF_REPORT_NOT_ALLOWED` · 409 `ALREADY_REPORTED` · 404 · 400(사유·설명)
