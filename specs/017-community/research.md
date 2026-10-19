@@ -12,5 +12,5 @@
 | D-6 | 너무 빨리 올리기 | 블로그 댓글과 같은 방식: 같은 회원의 마지막 글(댓글) 시각을 DB에서 읽고, 회원마다 트랜잭션 잠금(`pg_advisory_xact_lock`)으로 줄을 세운다. 글은 1분, 댓글은 5초 간격(설정) `가안` | Redis 횟수 | 이미 검증된 방식(005 D-2)이고 동시에 온 요청도 하나만 통과한다 |
 | D-7 | 지우기 | 글·댓글 모두 진짜 지운다(`DELETE`), 댓글은 FK CASCADE `가안` | 지움 표시 | 지운 글을 되살리는 요구가 없다. 탈퇴는 줄을 남기고 이름만 "탈퇴한 회원"(회원 줄이 남으므로 그대로 된다) |
 | D-8 | 검색 | `GET /api/v1/board/posts?q=`: 단어마다 `제목·본문·주제 이름·닉네임 ILIKE` AND, 같은 표 목록 쿼리에 조건을 더한다. 바인딩 값만(문자열 이어 붙이지 않음) `가안` | 전문 검색 | 글마당 글 수가 적다. 블로그 글 검색과 같은 방식 |
-| D-9 | 우편함 소식 | `notification.kind`에 `board_comment`, `board_accept`를 더하고 `board_post_id`(FK ON DELETE SET NULL) 칸을 더한다. 구독 모듈이 `BoardCommentWrittenEvent`, `BoardAnswerAcceptedEvent`를 커밋 뒤 듣는다 `가안` | 글마당 모듈이 직접 | 우편함은 한곳(016)에 둔다. 구독 모듈 의존에 `board`를 더한다 |
+| D-9 | 우편함 소식 | `notification.kind`에 `board`(내 글마당 글에 댓글), `accepted`(내 댓글이 채택됨)를 더하고(칸이 10자라 짧은 이름) `board_post_id`(FK ON DELETE SET NULL) 칸을 더한다. 구독 모듈이 `BoardCommentWrittenEvent`, `BoardAnswerAcceptedEvent`를 커밋 뒤 듣는다 `가안` | 글마당 모듈이 직접 | 우편함은 한곳(016)에 둔다. 구독 모듈 의존에 `board`를 더한다 |
 | D-10 | 모양 | 표는 원고지 칸 선 머리, 물음 꼬리표는 먹색 테두리, 채택은 붉은 도장(글 끝 도장과 같은 모양), 해결된 물음은 목록에 작은 `해결` 도장 `가안` | 체크 아이콘 | 원고지·도장 콘셉트 |

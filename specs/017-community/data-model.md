@@ -30,10 +30,10 @@
 - `INDEX (board_post_id, created_at)`.
 
 ## 칸 더하기 `notification` (V21)
-- `kind` CHECK에 `board_comment`, `board_accept`를 더한다.
+- `kind` CHECK에 `board`(내 글마당 글에 댓글), `accepted`(내 댓글이 채택됨)를 더한다.
 - `board_post_id BIGINT NULL FK board_post ON DELETE SET NULL`. 블로그 글 소식은 `post_id`, 글마당 소식은 `board_post_id`를 쓴다.
 
 ## Redis
 | 키 | 값 | 수명 |
 |---|---|---|
-| `view:board:{글}:{방문자}` (통계 모듈) | 30분 안에 본 표시 | 30분 |
+| `stats:board-view:{글}:{방문자}` (통계 모듈) | 30분 안에 본 표시 | 30분 |

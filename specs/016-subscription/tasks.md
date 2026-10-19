@@ -23,5 +23,5 @@
 
 ## 마무리
 - [x] T012 CHANGELOG `[0.11.0]`, 버전, REST Docs, V20 0.11.0 업데이트 공지, README, ERD E-13
-- [ ] T013 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright
-- [ ] T014 PR → 릴리스 0.11.0 → 배포 → 다시 합침
+- [x] T013 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright
+- [x] T014 PR → 릴리스 0.11.0 → 배포 → 다시 합침 (기능 PR #86, 릴리스 PR #87, 배포 실행 39251990619, 태그·GitHub 릴리스 `v0.11.0`, 다시 합침 PR #88)
