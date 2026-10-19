@@ -22,4 +22,4 @@
 ## 마무리
 - [x] T010 CHANGELOG `[0.13.0]`, 버전, REST Docs, V24 0.13.0 공지, README, ERD E-15
 - [x] T011 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright
-- [ ] T012 PR → 릴리스 0.13.0 → 배포 → 다시 합침
+- [x] T012 PR #92 → 릴리스 #93 → 배포 0.13.0(2026-10-19, 실행 39267658846) → 다시 합침 #94
