@@ -21,4 +21,4 @@
 ## 마무리
 - [x] T009 CHANGELOG `[0.14.0]`, 버전, REST Docs, V26 0.14.0 공지, README, ERD E-16
 - [x] T010 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright, 별도 리뷰 지적 반영(잠금을 기다리는 사이 지운 칸 → 404 재현 테스트)
-- [ ] T011 PR #95 → 릴리스 0.14.0 → 배포 → 다시 합침
+- [x] T011 PR #95 → 릴리스 #96 → 배포 0.14.0(2026-10-19, 실행 39280257419) → 다시 합침 #97
