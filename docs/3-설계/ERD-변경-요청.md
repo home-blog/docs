@@ -70,6 +70,7 @@ ALTER TABLE comment_report ADD CONSTRAINT ck_comment_report_reason CHECK (reason
 | E-17 | **새 표** `access_key` | 개인 열쇠: AI 비서(MCP)가 내 블로그에 붙는 열쇠. 원문은 저장하지 않고 SHA-256 해시와 앞 8글자만, 범위(read·draft)와 기한 | 글결 MCP(2026-10-20) | `020` data-model, Flyway V27 |
 | E-18 | **새 표** `guestbook_entry`, `notification`에 `guestbook_entry_id`·`blog_id` | 방명록 엽서(블로그·쓴 사람·내용 300자·우표·비밀·주인 답장 하나). 엽서를 지우면 소식도 지운다 | 방명록(2026-10-20) | `021` data-model, Flyway V30 |
 | E-19 | **새 표** `comment_report`, `comment.hidden_at·hidden_by`, `users.suspended_until·suspend_reason`, `editorial_action.comment_id·member_id` | 댓글 신고(한 사람 한 번, 3건이면 저절로 가림), 회원 정지(기한이 지나면 저절로 풀림), 편집실 처리 기록에 댓글·회원 | 운영 강화(2026-10-20) | `022` data-model, Flyway V31 |
+| E-20 | **새 표** `oauth_client`, `oauth_grant`, `oauth_access_token` | Claude 앱 커넥터(MCP OAuth): 동적 등록한 앱, 회원이 허락한 연결(범위·갱신 토큰 해시·옛 갱신 토큰 해시), 1시간 출입증 해시. 허락 요청·코드는 Redis | 글결 MCP OAuth(2026-10-20) | `023` data-model, Flyway V33 |
 
 ```sql
 -- E-1
