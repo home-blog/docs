@@ -8,6 +8,7 @@
 
 ## 2. 댓글 목록의 바뀐 칸 (005 contracts 1)
 - 댓글마다 `hidden`(편집실이 가림). 가렸으면 `body: ""`, `author` 빈 값, `canReply: false`. `canReport`: 로그인했고, 내 댓글이 아니고, 보이는 댓글.
+- 블로그 관리 댓글 목록(`GET /api/v1/manage/comments`) 줄마다 `hidden`. 가렸으면 `preview: ""`(주인은 그래도 지운다).
 
 ## 3. 편집실 댓글
 - `GET /api/v1/editorial/reports/comments?page=` → `{ totalCount, page, totalPages, pageSize, items: [ { "commentId", "postId", "postTitle", "excerpt", "writerId", "writerNickname", "hidden", "hiddenBy", "reportCount", "spam", "abuse", "adult", "other", "firstAt", "lastAt" } ] }`
@@ -22,8 +23,8 @@
 - `POST /api/v1/editorial/members/{memberId}/unsuspend` → 200 `{ "unsuspended": true|false }` · 404
 
 ## 5. 로그인
-- `POST /api/v1/auth/login`: 정지 중이고 비밀번호가 맞으면 403 `{ "code": "ACCOUNT_SUSPENDED", "message": "※ 2026-10-27 15:00까지 이용이 정지된 계정입니다. 사유: …" , "suspendedUntil", "reason" }`.
-- 소셜 로그인: `/login?error=suspended`로 돌려보낸다.
+- `POST /api/v1/auth/login`: 정지 중이고 비밀번호가 맞으면 403 `{ "code": "ACCOUNT_SUSPENDED", "message": "※ 2026-10-27 15:00까지 이용이 정지된 계정입니다. 사유: …", "retryAfterSeconds" }` (언제까지·사유는 문구에 싣는다. 공통 오류 모양을 그대로 쓴다).
+- 소셜 로그인: `/login?socialError=ACCOUNT_SUSPENDED`로 돌려보낸다 (다른 소셜 오류와 같은 자리).
 
 ## 6. 현황·기록
 - `GET /api/v1/editorial/summary`에 `pendingCommentReports`, `suspendedMembers`. `pendingReports`는 댓글 신고도 센다.

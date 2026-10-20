@@ -17,3 +17,4 @@
 
 ## 칸 바꾸기 `notification` (V30)
 - `kind` CHECK에 `guestbook`, `gb_reply`. `guestbook_entry_id BIGINT NULL FK guestbook_entry (CASCADE)`: 엽서를 지우면 소식도 지운다.
+- `blog_id BIGINT NULL FK blog (CASCADE)`: 방명록 주소(`/blog/{id}/guestbook`)를 만든다. 블로그 이름은 `post_title` 칸에, 보낸 사람 닉네임은 `actor_name`에.
