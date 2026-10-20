@@ -16,5 +16,5 @@
 - [x] T007 실제 MCP SDK 클라이언트의 OAuth 흐름으로 끝까지 확인(등록 → 인가 → 토큰 → 도구 → 갱신)
 
 ## 마무리
-- [ ] T008 화면 nginx·vite 프록시에 `/.well-known/`·`/oauth/`, CHANGELOG `[0.17.0]`, 버전, V34 공지, REST Docs, 쉬운 설명 `09-MCP와-RAG.md`에 커넥터, ERD E-20
-- [ ] T009 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright, PR → 릴리스 → 배포 → 다시 합침
+- [x] T008 화면 nginx·vite 프록시에 `/.well-known/`·`/oauth/`, CHANGELOG `[0.17.0]`, 버전, V34 공지, REST Docs, 쉬운 설명 `09-MCP와-RAG.md`에 커넥터, ERD E-20
+- [x] T009 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright, PR → 릴리스 → 배포 → 다시 합침
