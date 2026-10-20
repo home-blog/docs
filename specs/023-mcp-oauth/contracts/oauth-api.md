@@ -15,7 +15,8 @@
 
 ## 3. 인가
 - `GET /oauth/authorize?response_type=code&client_id&redirect_uri&code_challenge&code_challenge_method=S256&state&scope?&resource?`
-  → 302 `/connect/authorize?request=<id>` · 모르는 클라이언트/돌아갈 주소면 302 `/connect/authorize?error=invalid_client` · 그 밖에는 302 `<redirect_uri>?error=...&state=...`
+  → 302 `/connect/authorize?request=<id>` · 모르는 클라이언트/돌아갈 주소면 302 `/connect/authorize?error=invalid_client` · 그 밖의 오류(state가 너무 김, response_type, PKCE, 범위, resource, Redis 멈춤)는 **앱으로 바로 보내지 않고** 302 `/connect/authorize?error=<code>&back=<id>` (Redis가 멈췄으면 `back` 없이)
+- `GET /api/v1/oauth/errors/{id}` (로그인 없이) → `{ "clientName", "redirectHost", "error", "redirectTo": "<redirect_uri>?error=...&state=...&iss=<issuer>" }` · 404(지났거나 없음). 화면은 "앱으로 돌아가기 (<redirectHost>)" 링크로만 `redirectTo`에 보낸다(주소창의 값은 쓰지 않는다)
 - `GET /api/v1/oauth/requests/{id}` (로그인) → `{ "clientName", "redirectHost", "scope" (요청한 범위, 없으면 null), "expiresAt" }` · 401 · 404(지났거나 없음)
 - `POST /api/v1/oauth/requests/{id}/approve` `{ "scope": "read"|"draft" }` (로그인, CSRF) → `{ "redirectTo": "<redirect_uri>?code=...&state=...&iss=<issuer>" }`
 - `POST /api/v1/oauth/requests/{id}/deny` → `{ "redirectTo": "<redirect_uri>?error=access_denied&state=...&iss=<issuer>" }`
@@ -24,6 +25,9 @@
 - `POST /oauth/token` `grant_type=authorization_code&code&redirect_uri&client_id&code_verifier&resource?` →
   `{ "access_token": "go_...", "token_type": "Bearer", "expires_in": 3600, "refresh_token": "gr_...", "scope" }` (`Cache-Control: no-store`)
 - `grant_type=refresh_token&refresh_token&client_id` → 같은 모양(갱신 토큰도 새것)
+- 옛 갱신 토큰이 다시 오면 400 `invalid_grant`. 바뀐 지 `refresh-reuse-grace`(60초) 뒤면 그 연결도 끊는다(같은 클라이언트일 때만)
+- 연결을 모두 끊은(`users.oauth_revoked_at`) 뒤에는 그 전에 받은 허락 코드로 400 `invalid_grant`
+- 주소에 쿼리(`?…`)가 붙은 `/oauth/token`·`/oauth/revoke`는 400 `invalid_request` (토큰이 로그에 남지 않게 form 본문으로만)
 - 오류 400 `invalid_grant` · `invalid_request` · `unsupported_grant_type` · `invalid_target`, 401 `invalid_client`
 - `POST /oauth/revoke` `token&client_id` → 200 (모르는 토큰도 200)
 
