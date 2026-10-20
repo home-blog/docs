@@ -25,4 +25,4 @@
 ## 마무리
 - [x] T011 CHANGELOG `[0.15.0]`(우편함 다시 그리기 포함), 버전, REST Docs, V28 공지, README, ERD E-17, 쉬운 설명 `docs/4-가이드/09-MCP와-RAG.md`
 - [x] T012 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright
-- [ ] T013 PR → 릴리스 0.15.0 → 배포 → 다시 합침
+- [x] T013 PR → 릴리스 0.15.0 → 배포 → 다시 합침 (기능 PR #98, 릴리스 PR #99, 배포 실행 39355617431, 다시 합침 PR #100, 2026-10-20)
