@@ -23,5 +23,5 @@
 - [x] T010 화면 구현(먹줄 칸, 정지 도장)
 
 ## 마무리
-- [ ] T011 CHANGELOG, REST Docs, V32 0.16.0 공지, ERD E-19
-- [ ] T012 `mvn verify`, 화면 검사, Playwright, PR → 릴리스 0.16.0 → 배포 → 다시 합침
+- [x] T011 CHANGELOG, REST Docs, V32 0.16.0 공지, ERD E-19
+- [x] T012 `mvn verify`, 화면 검사, Playwright, PR → 릴리스 0.16.0 → 배포 → 다시 합침

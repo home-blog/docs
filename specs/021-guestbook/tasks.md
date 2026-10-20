@@ -19,5 +19,5 @@
 - [x] T008 블로그 머리 "방명록" 탭, `/blog/:blogId/guestbook` 엽서함(우표 SVG 5종, 꽂힘·소인 애니메이션, 뒤집어 답장), 우편함 소식 두 가지
 
 ## 마무리
-- [ ] T009 CHANGELOG `[0.16.0]`, REST Docs, 예시 엽서(seed), ERD E-18 — REST Docs·예시 엽서 6장(`guestbook.json`, Actions `예시 데이터` guestbook) 끝. 남은 것: CHANGELOG(릴리스 때), ERD E-18
+- [x] T009 CHANGELOG `[0.16.0]`, REST Docs, 예시 엽서(seed), ERD E-18 — REST Docs·예시 엽서 6장(`guestbook.json`, Actions `예시 데이터` guestbook) 끝. 남은 것: CHANGELOG(릴리스 때), ERD E-18
 - [x] T010 `mvn verify`, `npm run lint && npm test && npm run build`, Playwright
